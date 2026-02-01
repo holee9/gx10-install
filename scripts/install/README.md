@@ -11,7 +11,8 @@ GX10 OS 설치 후 자동 구축을 위한 단계별 스크립트 모음입니�
 ### 관련 문서
 - [../../GX10-03-Final-Implementation-Guide.md](../../GX10-03-Final-Implementation-Guide.md) - 최종 구현 가이드
 - [../../GX10-04-Build-Checklist.md](../../GX10-04-Build-Checklist.md) - 빌드 체크리스트
-- [../../GX10-08-CodeBrain-Memory-Optimization.md](../../GX10-08-CodeBrain-Memory-Optimization.md) (DOC-GX10-08) - 메모리 최적화
+- [../../GX10-08-CodeBrain-Memory-Optimization.md](../../GX10-08-CodeBrain-Memory-Optimization.md) (DOC-GX10-08) - Code Brain 메모리 최적화
+- [../../GX10-09-Two-Brain-Optimization.md](../../GX10-09-Two-Brain-Optimization.md) (DOC-GX10-09) - Two Brain 최적화 가이드
 
 ---
 
