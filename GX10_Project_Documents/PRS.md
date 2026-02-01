@@ -283,10 +283,21 @@
 - Vision Brain: 동시 처리 가능한 작업 없음 (단일 작업)
 - API: 최소 10 req/s
 
-**NFR-PRS-2.3**: 리소스 사용
-- Code Brain 메모리: 30-40GB
-- Vision Brain 메모리: 70-90GB
-- CPU 사용률: < 80% (Idle 시)
+**NFR-PRS-2.3**: 리소스 사용 (업데이트: 2026-02-01)
+
+**Code Brain 메모리**:
+- 권장: 50-60GB (Option A: 공격적 확장)
+  - qwen2.5-coder:32b: 24GB (16K KV Cache)
+  - qwen2.5-coder:7b: 5GB (상시 로드)
+  - deepseek-coder-v2:16b: 10GB (on-demand)
+  - Ollama 오버헤드: 4GB
+- 보수적 설정: 40-45GB (단일 모델 + on-demand 서브 모델)
+
+**Vision Brain 메모리**: 70-90GB (변경 없음)
+
+**CPU 사용률**: < 80% (Idle 시)
+
+**참고**: 상세 내용은 [GX10-08-CodeBrain-Memory-Optimization.md](../GX10-08-CodeBrain-Memory-Optimization.md) 참조
 
 ---
 
@@ -503,3 +514,4 @@
 | 일자 | 버전 | 설명 | 리뷰어 |
 |------|------|------|--------|
 | 2026-02-01 | 1.0 | 기존 문서 기반 전면 보완 | drake |
+| 2026-02-01 | 1.1 | Code Brain 메모리 요구사항 업데이트 (30-40GB → 50-60GB, GX10-08 반영) | drake |

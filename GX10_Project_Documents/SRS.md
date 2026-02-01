@@ -246,9 +246,14 @@
 ### PER-3: 리소스 사용 (Resource Usage)
 
 **Code Brain**:
-- 메모리: 30-40GB
+- 메모리: 50-60GB (권장, Option A) 또는 40-45GB (보수적)
+  - qwen2.5-coder:32b: 24GB (16K KV Cache)
+  - qwen2.5-coder:7b: 5GB (상시 로드)
+  - deepseek-coder-v2:16b: 10GB (on-demand)
+  - Ollama 오버헤드: 4GB
 - GPU: 중간 (23-48GB VRAM)
 - CPU: 중간
+- 참고: [GX10-08-CodeBrain-Memory-Optimization.md](../GX10-08-CodeBrain-Memory-Optimization.md)
 
 **Vision Brain**:
 - 메모리: 70-90GB
@@ -349,3 +354,4 @@
 | 일자 | 버전 | 설명 | 리뷰어 |
 |------|------|------|--------|
 | 2026-02-01 | 1.0 | 기존 문서 기반 전면 보완 | drake |
+| 2026-02-01 | 1.1 | Code Brain 메모리 요구사항 업데이트 (PER-3, 30-40GB → 50-60GB, GX10-08 반영) | drake |
