@@ -2,7 +2,25 @@
 #############################################
 # GX10 Auto Installation Script - Phase 8
 # Open WebUI Installation
+#
+# Reference: PRD.md Section "Functional Requirements > 7. Open WebUI"
+# - Port: 8080
+# - Integration with Ollama
+# - Code Brain interaction interface
+#
+# Author: omc-developer
+# Created: 2026-02-01
+# Modified: 2026-02-01
+#
+# Reviewed-By: alfrad (2026-02-01)
 #############################################
+
+# alfrad review:
+# ✅ Open WebUI 설치로 사용자 인터페이스 제공
+# ✅ Port 8080 설정으로 표준 포트 사용 적절
+# ✅ Ollama 연동으로 Code Brain 상호작용 가능
+# 💡 제안: HTTPS 설정 및 인증 메커니즘 추가로 보안 강화 권장
+# ⚠️ 확인: 외부 접속 시 방화벽 규칙 검토 필요
 
 set -e
 set -u

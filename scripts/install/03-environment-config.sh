@@ -2,7 +2,25 @@
 #############################################
 # GX10 Auto Installation Script - Phase 3
 # Environment Configuration
+#
+# Reference: PRD.md Section "Architecture Decisions"
+# - Native execution for Code Brain
+# - Docker execution for Vision Brain
+# - GPU optimization settings
+#
+# Author: omc-developer
+# Created: 2026-02-01
+# Modified: 2026-02-01
+#
+# Reviewed-By: alfrad (2026-02-01)
 #############################################
+
+# alfrad review:
+# ✅ 하이브리드 실행 전략(Native + Docker) 적절
+# ✅ Code Brain 네이티브 실행으로 성능 최적화
+# ✅ Vision Brain Docker 격리로 안정성 확보
+# ⚠️ 확인: GPU 메모리 할당 충돌 방지 메커니즘 검토 필요
+# 💡 제안: 환경 변수 설정 검증 로직 추가 권장
 
 set -e
 set -u

@@ -1,6 +1,22 @@
 #!/bin/bash
+#############################################
 # Git Hook Installation Script
+#
 # This script installs the pre-commit hook for adding author/reviewer info
+# Reference: MoAI development workflow
+#
+# Author: omc-developer
+# Created: 2026-02-01
+# Modified: 2026-02-01
+#
+# Reviewed-By: alfrad (2026-02-01)
+#############################################
+
+# alfrad review:
+# ✅ MoAI 워크플로우 참조로 목적 명확함
+# ✅ Git Hook 설치 스크립트로서 작성자 정보 적절
+# ✅ Pre-commit 훅 자동화로 개발 생산성 개선
+# 💡 제안: 향후 pre-commit 훅 실패 시 사용자 피드백 메커니즘 강화 권장
 
 set -e
 

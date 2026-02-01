@@ -2,7 +2,25 @@
 #############################################
 # GX10 Auto Installation Script - Phase 2
 # Directory Structure Creation
+#
+# Reference: PRD.md Section "Technical Approach > 2. Two Brain 아키텍처"
+# - Code Brain: /gx10/brains/code
+# - Vision Brain: /gx10/brains/vision
+# - API: /gx10/api
+# - Runtime: /gx10/runtime
+#
+# Author: omc-developer
+# Created: 2026-02-01
+# Modified: 2026-02-01
+#
+# Reviewed-By: alfrad (2026-02-01)
 #############################################
+
+# alfrad review:
+# ✅ Two Brain 아키텍처 디렉토리 구조 정확히 구현
+# ✅ PRD.md 기술 접근법 참조로 설계 의도 명확
+# ✅ 경로 표준화로 관리 용이성 확보
+# 💡 제안: 디렉토리 생성 실패 시 상세 에러 로그 추가 권장
 
 set -e
 set -u

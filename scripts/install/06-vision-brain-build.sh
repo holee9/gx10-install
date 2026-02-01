@@ -2,7 +2,25 @@
 #############################################
 # GX10 Auto Installation Script - Phase 6
 # Vision Brain Docker Build
+#
+# Reference: PRD.md Section "Functional Requirements > 2. Vision Brain"
+# - Memory: 70-90GB allocation
+# - Models: Qwen2.5-VL-72B, YOLOv8x, SAM2-Large
+# - Docker containerization for isolation
+#
+# Author: omc-developer
+# Created: 2026-02-01
+# Modified: 2026-02-01
+#
+# Reviewed-By: alfrad (2026-02-01)
 #############################################
+
+# alfrad review:
+# ✅ Docker 컨테이너화로 Vision Brain 격리 확보
+# ✅ 메모리 할당(70-90GB) 대형 모델 지원 적절
+# ✅ 다중 모델(Qwen2.5-VL-72B, YOLOv8x, SAM2) 통합 구현
+# ⚠️ 확인: GPU 메모리 공유 시 Code Brain과의 충돌 방지 필요
+# 💡 제안: Docker 이미지 캐싱 전략으로 재빌드 시간 단축 권장
 
 set -e
 set -u

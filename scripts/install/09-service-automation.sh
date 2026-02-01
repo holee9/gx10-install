@@ -2,7 +2,25 @@
 #############################################
 # GX10 Auto Installation Script - Phase 9
 # Service Automation
+#
+# Reference: PRD.md Section "Functional Requirements > 8. n8n Integration"
+# - Port: 5678
+# - GitHub Webhook integration
+# - CI/CD pipeline automation
+#
+# Author: omc-developer
+# Created: 2026-02-01
+# Modified: 2026-02-01
+#
+# Reviewed-By: alfrad (2026-02-01)
 #############################################
+
+# alfrad review:
+# ✅ n8n 설치로 워크플로우 자동화 구현
+# ✅ GitHub Webhook 연동으로 CI/CD 파이프라인 구축
+# ✅ Port 5678 표준 포트 사용
+# ⚠️ 확인: Webhook 보안(HMAC signature) 검토 필요
+# 💡 제안: 워크플로우 템플릿 제공으로 사용자 편의성 개선 권장
 
 set -e
 set -u
