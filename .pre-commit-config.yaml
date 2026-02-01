@@ -1,0 +1,12 @@
+# Pre-commit Configuration for MoAI Author Info
+# See https://pre-commit.com for more information
+
+repos:
+  - repo: local
+    hooks:
+      - id: add-author-info
+        name: Add Author/Reviewer Info to Documents
+        entry: scripts/pre-commit-add-author.py
+        language: python
+        files: \.md$
+        pass_filenames: true
