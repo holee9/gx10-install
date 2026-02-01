@@ -23,6 +23,26 @@
 
 ---
 
+## 문서 계층 구조
+
+### 상위 문서
+- [MRD.md](MRD.md) (DOC-MRD-001) - Market Requirements Document
+- [PRD.md](PRD.md) (DOC-PRD-001) - Product Requirements Document
+- [PRS.md](PRS.md) (DOC-PRS-001) - Product Requirements Specification
+- [SRS.md](SRS.md) (DOC-SRS-001) - System Requirements Specification
+
+### 동급 문서
+- [Test_Plan.md](Test_Plan.md) (DOC-TEST-001) - Test Plan
+
+### 하위 문서
+없음
+
+### 관련 문서
+- [../GX10-06-Comprehensive-Guide.md](../GX10-06-Comprehensive-Guide.md) - 종합 가이드
+- [../GX10-07-Auto-Installation-Plan.md](../GX10-07-Auto-Installation-Plan.md) - 자동 설치 계획
+
+---
+
 ## Core Functions
 
 ### FC-1: Execution Plan 수신 및 검증 (Execution Plan Reception and Validation)

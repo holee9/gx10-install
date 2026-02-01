@@ -25,6 +25,25 @@
 
 ---
 
+## 문서 계층 구조
+
+### 상위 문서
+- [MRD.md](MRD.md) (DOC-MRD-001) - Market Requirements Document
+- [PRD.md](PRD.md) (DOC-PRD-001) - Product Requirements Document
+
+### 동급 문서
+- [PRS.md](PRS.md) (DOC-PRS-001) - Product Requirements Specification
+
+### 하위 문서
+- [FRS.md](FRS.md) (DOC-FRS-001) - Functional Requirements Specification
+- [Test_Plan.md](Test_Plan.md) (DOC-TEST-001) - Test Plan
+
+### 관련 문서
+- [../GX10-03-Final-Implementation-Guide.md](../GX10-03-Final-Implementation-Guide.md) - 최종 구현 가이드
+- [../GX10-04-Build-Checklist.md](../GX10-04-Build-Checklist.md) - 빌드 체크리스트
+
+---
+
 ## Hardware Requirements
 
 ### HR-1: ASUS GX10 하드웨어 사양

@@ -30,6 +30,25 @@
 
 ---
 
+## 문서 계층 구조
+
+### 상위 문서
+- [MRD.md](MRD.md) (DOC-MRD-001) - Market Requirements Document
+- [PRD.md](PRD.md) (DOC-PRD-001) - Product Requirements Document
+- [PRS.md](PRS.md) (DOC-PRS-001) - Product Requirements Specification
+- [SRS.md](SRS.md) (DOC-SRS-001) - System Requirements Specification
+
+### 동급 문서
+- [FRS.md](FRS.md) (DOC-FRS-001) - Functional Requirements Specification
+
+### 하위 문서
+없음
+
+### 관련 문서
+- [../GX10-04-Build-Checklist.md](../GX10-04-Build-Checklist.md) - 빌드 체크리스트
+
+---
+
 ## Test Types
 
 ### TT-1: 단위 테스트 (Unit Tests)

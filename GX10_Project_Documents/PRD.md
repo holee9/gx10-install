@@ -30,6 +30,26 @@
 
 ---
 
+## 문서 계층 구조
+
+### 상위 문서
+- [MRD.md](MRD.md) (DOC-MRD-001) - Market Requirements Document
+
+### 동급 문서
+- [PRS.md](PRS.md) (DOC-PRS-001) - Product Requirements Specification
+- [SRS.md](SRS.md) (DOC-SRS-001) - System Requirements Specification
+
+### 하위 문서
+- [FRS.md](FRS.md) (DOC-FRS-001) - Functional Requirements Specification
+- [Test_Plan.md](Test_Plan.md) (DOC-TEST-001) - Test Plan
+
+### 관련 문서
+- [../GX10-03-Final-Implementation-Guide.md](../GX10-03-Final-Implementation-Guide.md) - 최종 구현 가이드
+- [../GX10-06-Comprehensive-Guide.md](../GX10-06-Comprehensive-Guide.md) - 종합 가이드
+- [../GX10-08-CodeBrain-Memory-Optimization.md](../GX10-08-CodeBrain-Memory-Optimization.md) - Code Brain 메모리 최적화
+
+---
+
 ## Executive Summary
 
 GX10 프로젝트는 **장기 유지보수가 가능한 고품질 코드 생산**을 최우선 목표로 하는 로컬 AI 개발 환경 시스템입니다. 클라우드 구독형 AI 코딩 도구(GitHub Copilot, Claude Code, Cursor)의 높은 비용과 제어 불가능성을 해결하기 위해, ASUS GX10 하드웨어와 로컬 LLM을 활용한 완전히 제어 가능한 에이전트 코딩 시스템을 구축합니다.

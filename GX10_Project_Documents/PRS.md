@@ -28,6 +28,25 @@
 
 ---
 
+## 문서 계층 구조
+
+### 상위 문서
+- [MRD.md](MRD.md) (DOC-MRD-001) - Market Requirements Document
+- [PRD.md](PRD.md) (DOC-PRD-001) - Product Requirements Document
+
+### 동급 문서
+- [SRS.md](SRS.md) (DOC-SRS-001) - System Requirements Specification
+
+### 하위 문서
+- [FRS.md](FRS.md) (DOC-FRS-001) - Functional Requirements Specification
+- [Test_Plan.md](Test_Plan.md) (DOC-TEST-001) - Test Plan
+
+### 관련 문서
+- [../GX10-06-Comprehensive-Guide.md](../GX10-06-Comprehensive-Guide.md) - 종합 가이드
+- [../GX10-08-CodeBrain-Memory-Optimization.md](../GX10-08-CodeBrain-Memory-Optimization.md) - Code Brain 메모리 최적화
+
+---
+
 ## Functional Requirements
 
 ### FR-PRS-1: Execution Plan 기반 코드 생성 (Execution Plan-Based Code Generation)

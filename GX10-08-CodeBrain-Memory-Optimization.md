@@ -10,6 +10,25 @@
 
 ---
 
+## 문서 계층 구조
+
+### 상위 문서
+- [GX10_Project_Documents/PRS.md](GX10_Project_Documents/PRS.md) (DOC-PRS-001) - Product Requirements Specification
+- [GX10_Project_Documents/SRS.md](GX10_Project_Documents/SRS.md) (DOC-SRS-001) - System Requirements Specification
+
+### 동급 문서
+없음 (기술 문서)
+
+### 하위 문서
+없음
+
+### 관련 문서
+- [GX10_Project_Documents/PRD.md](GX10_Project_Documents/PRD.md) (DOC-PRD-001) - Product Requirements Document
+- [GX10-06-Comprehensive-Guide.md](GX10-06-Comprehensive-Guide.md) - 종합 가이드
+- [GX10-07-Auto-Installation-Plan.md](GX10-07-Auto-Installation-Plan.md) - 자동 설치 계획
+
+---
+
 ## 1. 현재 상황 분석
 
 ### 1.1 하드웨어 사양
