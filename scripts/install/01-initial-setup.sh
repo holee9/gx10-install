@@ -1,0 +1,81 @@
+#!/bin/bash
+#############################################
+# GX10 Auto Installation Script - Phase 1
+# Initial Setup and System Update
+#############################################
+
+set -e  # Exit on error
+set -u  # Exit on undefined variable
+
+LOG_FILE="/gx10/runtime/logs/01-initial-setup.log"
+mkdir -p /gx10/runtime/logs
+
+echo "=========================================="
+echo "GX10 Phase 1: Initial Setup"
+echo "=========================================="
+echo "Log: $LOG_FILE"
+echo ""
+
+# Log function
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
+}
+
+log "Starting system update..."
+
+# System update
+log "Updating system packages..."
+sudo apt update >> "$LOG_FILE" 2>&1
+sudo apt upgrade -y >> "$LOG_FILE" 2>&1
+
+# Install essential packages
+log "Installing essential packages..."
+sudo apt install -y \
+    build-essential \
+    cmake \
+    git \
+    curl \
+    wget \
+    htop \
+    btop \
+    tmux \
+    vim \
+    neovim \
+    tree \
+    jq \
+    unzip \
+    net-tools \
+    openssh-server \
+    python3-pip \
+    python3-venv >> "$LOG_FILE" 2>&1
+
+# SSH configuration
+log "Configuring SSH..."
+sudo systemctl enable ssh >> "$LOG_FILE" 2>&1
+sudo systemctl start ssh >> "$LOG_FILE" 2>&1
+
+# Firewall configuration
+log "Configuring firewall..."
+sudo ufw allow ssh >> "$LOG_FILE" 2>&1
+sudo ufw allow 11434/tcp >> "$LOG_FILE" 2>&1  # Ollama
+sudo ufw allow 8080/tcp >> "$LOG_FILE" 2>&1   # Open WebUI
+sudo ufw allow 5678/tcp >> "$LOG_FILE" 2>&1   # n8n
+sudo ufw --force enable >> "$LOG_FILE" 2>&1
+
+# Verification
+log "Verifying installation..."
+echo "" | tee -a "$LOG_FILE"
+echo "=== Verification ===" | tee -a "$LOG_FILE"
+echo "SSH Status:" | tee -a "$LOG_FILE"
+sudo systemctl status ssh --no-pager | tee -a "$LOG_FILE"
+echo "" | tee -a "$LOG_FILE"
+echo "UFW Status:" | tee -a "$LOG_FILE"
+sudo ufw status | tee -a "$LOG_FILE"
+echo "" | tee -a "$LOG_FILE"
+echo "Disk Usage:" | tee -a "$LOG_FILE"
+df -h | tee -a "$LOG_FILE"
+
+log "Phase 1 completed successfully!"
+echo "=========================================="
+echo "Phase 1: COMPLETED"
+echo "=========================================="
