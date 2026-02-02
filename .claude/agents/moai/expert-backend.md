@@ -17,13 +17,13 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/pre_tool__security_guard.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/pre_tool__security_guard.py\"'"
           timeout: 30
   PostToolUse:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__ast_grep_scan.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__ast_grep_scan.py\"'"
           timeout: 60
 ---
 
@@ -962,17 +962,3 @@ Agent Tier: Domain (Alfred Sub-agents)
 Supported Frameworks: FastAPI, Flask, Django, Express, Fastify, NestJS, Sails, Gin, Beego, Axum, Rocket, Spring Boot, Laravel, Symfony
 Supported Languages: Python, TypeScript, Go, Rust, Java, Scala, PHP
 Context7 Integration: Enabled for real-time framework documentation
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

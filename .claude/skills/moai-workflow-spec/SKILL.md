@@ -278,19 +278,11 @@ For advanced patterns including SPEC templates, validation automation, and workf
 
 ### SPEC File Organization
 
-Directory Structure (Standard 3-File Format):
+Directory Structure:
 
-- .moai/specs/SPEC-{ID}/: SPEC document directory containing 3 required files
-  - spec.md: EARS format specification (Environment, Assumptions, Requirements, Specifications)
-  - plan.md: Implementation plan, milestones, technical approach
-  - acceptance.md: Detailed acceptance criteria, test scenarios (Given-When-Then format)
+- .moai/specs/: SPEC document files (SPEC-001-feature-name.md)
 - .moai/memory/: Session state files (last-session-state.json)
 - .moai/docs/: Generated documentation (api-documentation.md)
-
-[HARD] Required File Set:
-Every SPEC directory MUST contain all 3 files (spec.md, plan.md, acceptance.md)
-WHY: Complete SPEC structure ensures traceability, implementation guidance, and quality validation
-IMPACT: Missing files create incomplete requirements and prevent proper workflow execution
 
 ### SPEC Metadata Schema
 
@@ -564,17 +556,3 @@ echo -e "\n=== Check Complete ==="
 Version: 1.3.0 (SDD 2025 Standard Integration + SPEC Scope Classification)
 Last Updated: 2026-01-21
 Integration Status: Complete - Full Plan-Run-Sync workflow with SDD 2025 features and Migration Guide
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

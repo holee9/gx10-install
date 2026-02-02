@@ -122,17 +122,3 @@ project = template.scaffold(
 
 - Scaffold Time: 2 minutes for new projects (vs 30 minutes manual)
 - Template Adoption: 95% of projects use templates
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

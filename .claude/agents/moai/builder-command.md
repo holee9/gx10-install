@@ -17,10 +17,10 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__code_formatter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__code_formatter.py\"'"
           timeout: 30
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__linter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__linter.py\"'"
           timeout: 30
 ---
 
@@ -1216,17 +1216,3 @@ Version: 1.0.0
 Created: 2025-11-25
 Pattern: Comprehensive 6-Phase with Reuse-First Philosophy
 Compliance: Claude Code Official Standards + MoAI-ADK Conventions
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

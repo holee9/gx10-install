@@ -152,7 +152,7 @@ GX10 Code Brain에 작업을 지시할 때 사용하는 표준 포맷입니다.
 ### 1. 필수 조건
 
 - GX10 하드웨어 (128GB RAM, NVIDIA Blackwell GB10)
-- DGX OS 설치 완료
+- DGX OS 7.2.3 설치 완료 (Ubuntu 24.04 기반)
 - 개발자 PC와 SSH 연결 가능
 
 ### 2. 3단계 구축
@@ -266,7 +266,7 @@ sleep 10
 | 메모리 대역폭 | 273 GB/s (CPU+GPU 공유) |
 | 스토리지 | 1TB NVMe SSD |
 | 네트워크 | 10GbE + ConnectX-7 (200Gbps QSFP) |
-| OS | DGX OS (Ubuntu 24.04 기반) |
+| OS | DGX OS 7.2.3 (Ubuntu 24.04 LTS 기반) |
 
 ### UMA(Unified Memory Architecture) 특성
 
@@ -298,11 +298,12 @@ sleep 10
 
 ## 📝 문서 버전
 
-- **최종 수정**: 2026-02-01
+- **최종 수정**: 2026-02-02
 - **주요 변경사항**:
-  - README 통합 작성
-  - 문서 간 중복 내용 정리
-  - 빠른 시작 가이드 추가
+  - DGX OS 7.2.3 (Ubuntu 24.04 기반) 기반으로 정정
+  - DGX OS 사전 설치된 컴포넌트 활용 가이드
+  - Python 3.12 및 PEP 668 관련 내용 유지
+  - DGX OS 특정 설정 추가
 
 ## 👥 기여
 
@@ -318,6 +319,8 @@ sleep 10
 
 | 일자 | 버전 | 설명 | 리뷰어 |
 |------|------|------|--------|
+| 2026-02-02 | 1.2 | DGX OS 기반으로 정정 (DGX OS는 Ubuntu 24.04 기반 NVIDIA 커스텀 OS) | drake |
+| 2026-02-02 | 1.1 | Ubuntu 24.04 LTS 변경 사항 반영 | drake |
 | 2026-02-01 | 1.0 | README 통합 작성, 작성자/리뷰어 정보 추가 | drake |
 
 ---

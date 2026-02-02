@@ -212,17 +212,3 @@ Step 4: Test with known good and bad requests.
 Auth0 Documentation: Configure Akamai to Send Supplemental Signals
 Auth0 Documentation: Use Akamai Supplemental Signals in Actions
 Akamai Documentation: Bot Manager and Enterprise Application Access
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

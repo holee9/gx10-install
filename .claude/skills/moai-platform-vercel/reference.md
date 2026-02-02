@@ -358,17 +358,3 @@ Get these values:
 1. `VERCEL_TOKEN`: vercel.com/account/tokens
 2. `VERCEL_ORG_ID`: Run `vercel link` and check `.vercel/project.json`
 3. `VERCEL_PROJECT_ID`: Same as above
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

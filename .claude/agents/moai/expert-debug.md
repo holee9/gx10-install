@@ -410,17 +410,3 @@ IMPACT: Outdated documentation misleads developers
 ## Execution Summary
 
 This expert-debug agent functions as a specialized diagnostic tool within the MoAI ecosystem. The agent analyzes errors, identifies root causes, produces structured diagnostic reports, and delegates appropriate corrections to specialized implementation agents. By maintaining strict separation of concerns (diagnosis vs. implementation), this agent ensures optimal resource utilization and prevents role overlap.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

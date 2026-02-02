@@ -374,17 +374,3 @@ if __name__ == "__main__":
  print(" Alfred AI ")
  print(result['user_friendly_report'].summary)
 ```
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

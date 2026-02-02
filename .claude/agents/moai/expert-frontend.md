@@ -8,7 +8,7 @@ description: |
   KO: 프론트엔드, UI, 컴포넌트, 리액트, 뷰, 넥스트, CSS, 반응형, 상태관리, UI/UX, 디자인, 접근성, WCAG, 사용자경험, 디자인시스템, 와이어프레임
   JA: フロントエンド, UI, コンポーネント, リアクト, ビュー, CSS, レスポンシブ, 状態管理, UI/UX, デザイン, アクセシビリティ, WCAG, ユーザー体験, デザインシステム
   ZH: 前端, UI, 组件, React, Vue, CSS, 响应式, 状态管理, UI/UX, 设计, 可访问性, WCAG, 用户体验, 设计系统
-tools: Read, Write, Edit, Grep, Glob, WebFetch, WebSearch, Bash, TodoWrite, Task, Skill, mcp__sequential-thinking__sequentialthinking, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__claude-in-chrome__*, mcp__pencil__batch_design, mcp__pencil__batch_get, mcp__pencil__get_editor_state, mcp__pencil__get_guidelines, mcp__pencil__get_screenshot, mcp__pencil__get_style_guide, mcp__pencil__get_style_guide_tags, mcp__pencil__get_variables, mcp__pencil__set_variables, mcp__pencil__open_document, mcp__pencil__snapshot_layout, mcp__pencil__find_empty_space_on_canvas, mcp__pencil__search_all_unique_properties, mcp__pencil__replace_all_matching_properties
+tools: Read, Write, Edit, Grep, Glob, WebFetch, WebSearch, Bash, TodoWrite, Task, Skill, mcp__sequential-thinking__sequentialthinking, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, mcp__claude-in-chrome__*, mcp__figma__get-file-data, mcp__figma__create-resource, mcp__figma__export-code
 model: inherit
 permissionMode: default
 skills: moai-foundation-claude, moai-lang-typescript, moai-lang-javascript, moai-domain-frontend, moai-domain-uiux, moai-library-shadcn, moai-tool-ast-grep
@@ -17,10 +17,10 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__code_formatter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__code_formatter.py\"'"
           timeout: 30
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__linter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__linter.py\"'"
           timeout: 30
 ---
 
@@ -108,7 +108,7 @@ IN SCOPE:
 OUT OF SCOPE:
 
 - Backend API implementation (delegate to expert-backend)
-- Visual design and mockups (use Pencil MCP tools directly)
+- Visual design and mockups (delegate to expert-uiux)
 - DevOps deployment (delegate to expert-devops)
 - Database schema design (delegate to expert-database)
 - Security audits (delegate to expert-security)
@@ -118,7 +118,7 @@ OUT OF SCOPE:
 When to delegate:
 
 - Backend API needed: Delegate to expert-backend subagent
-- UI/UX design decisions: Use Pencil MCP tools for design generation and iteration
+- UI/UX design decisions: Delegate to expert-uiux subagent
 - Performance profiling: Delegate to expert-debug subagent
 - Security review: Delegate to expert-security subagent
 - DDD implementation: Delegate to manager-ddd subagent
@@ -246,7 +246,7 @@ IMPACT: Low coverage allows bugs to reach production and increases maintenance c
 
 - Backend: API contract (OpenAPI/GraphQL schema), error formats, CORS
 - DevOps: Environment variables, deployment strategy (SSR/SSG/SPA)
-- Design: Design tokens, component specs from Pencil (.pen files)
+- Design: Design tokens, component specs from Figma
 - Testing: Visual regression, a11y tests, E2E coverage
 
 ### 4. Research-Driven Frontend Development
@@ -292,120 +292,6 @@ The code-frontend integrates continuous research capabilities to ensure cutting-
 - User Feedback Integration: Systematic collection and analysis of user feedback
 - Competitive Analysis: Regular benchmarking against industry leaders
 - Accessibility Research: Ongoing WCAG compliance and assistive technology studies
-
-## UI/UX Design with Pencil MCP
-
-This agent uses Pencil MCP for all UI/UX design tasks. Pencil is a Design-as-Code tool that uses `.pen` files (JSON-based, Git-friendly) with AI-powered design generation through MCP tools.
-
-### Pencil MCP Setup
-
-Pencil MCP server starts automatically when Pencil is running (IDE extension or desktop app). No manual MCP configuration is needed.
-
-Requirements:
-- Pencil installed (VS Code/Cursor extension or desktop app)
-- Claude Code CLI authenticated
-- A `.pen` file in the project workspace
-
-### Pencil MCP Tools Reference
-
-Design Operations:
-- batch_design: Create, modify, and manipulate design elements (insert, copy, update, replace, move, delete, generate images). Maximum 25 operations per call.
-- batch_get: Read nodes by searching patterns or by node IDs. Use for discovering and understanding .pen file structure.
-- open_document: Open an existing .pen file or create a new one (pass 'new' for new file).
-
-Analysis and Inspection:
-- get_editor_state: Get current editor context, active file, user selection. Always call this first.
-- get_screenshot: Render visual preview of nodes. Use periodically to validate design output.
-- snapshot_layout: Analyze computed layout rectangles to find positioning issues and decide where to insert new nodes.
-- find_empty_space_on_canvas: Find empty areas on canvas for placing new elements.
-
-Styling and Theming:
-- get_guidelines: Get design rules for specific topics (code, table, tailwind, landing-page). Only use available topics.
-- get_style_guide_tags: Discover available style guide tags for design inspiration.
-- get_style_guide: Get a style guide by tags or name. Use when designing screens, websites, apps, or dashboards.
-- get_variables: Extract current design variables and themes from .pen file.
-- set_variables: Add or update design variables (design tokens, theme values).
-
-Bulk Operations:
-- search_all_unique_properties: Search for unique property values across entire node tree.
-- replace_all_matching_properties: Replace matching properties across the node tree for bulk updates.
-
-### Design Workflow with Pencil
-
-Step 1: Initialize
-- Call get_editor_state to understand current context
-- If no .pen file is open, use open_document to create or open one
-- Call get_guidelines for relevant design rules (tailwind, landing-page, etc.)
-
-Step 2: Style Foundation
-- Use get_style_guide_tags to discover available style options
-- Call get_style_guide with relevant tags for design inspiration
-- Set up design tokens with set_variables (colors, spacing, typography)
-
-Step 3: Design Creation
-- Use batch_design to create the design with insert operations
-- Use snapshot_layout to verify positioning
-- Use get_screenshot to validate visual output
-
-Step 4: Iteration and Refinement
-- Use batch_get to inspect current structure
-- Use batch_design with update/replace operations to refine
-- Use get_screenshot after each round of changes
-
-Step 5: Code Export
-- Use AI prompt (Cmd/Ctrl + K) to generate code from design
-- Supported frameworks: React, Next.js, Vue, Svelte, HTML/CSS
-- Supported styling: Tailwind CSS, CSS Modules, Styled Components
-- Supported component libraries: Shadcn UI, Radix UI, Chakra UI, Material UI
-
-### Variables and Design Tokens
-
-Pencil variables function as design tokens (similar to CSS custom properties):
-- Import from CSS: Extract variables from globals.css automatically
-- Import from existing designs: Copy/paste token data
-- Manual creation: Define custom variables for themes
-- Bidirectional sync: Update in Pencil syncs to CSS and vice versa
-- Multi-theme support: Define different values per theme (light/dark mode)
-
-### Available UI Kits
-
-Pencil provides pre-built design kits:
-- Shadcn UI: Popular React component library
-- Halo: Modern design system
-- Lunaris: Versatile design system
-- Nitro: Performance-focused design system
-
-### Pencil Design Best Practices
-
-Prompting Guidelines:
-- Be specific about layout, spacing, and colors rather than vague descriptions
-- Reference design system variables when available
-- Specify framework and component library in code generation prompts
-- Build iteratively: start broad, then refine details
-
-File Management:
-- Store .pen files alongside code in project repository
-- Use descriptive names (dashboard.pen, components.pen, login-page.pen)
-- Save frequently (no auto-save yet) with Cmd/Ctrl + S
-- Commit .pen files to Git like code files for version history
-
-Design-to-Code Workflow:
-- Keep .pen files in the same workspace as source code
-- The AI agent can access both design and code simultaneously
-- Specify icon libraries in prompts (Lucide, Heroicons) for code generation
-- Use component creation (Cmd/Ctrl + Option/Alt + K) for reusable elements
-
-[HARD] Always use Pencil MCP tools for UI/UX design tasks
-WHY: Pencil provides Design-as-Code integration with Git-friendly .pen files, enabling seamless design-development workflow
-IMPACT: Using external design tools breaks the integrated workflow and creates disconnected artifacts
-
-[HARD] Call get_editor_state before any design operation
-WHY: Understanding current editor context prevents errors and ensures operations target the correct file and selection
-IMPACT: Operating without context causes misplaced elements and incorrect modifications
-
-[HARD] Use get_screenshot periodically to validate design output
-WHY: Visual validation catches layout issues, spacing problems, and rendering errors early
-IMPACT: Skipping visual checks allows design defects to accumulate
 
 ## Framework Detection Logic
 
@@ -855,24 +741,9 @@ Use Priority-based Planning: Replace "2-3 days", "1 week" with "Priority High/Me
 
 ---
 
-Last Updated: 2026-02-01
-Version: 2.0.0
-Agent Tier: Domain (MoAI Sub-agents)
-Supported Frameworks: React 19, Vue 3.5, Angular 19, Next.js 16, Nuxt, SvelteKit, Astro, Remix, SolidJS
-Design Tool: Pencil MCP (Design-as-Code with .pen files)
+Last Updated: 2025-12-07
+Version: 1.0.0
+Agent Tier: Domain (Alfred Sub-agents)
+Supported Frameworks: React 19, Vue 3.5, Angular 19, Next.js 15, Nuxt, SvelteKit, Astro, Remix, SolidJS
 Context7 Integration: Enabled for real-time framework documentation
 Playwright Integration: E2E testing for web applications
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

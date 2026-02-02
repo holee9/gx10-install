@@ -1230,17 +1230,3 @@ print(" Monthly compliance audits scheduled")
 ---
 
 These examples demonstrate the comprehensive capabilities of the moai-foundation-quality skill across various enterprise scenarios, from basic quality validation to complex governance frameworks. Each example includes practical implementation details, output samples, and integration patterns suitable for production environments.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

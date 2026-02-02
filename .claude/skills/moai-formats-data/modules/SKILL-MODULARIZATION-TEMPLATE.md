@@ -276,17 +276,3 @@ def validate_skill_modularization(skill_path: str) -> dict:
 Template Version: 1.0.0
 Last Updated: 2025-11-30
 Purpose: Claude Code skill compliance and progressive disclosure
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

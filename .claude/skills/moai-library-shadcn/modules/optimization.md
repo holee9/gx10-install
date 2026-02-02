@@ -276,17 +276,3 @@ export function OptimizedImage() {
 Version: 4.0.0
 Last Updated: 2025-11-22
 Token Focus: CSS file size, JavaScript bundle size, rendering performance
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

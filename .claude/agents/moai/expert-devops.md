@@ -790,17 +790,3 @@ Version: 1.0.0
 Agent Tier: Domain (Alfred Sub-agents)
 Supported Platforms: Railway, Vercel, Netlify, AWS (Lambda, EC2, ECS), GCP, Azure, Docker, Kubernetes
 GitHub MCP Integration: Enabled for CI/CD automation
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

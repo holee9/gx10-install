@@ -28,86 +28,186 @@ Enterprise Policy → User Settings → Project Settings → Local Settings
 
 ### Complete Configuration Schema
 
-Base Settings Framework (valid top-level fields):
+Base Settings Framework:
 ```json
 {
- "model": "claude-sonnet-4-5-20250929",
- "permissions": {},
+ "model": "claude-3-5-sonnet-20241022",
+ "permissionMode": "default",
+ "maxFileSize": 10000000,
+ "maxTokens": 200000,
+ "temperature": 1.0,
+ "environment": {},
  "hooks": {},
- "disableAllHooks": false,
- "env": {},
- "statusLine": {},
- "outputStyle": "",
- "cleanupPeriodDays": 30,
- "sandbox": {},
- "enabledPlugins": {},
- "enabledMcpjsonServers": [],
- "disabledMcpjsonServers": []
+ "plugins": {},
+ "subagents": {},
+ "mcpServers": {},
+ "allowedTools": [],
+ "toolRestrictions": {},
+ "memory": {},
+ "logging": {},
+ "security": {}
 }
 ```
 
 ### Essential Configuration Fields
 
-Key fields frequently used in settings.json:
-- `model`: Default model identifier
-- `permissions`: Tool allow/ask/deny lists
-- `hooks`: Lifecycle event hooks
-- `env`: Environment variables
-- `statusLine`: Status bar configuration
-- `outputStyle`: Output formatting style
-- `cleanupPeriodDays`: Session cleanup period
-- `sandbox`: Sandboxing configuration
+Model Configuration:
+```json
+{
+ "model": "claude-3-5-sonnet-20241022",
+ "maxTokens": 200000,
+ "temperature": 1.0,
+ "topP": 1.0,
+ "topK": 0
+}
+```
+
+Permission Management:
+```json
+{
+ "permissionMode": "default",
+ "allowedTools": [
+ "Read",
+ "Write",
+ "Edit",
+ "Bash",
+ "Grep",
+ "Glob",
+ "WebFetch",
+ "AskUserQuestion"
+ ],
+ "toolRestrictions": {
+ "Bash": "prompt",
+ "Write": "prompt",
+ "Edit": "prompt"
+ }
+}
+```
 
 ## Detailed Configuration Sections
 
 ### Model Settings
 
-The `model` field sets the default model. Only this single field is valid in settings.json for model selection.
+Available Models:
+- `claude-3-5-sonnet-20241022`: Balanced performance (default)
+- `claude-3-5-haiku-20241022`: Fast and cost-effective
+- `claude-3-opus-20240229`: Highest quality, higher cost
 
+Model Configuration Examples:
 ```json
 {
- "model": "claude-sonnet-4-5-20250929"
+ "model": "claude-3-5-sonnet-20241022",
+ "maxTokens": 200000,
+ "temperature": 0.7,
+ "topP": 0.9,
+ "topK": 40,
+ "stopSequences": ["---", "##"],
+ "timeout": 300000
+}
+```
+
+Model Selection Guidelines:
+```json
+{
+ "modelProfiles": {
+ "development": {
+ "model": "claude-3-5-haiku-20241022",
+ "temperature": 0.3,
+ "maxTokens": 50000
+ },
+ "testing": {
+ "model": "claude-3-5-sonnet-20241022",
+ "temperature": 0.1,
+ "maxTokens": 100000
+ },
+ "production": {
+ "model": "claude-3-5-sonnet-20241022",
+ "temperature": 0.0,
+ "maxTokens": 200000
+ }
+ }
 }
 ```
 
 ### Permission System
 
-Permission Modes: `default`, `plan`, `acceptEdits`, `dontAsk`, `bypassPermissions`.
+Permission Modes:
+- `default`: Standard permission prompts for sensitive operations
+- `acceptEdits`: Automatically accept file edits without prompts
+- `dontAsk`: Suppress all permission dialogs
 
-Permissions use allow/ask/deny lists with tool-path patterns:
+Tool-Specific Permissions:
 ```json
 {
- "permissions": {
- "defaultMode": "default",
- "allow": [
+ "allowedTools": [
  "Read",
- "Glob",
+ "Write",
+ "Edit",
+ "Bash",
  "Grep",
- "Bash(git status:*)",
- "Bash(git log:*)"
+ "Glob",
+ "WebFetch",
+ "WebSearch",
+ "AskUserQuestion",
+ "TodoWrite",
+ "Task",
+ "Skill",
+ "SlashCommand"
  ],
- "ask": [
- "Bash(rm:*)",
- "Bash(sudo:*)"
- ],
- "deny": [
- "Read(~/.ssh/**)",
- "Bash(rm -rf /:*)"
- ],
- "additionalDirectories": []
+ "toolRestrictions": {
+ "Read": {
+ "allowedPaths": ["./", "~/.claude/"],
+ "blockedPaths": [".env*", "*.key", "*.pem"]
+ },
+ "Bash": {
+ "allowedCommands": ["git", "npm", "python", "make", "docker"],
+ "blockedCommands": ["rm -rf", "sudo", "chmod 777", "dd", "mkfs"],
+ "requireConfirmation": true
+ },
+ "Write": {
+ "allowedExtensions": [".md", ".py", ".js", ".ts", ".json", ".yaml"],
+ "blockedExtensions": [".exe", ".bat", ".sh", ".key"],
+ "maxFileSize": 10000000
+ },
+ "WebFetch": {
+ "allowedDomains": ["*.github.com", "*.npmjs.com", "docs.python.org"],
+ "blockedDomains": ["*.malicious-site.com"],
+ "requireConfirmation": false
+ }
  }
 }
 ```
 
 ### Environment Variables
 
-The `env` field sets environment variables for the Claude Code session:
+Environment Configuration:
 ```json
 {
- "env": {
+ "environment": {
  "NODE_ENV": "development",
  "PYTHONPATH": "./src",
- "DEBUG": "true"
+ "API_KEY": "$ENV_VAR", // Environment variable reference
+ "PROJECT_ROOT": ".", // Static value
+ "DEBUG": "true",
+ "LOG_LEVEL": "$DEFAULT_LOG_LEVEL"
+ }
+}
+```
+
+Variable Resolution:
+```json
+{
+ "environmentResolution": {
+ "precedence": [
+ "runtime_environment",
+ "settings_json",
+ "default_values"
+ ],
+ "validation": {
+ "required": ["PROJECT_ROOT"],
+ "optional": ["DEBUG", "LOG_LEVEL"],
+ "typeChecking": true
+ }
  }
 }
 ```
@@ -164,12 +264,6 @@ MCP Permission Management:
 
 ### Hooks Configuration
 
-Hook events: SessionStart, UserPromptSubmit, PreToolUse, PermissionRequest, PostToolUse, PostToolUseFailure, Notification, SubagentStart, SubagentStop, Stop, PreCompact, SessionEnd.
-
-Hook handler types: "command" (shell command), "prompt" (LLM evaluation), "agent" (subagent with tool access).
-
-Timeout unit: seconds. Defaults: 600 for command, 30 for prompt, 60 for agent.
-
 Hooks Setup:
 ```json
 {
@@ -180,31 +274,29 @@ Hooks Setup:
  "hooks": [
  {
  "type": "command",
- "command": ".claude/hooks/block-rm.sh",
- "timeout": 10
+ "command": "echo 'Bash command: $COMMAND' >> ~/.claude/hooks.log"
  }
  ]
  }
  ],
  "PostToolUse": [
  {
- "matcher": "Write|Edit",
+ "matcher": "*",
  "hooks": [
  {
  "type": "command",
- "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lint-check.sh",
- "timeout": 30
+ "command": "echo 'Tool executed: $TOOL_NAME' >> ~/.claude/activity.log"
  }
  ]
  }
  ],
- "Stop": [
+ "UserPromptSubmit": [
  {
  "hooks": [
  {
- "type": "prompt",
- "prompt": "Check if all tasks are complete: $ARGUMENTS",
- "timeout": 30
+ "type": "validation",
+ "pattern": "^[\\w\\s\\.\\?!]+$",
+ "message": "Invalid characters in prompt"
  }
  ]
  }
@@ -569,17 +661,3 @@ Enterprise Policies:
 ```
 
 This comprehensive reference provides all the information needed to configure Claude Code effectively for any use case, from personal development to enterprise deployment.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

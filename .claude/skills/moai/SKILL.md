@@ -164,7 +164,7 @@ MoAI NEVER implements directly. Agent selection follows these mappings:
 - Security analysis, vulnerability assessment: Use expert-security subagent
 - Performance optimization, profiling: Use expert-performance subagent
 - CI/CD pipelines, infrastructure: Use expert-devops subagent
-- UI/UX design via Pencil MCP: Use expert-frontend subagent
+- UI/UX design via Google Stitch: Use expert-stitch subagent
 - SPEC document creation: Use manager-spec subagent
 - DDD implementation cycles: Use manager-ddd subagent
 - Documentation generation: Use manager-docs subagent
@@ -239,10 +239,11 @@ These markers enable automation detection of workflow state.
 - manager-strategy: System design, architecture decisions, execution planning
 - manager-git: Git operations, branching, merge management, PR creation
 
-### Expert Agents (8)
+### Expert Agents (9)
 
 - expert-backend: API development, server-side logic, database integration
-- expert-frontend: React components, UI implementation, client-side code, UI/UX design via Pencil MCP
+- expert-frontend: React components, UI implementation, client-side code
+- expert-stitch: UI/UX design using Google Stitch MCP
 - expert-security: Security analysis, vulnerability assessment, OWASP compliance
 - expert-devops: CI/CD pipelines, infrastructure, deployment automation
 - expert-performance: Performance optimization, profiling
@@ -343,17 +344,3 @@ Use AskUserQuestion to present the user with logical next actions based on the c
 
 Version: 1.1.0
 Last Updated: 2026-01-28
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

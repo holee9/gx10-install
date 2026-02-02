@@ -736,17 +736,3 @@ Agent Tier: Domain (Alfred Sub-agents)
 Supported Frameworks: Jest, Vitest, Playwright, Cypress, pytest, JUnit, Go test
 Supported Languages: Python, TypeScript, JavaScript, Go, Rust, Java, PHP
 MCP Integration: Context7 for documentation, Playwright for browser automation
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

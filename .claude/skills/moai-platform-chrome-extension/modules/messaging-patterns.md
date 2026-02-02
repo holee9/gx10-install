@@ -502,17 +502,3 @@ Never trust messages from content scripts. The host page environment could be co
 Never use eval, Function constructor, or innerHTML with message data. Validate expected types and values before processing. Use an allowlist of accepted actions.
 
 For cross-extension and web page messaging, always verify the sender identity using sender.id (extension ID) or sender.url (web page origin). Maintain an allowlist of trusted sources.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

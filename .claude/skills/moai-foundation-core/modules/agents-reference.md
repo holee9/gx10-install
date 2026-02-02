@@ -114,7 +114,7 @@ External MCP server integrations with context continuity support.
 | Agent | MCP Server | Purpose |
 |-------|------------|---------|
 | `mcp-context7` | Context7 | Documentation research and API reference |
-| `mcp-pencil` | Pencil | Design system integration |
+| `mcp-figma` | Figma | Design system integration |
 | `mcp-notion` | Notion | Knowledge base integration |
 | `mcp-playwright` | Playwright | Browser automation and E2E testing |
 | `mcp-sequential-thinking` | Sequential-Thinking | Complex reasoning and strategic analysis |
@@ -357,17 +357,3 @@ Commands:
 Total Agents: 26 active agents (down from 35, -26% reduction)
 Maintained by: MoAI-ADK Team
 Status: Production Ready
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

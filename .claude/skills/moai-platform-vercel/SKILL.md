@@ -133,17 +133,3 @@ Step 2: Fetch documentation using mcp__context7__get-library-docs with resolved 
 Status: Production Ready
 Version: 2.1.0
 Updated: 2026-01-11
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

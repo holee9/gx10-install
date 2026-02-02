@@ -175,17 +175,3 @@ Custom Text: Override default text with organization-specific wording.
 Auth0 Documentation: Customize MFA
 Auth0 Documentation: Universal Login Branding
 Auth0 Documentation: Actions
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

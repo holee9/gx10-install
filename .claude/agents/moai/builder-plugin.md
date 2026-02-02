@@ -17,10 +17,10 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__code_formatter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__code_formatter.py\"'"
           timeout: 30
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__linter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__linter.py\"'"
           timeout: 30
 ---
 
@@ -762,17 +762,3 @@ Updated: 2026-01-06
 Pattern: Comprehensive 7-Phase Plugin Creation Workflow
 Compliance: Claude Code Official Plugin Standards + MoAI-ADK Conventions
 Changes: Added PHASE 6 for marketplace creation; Added marketplace keywords to description; Updated scope to include marketplace distribution; Previous: Added PostToolUseFailure, SubagentStart, Notification, PreCompact hook events; Added agent hook type; Added LSP server advanced options; Added Plugin Caching and Security section; Added managed installation scope
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

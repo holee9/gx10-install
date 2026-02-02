@@ -222,17 +222,3 @@ This skill contains 39 modules organized into 6 categories:
 **Skill Version**: 1.0.0
 **Total Modules**: 39
 **Categories**: 6
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

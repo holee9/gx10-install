@@ -17,10 +17,10 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__code_formatter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__code_formatter.py\"'"
           timeout: 30
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__linter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__linter.py\"'"
           timeout: 30
 ---
 
@@ -314,17 +314,3 @@ Core Principle: The context window is a shared resource. Challenge each piece of
 - manager-quality: Skill validation and compliance checking
 - manager-docs: Skill documentation and integration guides
 - Context7 MCP: Latest documentation research for skill content
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

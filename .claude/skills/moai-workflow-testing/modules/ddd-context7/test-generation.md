@@ -469,17 +469,3 @@ class Context7TestIntegration:
 ---
 
 Related: [ANALYZE-PRESERVE-IMPROVE](./analyze-preserve-improve.md) | [Test Patterns](./test-patterns.md)
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

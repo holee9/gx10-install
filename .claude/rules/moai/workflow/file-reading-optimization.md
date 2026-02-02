@@ -48,17 +48,3 @@ For a 200K token context window:
 - Reading targeted 50-line sections from 10 files would consume 5-10K tokens (2.5-5% of budget)
 
 Always prefer targeted reads over full file reads when the task allows it.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

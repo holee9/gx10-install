@@ -633,17 +633,3 @@ Production Environment:
 ```
 
 This comprehensive IAM reference provides all the information needed to implement secure, compliant, and effective access control for Claude Code deployments at any scale.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

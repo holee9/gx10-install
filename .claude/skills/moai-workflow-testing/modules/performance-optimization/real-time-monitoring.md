@@ -185,17 +185,3 @@ print(f"Average Memory: {avg_metrics.get('avg_memory_mb', 0):.1f}MB")
 ---
 
 Related: [Profiler Core](./profiler-core.md) | [Bottleneck Detection](./bottleneck-detection.md)
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

@@ -348,17 +348,3 @@ Migration from Nextra 3 to 4 requires converting from theme.config.tsx to Layout
 Last Updated: 2025-12-30
 Status: Production Ready
 Reference: https://nextra.site/docs/docs-theme/theme-configuration
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

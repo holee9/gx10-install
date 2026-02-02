@@ -175,17 +175,3 @@ Consider implementing rate limiting if mismatches occur frequently.
 Auth0 Documentation: State Parameter
 Auth0 Documentation: Prevent Attacks with State Parameters
 OAuth 2.0 RFC 6749: State Parameter Specification
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

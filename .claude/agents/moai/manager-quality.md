@@ -17,10 +17,10 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__code_formatter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__code_formatter.py\"'"
           timeout: 30
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/post_tool__linter.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/post_tool__linter.py\"'"
           timeout: 30
 ---
 
@@ -640,17 +640,3 @@ IMPACT: Quality gate enforcement prevents problematic code from entering version
 - TRUST Principles: TRUST section within moai-core-dev-guide
 - TAG Guide: TAG chain section in moai-core-dev-guide
 - trust-checker: `.claude/hooks/moai/trust-checker.py` (TRUST verification script)
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

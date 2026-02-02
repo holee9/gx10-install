@@ -94,10 +94,11 @@ Allowed Tools: Full access (Task, AskUserQuestion, TaskCreate, TaskUpdate, TaskL
 - manager-strategy: System design, architecture decisions
 - manager-git: Git operations, branching strategy, merge management
 
-### Expert Agents (8)
+### Expert Agents (9)
 
 - expert-backend: API development, server-side logic, database integration
-- expert-frontend: React components, UI implementation, client-side code, UI/UX design via Pencil MCP
+- expert-frontend: React components, UI implementation, client-side code
+- expert-stitch: UI/UX design using Google Stitch MCP
 - expert-security: Security analysis, vulnerability assessment, OWASP compliance
 - expert-devops: CI/CD pipelines, infrastructure, deployment automation
 - expert-performance: Performance optimization, profiling
@@ -308,17 +309,3 @@ Language: English
 Core Rule: MoAI is an orchestrator; direct implementation is prohibited
 
 For detailed patterns on plugins, sandboxing, headless mode, and version management, see Skill("moai-foundation-claude").
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

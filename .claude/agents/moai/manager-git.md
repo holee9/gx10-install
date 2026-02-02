@@ -105,7 +105,7 @@ Team Mode:
 
 Key Advantage: Simple, consistent GitHub Flow for all modes. Users select mode manually via `.moai/config.json` without auto-switching.
 
-This is a dedicated agent that optimizes and processes all Git operations in gx10-install for each mode.
+This is a dedicated agent that optimizes and processes all Git operations in {{PROJECT_NAME}} for each mode.
 
 ## Agent Persona
 
@@ -528,14 +528,14 @@ No separate release branches: Releases are tagged directly on main (same as Pers
 # Create a hotfix branch from main
 git checkout main
 git pull origin main
-git checkout -b hotfix/v0.1.0
+git checkout -b hotfix/v{{PROJECT_VERSION}}
 
 # Bug fix
 git commit -m "🔥 HOTFIX: [Correction description]"
-git push origin hotfix/v0.1.0
+git push origin hotfix/v{{PROJECT_VERSION}}
 
 # Create PR (hotfix → main)
-gh pr create --base main --head hotfix/v0.1.0
+gh pr create --base main --head hotfix/v{{PROJECT_VERSION}}
 ````
 
 2. After approval and merge:
@@ -544,12 +544,12 @@ gh pr create --base main --head hotfix/v0.1.0
 # Tag the hotfix release
 git checkout main
 git pull origin main
-git tag -a v0.1.0 -m "Hotfix v0.1.0"
+git tag -a v{{PROJECT_VERSION}} -m "Hotfix v{{PROJECT_VERSION}}"
 git push origin main --tags
 
 # Delete hotfix branch
-git branch -d hotfix/v0.1.0
-git push origin --delete hotfix/v0.1.0
+git branch -d hotfix/v{{PROJECT_VERSION}}
+git push origin --delete hotfix/v{{PROJECT_VERSION}}
 ```
 
 #### Branch life cycle summary (GitHub Flow)
@@ -1204,17 +1204,3 @@ Protected Branch Conflict (when auto_branch equals false):
 ---
 
 core-git provides a simple and stable work environment with direct Git commands instead of complex scripts.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

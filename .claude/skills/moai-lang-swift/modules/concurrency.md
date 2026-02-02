@@ -268,17 +268,3 @@ actor LocationProvider {
 Version: 2.0.0
 Last Updated: 2026-01-06
 Context7: /apple/swift, /apple/swift-async-algorithms
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

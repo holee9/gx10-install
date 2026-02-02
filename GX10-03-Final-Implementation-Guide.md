@@ -51,7 +51,7 @@
 | 메모리 대역폭 | 273 GB/s (CPU+GPU 공유) |
 | 스토리지 | 1TB NVMe SSD |
 | 네트워크 | 10GbE + ConnectX-7 (200Gbps QSFP) |
-| OS | DGX OS (Ubuntu 24.04 기반) |
+| OS | DGX OS 7.2.3 (Ubuntu 24.04 LTS 기반) |
 
 ### 2.2 UMA(Unified Memory Architecture) 특성
 
@@ -439,16 +439,20 @@ sleep 5  # 안정화 대기
 
 ### 1.1 첫 부팅 및 초기 설정
 
-GX10은 **DGX OS** (Ubuntu 24.04 기반)가 프리로드되어 출하된다.
+GX10은 **DGX OS 7.2.3** (Ubuntu 24.04 LTS 기반)이 설치되어 있습니다.
 
 ```bash
-# 첫 부팅 시 Wi-Fi 핫스팟 자동 생성
+# DGX OS 첫 부팅 시 자동으로 Wi-Fi 핫스팟 생성
 # Quick Start Guide의 SSID/Password로 접속
 # 브라우저에서 http://spark-xxxx.local 접속하여 초기 설정:
 #   - hostname 설정 (예: gx10-brain)
 #   - username/password 설정
 #   - 네트워크 설정 (고정 IP 권장)
 #   - 시스템 업데이트 자동 진행 후 재부팅
+
+# 설정 후 SSH로 접속하여 시스템 확인
+uname -a  # Linux 6.8.x-dgx kernel 확인
+cat /etc/os-release  # DGX OS / Ubuntu 24.04 확인
 ```
 
 ### 1.2 시스템 확인
@@ -474,10 +478,10 @@ uname -m
 ### 1.3 시스템 업데이트 및 필수 패키지
 
 ```bash
-# DGX OS 업데이트
+# DGX OS 업데이트 (DGX Dashboard 또는 CLI)
 sudo apt update && sudo apt upgrade -y
 
-# 필수 도구 설치
+# 필수 도구 설치 (DGX OS에는 대부분 사전 설치되어 있음)
 sudo apt install -y \
     build-essential \
     cmake \
@@ -496,6 +500,19 @@ sudo apt install -y \
     openssh-server \
     python3-pip \
     python3-venv
+
+# Python 3.12 확인 (DGX OS 기본)
+python3 --version  # Python 3.12.x
+
+# 중요: DGX OS도 PEP 668 적용 (externally managed environments)
+# pip install --user는 사용하지 말 것
+# 대신 python3-venv로 가상환경 사용 권장
+
+# 사전 설치된 컴포넌트 확인
+nvidia-smi          # NVIDIA 드라이버
+nvcc --version      # CUDA Toolkit
+docker --version    # Docker
+nvidia-ctk --version # NVIDIA Container Toolkit
 ```
 
 ### 1.4 디렉토리 구조 생성
@@ -537,9 +554,13 @@ export OLLAMA_MODELS="/gx10/brains/code/models"
 export HF_HOME="/gx10/brains/vision/models/huggingface"
 export TORCH_HOME="/gx10/brains/vision/models/torch"
 
-# CUDA (DGX OS에 이미 설정되어 있을 수 있음)
+# CUDA (DGX OS에 사전 설치되어 있음)
 export PATH="/usr/local/cuda/bin:$PATH"
 export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+
+# DGX OS CUDA 경로는 이미 설정되어 있을 가능성 높음
+# 확인: echo $CUDA_HOME
+```
 
 # Aliases
 alias gx="cd /gx10"
@@ -553,15 +574,19 @@ source ~/.bashrc
 ### 1.6 Docker 설정
 
 ```bash
-# Docker 상태 확인 (DGX OS에 프리인스톨)
+# Docker 상태 확인 (DGX OS에 사전 설치됨)
 docker --version
+docker info
+
+# NVIDIA Container Toolkit 확인 (사전 설치됨)
+nvidia-ctk --version
 
 # 사용자를 docker 그룹에 추가
 sudo usermod -aG docker $USER
 newgrp docker
 
-# GPU 접근 테스트
-docker run --rm --gpus all nvidia/cuda:12.0-base-ubuntu22.04 nvidia-smi
+# GPU 접근 테스트 (DGX OS에서는 바로 작동해야 함)
+docker run --rm --gpus all nvidia/cuda:12.0-base-ubuntu24.04 nvidia-smi
 ```
 
 ### 1.7 SSH 설정
@@ -1403,6 +1428,8 @@ ssh -N -L 5678:localhost:5678 user@gx10-brain.local &
 
 | 일자 | 버전 | 설명 | 리뷰어 |
 |------|------|------|--------|
+| 2026-02-02 | 2.2 | DGX OS 7.2.3 기반으로 수정 (사전 설치된 컴포넌트 활용) | drake |
+| 2026-02-02 | 2.1 | Ubuntu 24.04 LTS 변경 사항 반영 | drake |
 | 2026-02-01 | 2.0 | 딥 리서치 기반 전면 재구성 | drake |
 
 ---

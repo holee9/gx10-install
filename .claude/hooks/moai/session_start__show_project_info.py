@@ -23,13 +23,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-
-# Ensure UTF-8 output on Windows (cp949/cp1252 cannot encode emoji)
-if sys.platform == "win32":
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    if hasattr(sys.stderr, "reconfigure"):
-        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 from typing import Any
 
 # =============================================================================
@@ -138,6 +131,21 @@ try:
     from core.config_cache import get_cached_config, get_cached_spec_progress
 except ImportError:
     # Fallback to direct functions if cache not available
+    # Import merge_configs from lib.common to avoid duplication
+    try:
+        from lib.common import merge_configs
+    except ImportError:
+        # Fallback implementation if lib.common not available
+        def merge_configs(base: dict, override: dict) -> dict:
+            """Recursively merge two configuration dictionaries."""
+            result = base.copy()
+            for key, value in override.items():
+                if key in result and isinstance(result[key], dict) and isinstance(value, dict):
+                    result[key] = merge_configs(result[key], value)
+                else:
+                    result[key] = value
+            return result
+
     # Try PyYAML first, then use simple parser
     try:
         import yaml as yaml_fallback
@@ -250,16 +258,6 @@ except ImportError:
 
         return value
 
-    def _merge_configs(base: dict, override: dict) -> dict:
-        """Recursively merge two configuration dictionaries."""
-        result = base.copy()
-        for key, value in override.items():
-            if key in result and isinstance(result[key], dict) and isinstance(value, dict):
-                result[key] = _merge_configs(result[key], value)
-            else:
-                result[key] = value
-        return result
-
     def _load_yaml_file(file_path: Path) -> dict:
         """Load a YAML file using PyYAML or simple parser."""
         if not file_path.exists():
@@ -328,7 +326,7 @@ except ImportError:
                 section_data = _load_yaml_file(section_path)
                 if section_data:
                     # Merge section data into config
-                    config = _merge_configs(config, section_data)
+                    config = merge_configs(config, section_data)
 
         return config if config else None
 
@@ -853,7 +851,8 @@ def load_user_personalization() -> dict:
                 "config_source": config.get("config_source", "default"),
             }
             personalization_cache_file.write_text(
-                json.dumps(cache_data, ensure_ascii=False, indent=2), encoding="utf-8"
+                json.dumps(cache_data, ensure_ascii=False, indent=2),
+                encoding="utf-8",
             )
 
         except (OSError, PermissionError):
@@ -884,13 +883,15 @@ def load_user_personalization() -> dict:
         has_valid_name = user_name and not user_name.startswith("{{") and not user_name.endswith("}}")
 
         # Get language name
-        # System provides 4 languages: ko, en, ja, zh
-        # Language names are defined in .moai/config/sections/language.yaml
         lang_name_map = {
             "ko": "Korean",
             "en": "English",
             "ja": "Japanese",
             "zh": "Chinese",
+            "es": "Spanish",
+            "fr": "French",
+            "de": "German",
+            "ru": "Russian",
         }
         lang_name = lang_name_map.get(conversation_lang, "Unknown")
 

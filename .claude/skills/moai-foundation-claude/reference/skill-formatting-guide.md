@@ -611,7 +611,7 @@ docs = await mcp__context7__get-library_docs(
 
 Multi-MCP Integration:
 ```yaml
-allowed-tools: mcp__context7__*, mcp__playwright__*, mcp__pencil__*
+allowed-tools: mcp__context7__*, mcp__playwright__*, mcp__figma__*
 ```
 
 ---
@@ -727,17 +727,3 @@ Last Updated: 2025-11-25
 Next Review: 2025-12-25 or standards update
 
 Generated with Claude Code using official documentation and best practices.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

@@ -17,7 +17,7 @@ hooks:
     - matcher: "Write|Edit"
       hooks:
         - type: command
-          command: "uv run \"%CLAUDE_PROJECT_DIR%/.claude/hooks/moai/pre_tool__security_guard.py\""
+          command: "${SHELL:-/bin/bash} -l -c 'uv run \"$CLAUDE_PROJECT_DIR.claude/hooks/moai/pre_tool__security_guard.py\"'"
           timeout: 30
 ---
 
@@ -651,17 +651,3 @@ Expertise Level: Senior Security Consultant
 Certifications: CISSP, CEH, Security+
 Focus Areas: Application Security, Compliance, Risk Management
 Latest Update: 2026-01-21 (aligned with OWASP Top 10 2025, AST-grep integration)
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

@@ -282,10 +282,10 @@ merge_result = optimizer.smart_merge(
 ```toml
 # templates/fastapi-backend/pyproject.toml.template
 [project]
-name = "gx10-install"
+name = "{{PROJECT_NAME}}"
 version = "0.1.0"
 requires-python = ">={{PYTHON_VERSION}}"
-authors = [{ name = "@user" }]
+authors = [{ name = "{{AUTHOR}}" }]
 
 [tool.uv]
 dev-dependencies = [
@@ -550,17 +550,3 @@ project = template.scaffold(name="my-api")
 
 Version: 1.0.0
 Last Updated: 2025-12-06
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

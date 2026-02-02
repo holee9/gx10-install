@@ -241,17 +241,3 @@ For JSON output suitable for CI/CD, execute sg scan with config and json flag, r
 ## Reference
 
 For additional information, consult the AST-Grep Official Documentation at ast-grep.github.io, the AST-Grep GitHub Repository at github.com/ast-grep/ast-grep, the Pattern Playground at ast-grep.github.io/playground.html, and the Rule Configuration Reference at ast-grep.github.io/reference/yaml.html.
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

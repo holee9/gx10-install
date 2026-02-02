@@ -74,7 +74,7 @@ Allowed Tools (4 categories):
 | `Task()` | Agent delegation | `Task("code-backend", "Implement API")` |
 | `AskUserQuestion()` | User interaction | `AskUserQuestion(questions=[...])` |
 | `Skill()` | Knowledge invocation | `Skill("moai-foundation-core")` |
-| `MCP Servers` | External integrations | Context7, Playwright, Pencil |
+| `MCP Servers` | External integrations | Context7, Playwright, Figma |
 
 Forbidden Tools (Why?):
 
@@ -163,7 +163,7 @@ MCP Server Permissions:
 |------------|-------------|
 | Context7 | Library documentation access, API reference resolution, version checking |
 | Playwright | Browser automation, screenshot capture, UI simulation, E2E testing |
-| Pencil | Design system access, .pen file editing, design-to-code, style guides, variables |
+| Figma | Design system access, component extraction, design-to-code, style guides |
 
 ---
 
@@ -685,17 +685,3 @@ This comprehensive set of execution rules ensures that MoAI-ADK operates securel
 
 Maintained by: MoAI-ADK Team
 Status: Production Ready
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

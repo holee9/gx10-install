@@ -137,17 +137,3 @@ Skills that complement this skill include moai-docs-generation for comprehensive
 Commands that utilize this skill include moai:3-sync for documentation with embedded diagrams and moai:1-plan for SPEC creation with visual architecture diagrams.
 
 Focus: Pure skill-based Mermaid rendering with MCP Playwright integration
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

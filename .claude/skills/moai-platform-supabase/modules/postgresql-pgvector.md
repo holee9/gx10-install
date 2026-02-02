@@ -229,17 +229,3 @@ Topic: "postgresql full-text search tsvector"
 Related Modules:
 - row-level-security.md - Secure vector data access
 - typescript-patterns.md - Client-side search implementation
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

@@ -51,14 +51,18 @@
 
 ### 1.1 첫 부팅 및 초기 설정
 
-GX10은 **DGX OS** (Ubuntu 24.04 기반)가 프리로드되어 출하됩니다.
+GX10은 **DGX OS 7.2.3** (Ubuntu 24.04 LTS 기반)이 설치되어 있습니다.
 
 ```bash
-# 전원 연결 후 첫 부팅시 Wi-Fi 핫스팟 생성
+# DGX OS 첫 부팅 시 Wi-Fi 핫스팟 자동 생성
 # Quick Start Guide의 SSID/Password로 접속
 # 브라우저에서 http://spark-xxxx.local 접속하여 초기 설정 진행
 # - hostname, username, password, network 설정
 # - 시스템 업데이트 자동 진행 후 재부팅
+
+# 설정 완료 후 SSH로 접속
+uname -a  # Linux 6.8.x-dgx kernel
+cat /etc/os-release  # DGX OS / Ubuntu 24.04 LTS
 ```
 
 ### 1.2 시스템 사양 확인
@@ -91,7 +95,7 @@ uname -m
 # DGX OS 업데이트 (DGX Dashboard 또는 CLI)
 sudo apt update && sudo apt upgrade -y
 
-# 필수 도구 설치
+# 필수 도구 설치 (대부분 DGX OS에 사전 설치)
 sudo apt install -y \
     build-essential \
     cmake \
@@ -109,6 +113,19 @@ sudo apt install -y \
     p7zip-full \
     net-tools \
     openssh-server
+
+# Python 3.12 확인 (DGX OS 기본 버전)
+python3 --version  # Python 3.12.x
+
+# 중요: DGX OS도 PEP 668 적용
+# pip install --user 사용 시 경고 발생
+# python3-venv로 가상환경 사용 권장
+
+# DGX OS 사전 설치 컴포넌트 확인
+nvidia-smi              # NVIDIA 드라이버 (사전 설치)
+nvcc --version          # CUDA Toolkit (사전 설치)
+docker --version        # Docker (사전 설치)
+nvidia-ctk --version    # NVIDIA Container Toolkit (사전 설치)
 ```
 
 ### 1.4 작업 디렉토리 구성
@@ -129,9 +146,13 @@ export HF_HUB_CACHE="$WORKSPACE/models/huggingface"
 export OLLAMA_MODELS="$WORKSPACE/models/ollama"
 export TORCH_HOME="$WORKSPACE/models/checkpoints"
 
-# CUDA paths (DGX OS에 이미 설정되어 있을 수 있음)
+# CUDA paths (DGX OS에 사전 설치되어 있음)
 export PATH="/usr/local/cuda/bin:$PATH"
 export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+
+# DGX OS에서는 CUDA_HOME 이미 설정되어 있을 가능성 높음
+# 확인: echo $CUDA_HOME
+```
 
 # Convenience aliases
 alias ws="cd $WORKSPACE"
@@ -145,19 +166,23 @@ source ~/.bashrc
 ### 1.5 Docker 및 NVIDIA Container Toolkit
 
 ```bash
-# Docker 상태 확인 (DGX OS에 프리인스톨)
+# Docker 상태 확인 (DGX OS에 사전 설치됨)
 docker --version
 docker info
+
+# NVIDIA Container Toolkit 확인 (사전 설치됨)
+nvidia-ctk --version
+
+# Docker 서비스 활성화 (이미 활성화되어 있을 수 있음)
+sudo systemctl enable docker
+sudo systemctl start docker
 
 # 사용자를 docker 그룹에 추가
 sudo usermod -aG docker $USER
 newgrp docker
 
-# NVIDIA Container Toolkit 확인
-nvidia-ctk --version
-
-# GPU 접근 테스트
-docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
+# GPU 접근 테스트 (DGX OS에서는 바로 작동)
+docker run --rm --gpus all nvidia/cuda:12.0-base-ubuntu24.04 nvidia-smi
 ```
 
 ### 1.6 원격 접속 설정
@@ -273,12 +298,19 @@ docker logs -f open-webui
 ### 3.1 Python 기본 환경
 
 ```bash
-# Python 개발 도구
+# Python 개발 도구 (Python 3.12 포함, DGX OS에 사전 설치)
 sudo apt install -y python3-pip python3-venv python3-dev
 
+# Python 버전 확인
+python3 --version  # Python 3.12.x
+
 # pipx 설치 (CLI 도구 관리)
-python3 -m pip install --user pipx
-python3 -m pipx ensurepath
+# DGX OS도 PEP 668 적용으로 가상환경 통한 설치 권장
+python3 -m venv ~/.local/pipx-env
+source ~/.local/pipx-env/bin/activate
+pip install pipx
+pipx ensurepath
+deactivate
 source ~/.bashrc
 ```
 

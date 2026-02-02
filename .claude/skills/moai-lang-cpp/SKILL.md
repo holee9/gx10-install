@@ -140,17 +140,3 @@ vcpkg Integration: Clone the vcpkg repository from GitHub, run bootstrap-vcpkg.s
 
 Last Updated: 2026-01-11
 Status: Active (v1.1.0)
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

@@ -138,10 +138,10 @@ Comprehensive collection of official documentation, specifications, and resource
 
 ## Design-to-Code Tools
 
-### Pencil MCP
-- Documentation: https://docs.pencil.dev
-- Server Setup: Auto-starts with Pencil IDE extension or desktop app
-- Use Case: Design-as-Code with .pen files, design token management, component code generation
+### Figma MCP
+- Documentation: https://help.figma.com/hc/en-us/articles/32132100833559
+- Server Setup: Desktop + Remote server modes
+- Use Case: Design token extraction, component code generation
 
 ### Storybook 8.x
 - Documentation: https://storybook.js.org/docs
@@ -241,17 +241,3 @@ Comprehensive collection of official documentation, specifications, and resource
 
 Last Updated: 2025-11-26
 Status: Production Ready
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

@@ -226,7 +226,7 @@ Core documentation skills (auto-loaded):
 # Conditional skills (auto-loaded by Alfred when needed)
 
 conditional_skills = [
-"moai-domain-uiux", # WCAG compliance, accessibility patterns, Pencil MCP integration
+"moai-domain-uiux", # WCAG compliance, accessibility patterns, Figma integration
 "moai-lang-python", # Python documentation patterns
 "moai-lang-typescript", # TypeScript documentation patterns
 "moai-workflow-project", # Project documentation management
@@ -652,18 +652,4 @@ Downstream Agents (this agent typically calls):
 Parallel Agents (work alongside):
 
 - workflow-spec: Synchronize SPEC documentation with generated docs
-- design-uiux: Integrate design system documentation from Pencil
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-
+- design-uiux: Integrate design system documentation from Figma

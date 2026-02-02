@@ -208,17 +208,3 @@ Allow users to retry the verification process.
 Auth0 Documentation: Mobile Driver's License Verification
 Auth0 Documentation: Verifiable Credentials
 ISO/IEC TS 18013-7:2024: mDL REST API Specification
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-

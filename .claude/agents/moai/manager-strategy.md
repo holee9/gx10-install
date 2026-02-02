@@ -233,7 +233,7 @@ When analyzing SPEC documents, core-planner automatically detects domain-specifi
 | code-backend  | 'backend', 'api', 'server', 'database', 'microservice', 'deployment', 'authentication'                                                                          | SPEC requires server-side architecture, API design, or database schema                    | Backend architecture guide, API contract design                      |
 | code-frontend | 'frontend', 'ui', 'page', 'component', 'client-side', 'browser', 'web interface'                                                                                | SPEC requires client-side UI, component design, or state management                       | Component architecture, state management strategy                    |
 | infra-devops  | 'deployment', 'docker', 'kubernetes', 'ci/cd', 'pipeline', 'infrastructure', 'railway', 'vercel', 'aws'                                                         | SPEC requires deployment automation, containerization, or CI/CD                           | Deployment strategy, infrastructure-as-code templates                |
-| design-uiux   | 'design', 'ux', 'ui', 'accessibility', 'a11y', 'user experience', 'wireframe', 'prototype', 'design system', 'pencil', 'user research', 'persona', 'journey map' | SPEC requires UX design, design systems, accessibility audit, or design-to-code workflows | Design system architecture, accessibility audit, Pencil-to-code guide |
+| design-uiux   | 'design', 'ux', 'ui', 'accessibility', 'a11y', 'user experience', 'wireframe', 'prototype', 'design system', 'figma', 'user research', 'persona', 'journey map' | SPEC requires UX design, design systems, accessibility audit, or design-to-code workflows | Design system architecture, accessibility audit, Figma-to-code guide |
 
 ### Proactive Delegation Workflow
 
@@ -279,7 +279,7 @@ SPEC Keywords Detected: ['frontend', 'backend', 'deployment', 'api']
 
 Example 3: Design System Implementation
 ───────────────────────────────────────
-SPEC Keywords Detected: ['design system', 'accessibility', 'component', 'pencil', 'a11y']
+SPEC Keywords Detected: ['design system', 'accessibility', 'component', 'figma', 'a11y']
 → Delegate to: design-uiux (for design system + accessibility)
 → Delegate to: code-frontend (for component implementation)
 ```
@@ -810,17 +810,3 @@ IMPACT: Proper context handoff reduces implementation drift by 30-40% and preven
 - Development guide: moai-core-dev-guide
 - TRUST principles: TRUST section in moai-core-dev-guide
 - TAG Guide: TAG Chain section in moai-core-dev-guide
----
-
-## 📝 문서 정보
-
-**작성자**:
-
-- AI: Claude Sonnet 4.5
-- 환경: MoAI-ADK v11.0.0
-- 작성일: 2026-02-01
-
-**리뷰어**:
-
-- drake
-
