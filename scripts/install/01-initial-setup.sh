@@ -20,11 +20,43 @@
 # ✅ 에러 처리(set -e, set -u) 적절
 # 💡 참고: DGX OS 7.2.3 특화 패키지 목록 주기적 업데이트 필요
 
+# alfrad review (v2.0.0 updates):
+# ✅ 라이브러리 시스템 도입 (lib/logger.sh, state-manager.sh, error-handler.sh, security.sh)
+# ✅ 체크포인트 시스템으로 실패 시 롤백 가능
+# ✅ init_log로 Phase 로그 초기화
+# ✅ 문서 메타데이터 추가 (DOC-SCR-001, Version 2.0.0)
+# ⚠️ 확인: lib/* 파일들이 scripts/install/lib/ 폴더에 존재해야 함
+
+#
+# Document-ID: DOC-SCR-001
+# Document-Name: GX10 Auto-Installation Script - Phase 01
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 1: Initial Setup"
+# Reference: GX10-09-Two-Brain-Optimization.md Section "Environment Preparation"
+#
+# Version: 2.0.0
+# Status: RELEASED
+# Dependencies: None
+#
+
 set -e  # Exit on error
 set -u  # Exit on undefined variable
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/logger.sh"
+source "$SCRIPT_DIR/lib/state-manager.sh"
+source "$SCRIPT_DIR/lib/error-handler.sh"
+source "$SCRIPT_DIR/lib/security.sh"
+
 LOG_FILE="/gx10/runtime/logs/01-initial-setup.log"
 mkdir -p /gx10/runtime/logs
+
+# Initialize state management
+init_state
+init_checkpoint_system
+
+# Initialize phase log
+PHASE="01"
+init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
 echo "GX10 Phase 1: Initial Setup"
@@ -32,10 +64,9 @@ echo "=========================================="
 echo "Log: $LOG_FILE"
 echo ""
 
-# Log function
-log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
+# Create checkpoint
+CHECKPOINT_ID=$(checkpoint "phase-$PHASE" "Before starting phase $PHASE")
+trap "rollback $CHECKPOINT_ID; exit 1" ERR
 
 log "Starting system update..."
 
@@ -90,6 +121,9 @@ sudo ufw status | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "Disk Usage:" | tee -a "$LOG_FILE"
 df -h | tee -a "$LOG_FILE"
+
+# Mark checkpoint as completed
+complete_checkpoint "$CHECKPOINT_ID"
 
 log "Phase 1 completed successfully!"
 echo "=========================================="

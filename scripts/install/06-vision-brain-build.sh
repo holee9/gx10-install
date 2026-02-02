@@ -22,11 +22,41 @@
 # ⚠️ 확인: GPU 메모리 공유 시 Code Brain과의 충돌 방지 필요
 # 💡 제안: Docker 이미지 캐싱 전략으로 재빌드 시간 단축 권장
 
+# alfrad review (v2.0.0 updates):
+# ✅ 체크포인트로 Docker build 실패 시 롤백 가능
+# ✅ 문서 메타데이터 추가 (DOC-SCR-006, Dependencies: DOC-SCR-005)
+# ⚠️ 확인: Docker build 실패 시 디스크 공간 정리 로직 필요
+
+#
+# Document-ID: DOC-SCR-006
+# Document-Name: GX10 Auto-Installation Script - Phase 06
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 6: Vision Brain Build"
+# Reference: GX10-09-Two-Brain-Optimization.md Section "Vision Brain Architecture"
+#
+# Version: 2.0.0
+# Status: RELEASED
+# Dependencies: DOC-SCR-003
+#
+
 set -e
 set -u
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/logger.sh"
+source "$SCRIPT_DIR/lib/state-manager.sh"
+source "$SCRIPT_DIR/lib/error-handler.sh"
+source "$SCRIPT_DIR/lib/security.sh"
+
 LOG_FILE="/gx10/runtime/logs/06-vision-brain-build.log"
 mkdir -p /gx10/runtime/logs
+
+# Initialize state management
+init_state
+init_checkpoint_system
+
+# Initialize phase log
+PHASE="06"
+init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
 echo "GX10 Phase 6: Vision Brain Build"
@@ -35,9 +65,9 @@ echo "Log: $LOG_FILE"
 echo "WARNING: This may take 20-30 minutes"
 echo ""
 
-log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
+# Create checkpoint
+CHECKPOINT_ID=$(checkpoint "phase-$PHASE" "Before starting phase $PHASE")
+trap "rollback $CHECKPOINT_ID; exit 1" ERR
 
 log "Building Vision Brain Docker image..."
 
@@ -92,6 +122,9 @@ docker images | grep gx10-vision-brain | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "=== GPU Test in Container ===" | tee -a "$LOG_FILE"
 docker run --rm --gpus all gx10-vision-brain:latest python -c "import torch; print(f'CUDA Available: {torch.cuda.is_available()}'); print(f'GPU Count: {torch.cuda.device_count()}'); print(f'GPU Name: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"N/A\"}')" | tee -a "$LOG_FILE"
+
+# Mark checkpoint as completed
+complete_checkpoint "$CHECKPOINT_ID"
 
 log "Phase 6 completed successfully!"
 echo "=========================================="

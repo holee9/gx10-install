@@ -22,11 +22,40 @@
 # ⚠️ 확인: GPU 메모리 할당 충돌 방지 메커니즘 검토 필요
 # 💡 제안: 환경 변수 설정 검증 로직 추가 권장
 
+# alfrad review (v2.0.0 updates):
+# ✅ 체크포인트 시스템으로 환경 설정 실패 시 롤백 가능
+# ✅ 문서 메타데이터 추가 (DOC-SCR-003, Dependencies: DOC-SCR-002)
+
+#
+# Document-ID: DOC-SCR-003
+# Document-Name: GX10 Auto-Installation Script - Phase 03
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 3: Environment Config"
+# Reference: GX10-09-Two-Brain-Optimization.md Section "Hybrid Execution Strategy"
+#
+# Version: 2.0.0
+# Status: RELEASED
+# Dependencies: DOC-SCR-002
+#
+
 set -e
 set -u
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/logger.sh"
+source "$SCRIPT_DIR/lib/state-manager.sh"
+source "$SCRIPT_DIR/lib/error-handler.sh"
+source "$SCRIPT_DIR/lib/security.sh"
+
 LOG_FILE="/gx10/runtime/logs/03-environment-config.log"
 mkdir -p /gx10/runtime/logs
+
+# Initialize state management
+init_state
+init_checkpoint_system
+
+# Initialize phase log
+PHASE="03"
+init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
 echo "GX10 Phase 3: Environment Config"
@@ -34,9 +63,9 @@ echo "=========================================="
 echo "Log: $LOG_FILE"
 echo ""
 
-log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
+# Create checkpoint
+CHECKPOINT_ID=$(checkpoint "phase-$PHASE" "Before starting phase $PHASE")
+trap "rollback $CHECKPOINT_ID; exit 1" ERR
 
 log "Configuring environment variables..."
 
@@ -127,6 +156,9 @@ echo "=== Ollama Service Configuration ===" | tee -a "$LOG_FILE"
 sudo systemctl cat ollama.service | grep -A5 "\[Service\]" | tee -a "$LOG_FILE" || echo "Ollama service not yet installed (Phase 4)" | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "Note: You may need to log out and log back in for docker group to take effect" | tee -a "$LOG_FILE"
+
+# Mark checkpoint as completed
+complete_checkpoint "$CHECKPOINT_ID"
 
 log "Phase 3 completed successfully!"
 echo "=========================================="

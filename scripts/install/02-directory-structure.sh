@@ -22,11 +22,41 @@
 # ✅ 경로 표준화로 관리 용이성 확보
 # 💡 제안: 디렉토리 생성 실패 시 상세 에러 로그 추가 권장
 
+# alfrad review (v2.0.0 updates):
+# ✅ 라이브러리 시스템 및 체크포인트 도입
+# ✅ 문서 메타데이터 추가 (DOC-SCR-002, Dependencies: DOC-SCR-001)
+# ✅ init_log로 Phase 로그 초기화
+
+#
+# Document-ID: DOC-SCR-002
+# Document-Name: GX10 Auto-Installation Script - Phase 02
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 2: Directory Structure"
+# Reference: GX10-09-Two-Brain-Optimization.md Section "Two Brain Architecture"
+#
+# Version: 2.0.0
+# Status: RELEASED
+# Dependencies: DOC-SCR-001
+#
+
 set -e
 set -u
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/logger.sh"
+source "$SCRIPT_DIR/lib/state-manager.sh"
+source "$SCRIPT_DIR/lib/error-handler.sh"
+source "$SCRIPT_DIR/lib/security.sh"
+
 LOG_FILE="/gx10/runtime/logs/02-directory-structure.log"
 mkdir -p /gx10/runtime/logs
+
+# Initialize state management
+init_state
+init_checkpoint_system
+
+# Initialize phase log
+PHASE="02"
+init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
 echo "GX10 Phase 2: Directory Structure"
@@ -34,9 +64,9 @@ echo "=========================================="
 echo "Log: $LOG_FILE"
 echo ""
 
-log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
+# Create checkpoint
+CHECKPOINT_ID=$(checkpoint "phase-$PHASE" "Before starting phase $PHASE")
+trap "rollback $CHECKPOINT_ID; exit 1" ERR
 
 log "Creating GX10 directory structure..."
 
@@ -80,6 +110,9 @@ tree /gx10 -L 2 | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "=== Permissions ===" | tee -a "$LOG_FILE"
 ls -la /gx10 | tee -a "$LOG_FILE"
+
+# Mark checkpoint as completed
+complete_checkpoint "$CHECKPOINT_ID"
 
 log "Phase 2 completed successfully!"
 echo "=========================================="

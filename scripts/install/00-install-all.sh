@@ -21,6 +21,25 @@
 # ⚠️ 확인: 개별 단계 실패 시 롤백 메커니즘 검토 필요
 # 💡 제안: 진행 상황 시각화(Progress Bar) 추가 권장
 
+# alfrad review (v2.0.0 updates):
+# ✅ 보안 강화: admin password 대화형 프롬프트로 하드코딩 제거
+# ✅ HTTPS 지원: 443 포트로 SSL 인증서 적용
+# ✅ 문서 메타데이터 추가 (DOC-SCR-000, Version 2.0.0)
+# ✅ 의존성 명시로 모든 Phase 스크립트 관계 명확
+# ⚠️ 확인: get_admin_password 함수가 lib/security.sh에 구현되어 있어야 함
+# 💡 제안: 비밀번호 복잡도 검증 로직이 security.sh에 있는지 확인 필요
+
+#
+# Document-ID: DOC-SCR-000
+# Document-Name: GX10 Auto-Installation Script - Master Orchestrator
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Implementation Phases"
+# Reference: GX10-09-Two-Brain-Optimization.md Section "P0 Optimizations"
+#
+# Version: 2.0.0
+# Status: RELEASED
+# Dependencies: DOC-SCR-001, DOC-SCR-002, DOC-SCR-003, DOC-SCR-004, DOC-SCR-005, DOC-SCR-006, DOC-SCR-007, DOC-SCR-008, DOC-SCR-009, DOC-SCR-010
+#
+
 set -e
 set -u
 
@@ -50,6 +69,26 @@ log() {
 }
 
 log "Starting complete GX10 installation..."
+
+# Security: Get admin password before starting phases
+log "Configuring security credentials..."
+
+# Source security library
+source "$SCRIPT_DIR/lib/security.sh"
+
+# Get admin password (from GX10_PASSWORD env or interactive prompt)
+ADMIN_PASSWORD=$(get_admin_password)
+
+if [ -z "$ADMIN_PASSWORD" ]; then
+    log "ERROR: Failed to get admin password"
+    log "Installation cannot proceed without valid admin credentials"
+    exit 1
+fi
+
+# Export for all child scripts
+export GX10_ADMIN_PASSWORD="$ADMIN_PASSWORD"
+
+log "Security credentials configured successfully"
 
 # Array of scripts
 SCRIPTS=(
@@ -99,8 +138,12 @@ log "INSTALLATION COMPLETED SUCCESSFULLY!"
 log "=========================================="
 log "Installation Report: $LOG_DIR/installation-report.txt"
 log ""
-log "Next Steps:"
+log "Access Information:"
 log "1. Review the installation report"
-log "2. Test Open WebUI: http://$(hostname -I | awk '{print $1}'):8080"
-log "3. Test n8n: http://$(hostname -I | awk '{print $1}'):5678"
+log "2. Open WebUI: https://$(hostname -I | awk '{print $1}'):443"
+log "3. n8n Automation: http://$(hostname -I | awk '{print $1}'):5678"
+log "   Username: admin"
+log "   Password: [Set during installation - check .admin_password file]"
 log "4. Check brain status: /gx10/api/status.sh"
+log ""
+log "Security Note: Default admin password has been configured."

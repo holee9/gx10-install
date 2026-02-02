@@ -22,11 +22,36 @@
 # ⚠️ 확인: 7B, 16B 모델에도 동일한 KV Cache 적용 필요 여부 검토 필요
 # 💡 제안: 향후 KV Cache 값을 환경별로 설정 가능하도록 파라미터화 권장
 
+#
+# Document-ID: DOC-SCR-005
+# Document-Name: GX10 Auto-Installation Script - Phase 05
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 5: Code Models Download"
+# Reference: GX10-09-Two-Brain-Optimization.md Section "KV Cache Optimization"
+#
+# Version: 2.0.0
+# Status: RELEASED
+# Dependencies: DOC-SCR-004
+#
+
 set -e
 set -u
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/logger.sh"
+source "$SCRIPT_DIR/lib/state-manager.sh"
+source "$SCRIPT_DIR/lib/error-handler.sh"
+source "$SCRIPT_DIR/lib/security.sh"
+
 LOG_FILE="/gx10/runtime/logs/05-code-models-download.log"
 mkdir -p /gx10/runtime/logs
+
+# Initialize state management
+init_state
+init_checkpoint_system
+
+# Initialize phase log
+PHASE="05"
+init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
 echo "GX10 Phase 5: Code Models Download"
@@ -35,9 +60,9 @@ echo "Log: $LOG_FILE"
 echo "WARNING: This may take 40-60 minutes"
 echo ""
 
-log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
+# Create checkpoint
+CHECKPOINT_ID=$(checkpoint "phase-$PHASE" "Before starting phase $PHASE")
+trap "rollback $CHECKPOINT_ID; exit 1" ERR
 
 log "Starting code models download..."
 
@@ -80,6 +105,9 @@ echo "" | tee -a "$LOG_FILE"
 echo "=== Quick Test (32B Model) ===" | tee -a "$LOG_FILE"
 echo "Testing: Write a Python hello world function..." | tee -a "$LOG_FILE"
 time ollama run qwen2.5-coder:32b "def hello(): print('Hello GX10')" >> "$LOG_FILE" 2>&1
+
+# Mark checkpoint as completed
+complete_checkpoint "$CHECKPOINT_ID"
 
 log "Phase 5 completed successfully!"
 echo "=========================================="

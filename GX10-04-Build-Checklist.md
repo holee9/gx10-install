@@ -46,12 +46,14 @@
 ## 3. 디렉토리 구조 생성
 
 
-⬜ `/gx10/docker/code-brain`  
-⬜ `/gx10/docker/vision-brain`  
-⬜ `/gx10/runtime`  
-⬜ `/gx10/api`  
-⬜ `/gx10/automation`  
-⬜ `/gx10/system`  
+⬜ `/gx10/brains/code` (Native 실행)
+⬜ `/gx10/brains/vision` (Docker 실행)
+⬜ `/gx10/runtime`
+⬜ `/gx10/api`
+⬜ `/gx10/automation`
+⬜ `/gx10/system`
+
+**참고**: ADR-001에 따라 Code Brain은 Native 실행, Vision Brain은 Docker 실행 (2026-02-01 표준화)
 
 
 

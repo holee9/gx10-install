@@ -22,11 +22,40 @@
 # ✅ Keep alive 24h로 서비스 지속성 보장
 # 💡 참고: Ollama 버전 업데이트 시 호환성 확인 필요
 
+# alfrad review (v2.0.0 updates):
+# ✅ 체크포인트로 Ollama 설치 실패 시 롤백 가능
+# ✅ 문서 메타데이터 추가 (DOC-SCR-004, Dependencies: DOC-SCR-003)
+
+#
+# Document-ID: DOC-SCR-004
+# Document-Name: GX10 Auto-Installation Script - Phase 04
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 4: Code Brain Install"
+# Reference: GX10-09-Two-Brain-Optimization.md Section "Code Brain Optimization"
+#
+# Version: 2.0.0
+# Status: RELEASED
+# Dependencies: DOC-SCR-003
+#
+
 set -e
 set -u
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/logger.sh"
+source "$SCRIPT_DIR/lib/state-manager.sh"
+source "$SCRIPT_DIR/lib/error-handler.sh"
+source "$SCRIPT_DIR/lib/security.sh"
+
 LOG_FILE="/gx10/runtime/logs/04-code-brain-install.log"
 mkdir -p /gx10/runtime/logs
+
+# Initialize state management
+init_state
+init_checkpoint_system
+
+# Initialize phase log
+PHASE="04"
+init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
 echo "GX10 Phase 4: Code Brain Install"
@@ -34,9 +63,9 @@ echo "=========================================="
 echo "Log: $LOG_FILE"
 echo ""
 
-log() {
-    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
-}
+# Create checkpoint
+CHECKPOINT_ID=$(checkpoint "phase-$PHASE" "Before starting phase $PHASE")
+trap "rollback $CHECKPOINT_ID; exit 1" ERR
 
 log "Installing Ollama..."
 
@@ -80,6 +109,9 @@ sudo systemctl status ollama --no-pager | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "=== Ollama API Test ===" | tee -a "$LOG_FILE"
 curl -s http://localhost:11434/api/version | jq . | tee -a "$LOG_FILE"
+
+# Mark checkpoint as completed
+complete_checkpoint "$CHECKPOINT_ID"
 
 log "Phase 4 completed successfully!"
 echo "=========================================="

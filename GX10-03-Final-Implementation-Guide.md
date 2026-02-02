@@ -177,11 +177,15 @@
 
 ### 5.2 실행 정책
 
+**아키텍처 결정 참조**: [ADR-002: 단일 Brain 실행 정책](GX10_Project_Documents/ADR-002-Single-Brain-Policy.md)
+
 1. **단일 Brain만 실행 가능**
 2. **Code + Vision 동시 실행 금지**
 3. **Brain 전환 시 Buffer Cache 플러시 필수**
 
 ### 5.3 왜 Code Brain은 Native, Vision Brain은 Docker인가?
+
+**아키텍처 결정 참조**: [ADR-001: Native vs Docker 실행](GX10_Project_Documents/ADR-001-Native-vs-Docker.md)
 
 **리서치 결과:**
 - UMA 아키텍처에서 Docker cgroups가 **20-30GB 메모리 오버헤드** 발생
