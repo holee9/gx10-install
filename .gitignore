@@ -119,6 +119,12 @@ logs/
 *_backup_*/
 
 # ===========================================
+# Knowledge Base
+# ===========================================
+# NOTE: /memory/ is tracked (project knowledge base)
+# Only .moai/memory/ is excluded (MoAI session state)
+
+# ===========================================
 # Secrets and Credentials (CRITICAL)
 # ===========================================
 # Environment files
