@@ -114,6 +114,7 @@ logs/
 # ===========================================
 .moai-backups/
 .moai/memory/
+.omc/
 *.backup/
 *-backup/
 *_backup_*/
