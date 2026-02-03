@@ -102,8 +102,8 @@ sudo /gx10/api/switch.sh code
 |------|------|
 | **총 소요 시간** | ~4시간 (문제 해결 포함) |
 | **Phase 완료** | 0~5 전체 완료 |
-| **발견된 이슈** | 12개 (KB-001 ~ KB-012) |
-| **이슈 해결** | 12개 모두 해결, 스크립트 반영 |
+| **발견된 이슈** | 14개 (KB-001 ~ KB-014) |
+| **이슈 해결** | 14개 모두 해결, 스크립트 반영 |
 
 ### Phase별 실행 결과
 
@@ -114,7 +114,7 @@ sudo /gx10/api/switch.sh code
 | Phase 2 | Vision Brain Docker | 4분 20초 | ✅ NGC 25.12, CUDA 13.1 |
 | Phase 3 | Brain Switch API | 3분 | ✅ 5-17초 전환 달성 |
 | Phase 4 | WebUI 설치 | 3분 | ✅ HTTP 8080 |
-| Phase 5 | 최종 검증 | 2분 | ✅ 전체 테스트 통과 |
+| Phase 5 | 최종 검증 | 44초 | ✅ 22개 자동화 테스트 통과 |
 
 ### 다운로드된 AI 모델
 
@@ -141,6 +141,8 @@ sudo /gx10/api/switch.sh code
 | KB-010 | 중첩 heredoc 충돌 | 구분자 변경 | ✅ |
 | KB-011 | WebUI HTTPS 미지원 | HTTP 모드 | ✅ |
 | KB-012 | switch.sh jq/PID/컨테이너 | 다중 수정 | ✅ |
+| KB-013 | 재설치 시 Docker 컨테이너 충돌 | docker rm -f 추가 | ✅ |
+| KB-014 | 검증 스크립트 자동화 부족 | 22개 자동화 테스트 | ✅ |
 
 > 상세 내용: `memory/errors/KB-*.md`
 
@@ -188,7 +190,7 @@ gx10-install/
 │       ├── 05-final-validation.sh      # Phase 5
 │       └── lib/                 # 공통 라이브러리
 ├── memory/
-│   └── errors/                  # Knowledge Base (KB-001~012)
+│   └── errors/                  # Knowledge Base (KB-001~014)
 ├── GX10-*.md                    # 상세 가이드 문서
 └── gx10-scripts/                # 추가 유틸리티
 ```
@@ -331,7 +333,7 @@ sudo docker restart open-webui
 
 | 항목 | 내용 |
 |------|------|
-| **버전** | 2.0.0 |
+| **버전** | 2.1.0 |
 | **최종 수정** | 2026-02-03 |
 | **1차 구축 완료** | 2026-02-03 |
 | **작성** | Claude Opus 4.5 + MoAI-ADK |
@@ -341,6 +343,7 @@ sudo docker restart open-webui
 
 | 버전 | 일자 | 설명 |
 |------|------|------|
+| 2.1.0 | 2026-02-03 | KB-013~014 추가, 검증 스크립트 v3.0.0 반영 |
 | 2.0.0 | 2026-02-03 | 2차 GX10 Full Auto 가이드 중심 재작성, 1차 구축 기록 정리 |
 | 1.4 | 2026-02-03 | Live 진행 상황 추가, Phase 0-5 완료 |
 | 1.0 | 2026-02-01 | 초기 작성 |
