@@ -385,6 +385,15 @@ else
     test_fail "Dashboard External" "not accessible externally (HTTP $DASHBOARD_EXTERNAL)"
 fi
 
+# Test 7.5: Dashboard Brain API
+DASHBOARD_BRAIN=$(curl -s http://localhost:9000/api/brain 2>/dev/null)
+if echo "$DASHBOARD_BRAIN" | jq -e '.active' > /dev/null 2>&1; then
+    ACTIVE_BRAIN=$(echo "$DASHBOARD_BRAIN" | jq -r '.active' 2>/dev/null)
+    test_pass "Dashboard Brain API" "Brain mode: $ACTIVE_BRAIN"
+else
+    test_fail "Dashboard Brain API" "/api/brain not returning valid data"
+fi
+
 #############################################
 # FINAL SUMMARY
 #############################################
