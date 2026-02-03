@@ -30,16 +30,15 @@ GX10 OS 설치 후 자동 구축을 위한 단계별 스크립트 모음입니�
 git clone https://github.com/holee9/gx10-install.git
 cd gx10-install/scripts/install
 
-# Step 1: sudo 작업 일괄 실행 (1회, 15-20분)
+# Step 1: sudo 작업 일괄 실행 (1회, ~2분)
 sudo ./00-sudo-prereqs.sh
 
-# Step 2: 재로그인 (docker 그룹 반영)
+# Step 2: 재로그인 (docker 그룹 반영 필수!)
 logout
 # 다시 로그인 후:
 
-# Step 3: 나머지 자동 실행 (sudo 불필요, ~1시간 20분)
-cd ~/gx10-install/scripts/install   # 또는 clone 경로
-./00-install-all.sh
+cd ~/gx10-install/scripts/install
+./00-install-all.sh    # ~25분, sudo 불필요
 ```
 
 > **참고 (KB-005)**: `Permission denied` 오류 시 sudo가 아닌 `chmod +x *.sh`를 먼저 확인하세요. Git clone 시 실행 권한이 자동 반영됩니다.
@@ -55,19 +54,19 @@ cd scripts/install
 sudo ./00-sudo-prereqs.sh
 # → 재로그인 필요 (docker 그룹 반영)
 
-# Step 2: AI 모델 다운로드 (~40분, sudo 불필요)
+# Phase 1: AI 모델 다운로드 (~11분, sudo 불필요)
 ./01-code-models-download.sh
 
-# Step 3: Vision Brain Docker 빌드 (~20분, sudo 불필요)
+# Phase 2: Vision Brain Docker 빌드 (~5분, sudo 불필요)
 ./02-vision-brain-build.sh
 
-# Step 4: Brain 전환 API (~5분, sudo 불필요)
+# Phase 3: Brain 전환 API (~1분, sudo 불필요)
 ./03-brain-switch-api.sh
 
-# Step 5: Open WebUI 설치 (~5분, sudo 불필요)
+# Phase 4: Open WebUI 설치 (~3분, sudo 불필요)
 ./04-webui-install.sh
 
-# Step 6: 최종 검증 (~10분, sudo 불필요)
+# Phase 5: 최종 검증 (~2분, sudo 불필요)
 ./05-final-validation.sh
 ```
 
@@ -79,7 +78,7 @@ sudo ./00-sudo-prereqs.sh
 
 | 스크립트 | 설명 | sudo | 시간 |
 |---------|------|------|------|
-| `00-sudo-prereqs.sh` | 모든 sudo 작업 일괄 실행 | **Yes** | 15-20분 |
+| `00-sudo-prereqs.sh` | 모든 sudo 작업 일괄 실행 | **Yes** | ~2분 |
 
 Phase 0이 수행하는 작업:
 - 시스템 패키지 업데이트 (apt update/upgrade)
@@ -88,30 +87,20 @@ Phase 0이 수행하는 작업:
 - Docker 그룹에 사용자 추가
 - Ollama 설치 및 systemd 서비스 구성
 - models 디렉토리 ollama 유저 소유권 설정 (KB-002)
-- 모니터링 서비스 등록
+- sudoers 설정 (이후 Phase에서 일부 sudo 허용)
 
 ### Phase 1-5: 자동 설치 (sudo 불필요)
 
 | 스크립트 | 설명 | sudo | 시간 |
 |---------|------|------|------|
-| `00-install-all.sh` | **전체 자동 실행 (아래 Phase 일괄)** | No | ~1시간 20분 |
-| `01-code-models-download.sh` | AI 코딩 모델 다운로드 (32B, 7B) | No | 40분 |
-| `02-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | 20분 |
-| `03-brain-switch-api.sh` | Brain 전환 API 구축 | No | 5분 |
-| `04-webui-install.sh` | Open WebUI 설치 | No | 5분 |
-| `05-final-validation.sh` | 최종 검증 및 테스트 | No | 10분 |
+| `00-install-all.sh` | **전체 자동 실행 (아래 Phase 일괄)** | No | ~25분 |
+| `01-code-models-download.sh` | AI 코딩 모델 다운로드 (32B, 7B, 16B) | No | ~11분 |
+| `02-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | ~5분 |
+| `03-brain-switch-api.sh` | Brain 전환 API 구축 | No | ~1분 |
+| `04-webui-install.sh` | Open WebUI 설치 | No | ~3분 |
+| `05-final-validation.sh` | 최종 검증 및 테스트 | No | ~2분 |
 
-### 레거시 스크립트 (Phase 0에서 대체됨)
-
-| 스크립트 | 설명 | 비고 |
-|---------|------|------|
-| `01-initial-setup.sh` | 시스템 업데이트 | Phase 0에 통합됨 |
-| `02-directory-structure.sh` | 디렉토리 생성 | Phase 0에 통합됨 |
-| `03-environment-config.sh` | 환경 설정 | Phase 0에 통합됨 |
-| `04-code-brain-install.sh` | Ollama 설치 | Phase 0에 통합됨 |
-| `09-service-automation.sh` | 서비스 자동화 | Phase 0에 통합됨 (삭제됨) |
-
-**총 예상 시간**: Phase 0 (15-20분) + Phase 1-5 (~1시간 20분) = **약 1시간 40분**
+**총 예상 시간**: Phase 0 (~2분) + 재로그인 + Phase 1-5 (~25분) = **약 30분**
 
 ---
 
@@ -160,7 +149,7 @@ cd scripts/install
 |--------|-----|------|
 | Open WebUI | `http://<GX10-IP>:8080` | 첫 접속 시 계정 생성 |
 | Brain Status | `/gx10/api/status.sh` | CLI 명령 |
-| Brain Switch | `/gx10/api/switch.sh [code\|vision]` | CLI 명령 |
+| Brain Switch | `sudo /gx10/api/switch.sh [code\|vision]` | CLI 명령 |
 
 ```bash
 # IP 확인
@@ -185,26 +174,27 @@ ollama list
 
 ## 관련 문서
 
-- [GX10-07 구축 계획서](../../GX10-07-Auto-Installation-Plan.md)
-- [GX10-03 구현 가이드](../../GX10-03-Final-Implementation-Guide.md)
-- [INSTALLATION-CHECKLIST](../../INSTALLATION-CHECKLIST.md) — 실시간 체크리스트
-- [memory/errors/](../../memory/errors/) — 오류 기록 및 해결책
+- [메인 README](../../README.md) — 프로젝트 개요 및 Full Auto 가이드
+- [GX10-03 구현 가이드](../../GX10-03-Final-Implementation-Guide.md) — 상세 구현 가이드
+- [memory/errors/](../../memory/errors/) — 오류 기록 및 해결책 (KB-001~012)
 
 ---
 
-## 📝 문서 정보
+## 문서 정보
 
-**버전**: 3.0.0
-**상태**: RELEASED
-**최종 수정일**: 2026-02-03
+| 항목 | 내용 |
+|------|------|
+| **버전** | 4.0.0 |
+| **상태** | RELEASED |
+| **최종 수정** | 2026-02-03 |
+| **작성** | Claude Opus 4.5 / MoAI-ADK |
+| **리뷰** | holee |
 
-**작성자**: Claude Sonnet 4.5 / MoAI-ADK v11.0.0
-**리뷰어**: drake, holee
+### 수정 이력
 
-## 📜 수정 이력
-
-| 일자 | 버전 | 설명 | 리뷰어 |
-|------|------|------|--------|
-| 2026-02-01 | 1.0 | 초기 작성 | drake |
-| 2026-02-02 | 2.0.0 | 오류 처리, 보안 강화 추가 | drake |
-| 2026-02-03 | 3.0.0 | Phase 0 패턴 반영, 2차 GX10 배포 대응, 레거시 분리 | holee |
+| 버전 | 일자 | 설명 |
+|------|------|------|
+| 4.0.0 | 2026-02-03 | 실측 시간 반영 (~30분), 레거시 스크립트 목록 제거 |
+| 3.0.0 | 2026-02-03 | Phase 0 패턴 반영, 2차 GX10 배포 대응 |
+| 2.0.0 | 2026-02-02 | 오류 처리, 보안 강화 추가 |
+| 1.0 | 2026-02-01 | 초기 작성 |

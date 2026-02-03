@@ -1,173 +1,220 @@
-# GX10 로컬 AI 개발 환경 구축 프로젝트
+# GX10 로컬 AI 개발 환경 자동 구축
 
-ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입니다.
+ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 **완전 자동 구축** 프로젝트입니다.
 
----
-
-## 🔴 설치 진행 상황 (Live)
-
-> **현재 브랜치**: `feature/gx10-setup-phase1`
-> **마지막 업데이트**: 2026-02-03 14:30 KST
-
-### 전체 진행률
-
-```
-[████████████████████] 100% - 전체 Phase 완료, 배포 스크립트 수정 후 PR 대기
-```
-
-### Phase 체크리스트
-
-| Phase | 작업 | 상태 | 소요 시간 | 비고 |
-|-------|------|------|---------|------|
-| Phase 0 | sudo 사전 실행 (8개 섹션) | ✅ 완료 | 2분 | 패키지, SSH/UFW, 디렉토리, Docker, Ollama, systemd, sudoers, wrapper |
-| Phase 0+ | 후속 조치 (수동) | ✅ 완료 | 5분 | Ollama 권한 수정 후 정상 가동 확인 |
-| 감사 | 전체 스크립트/문서 감사 | ✅ 완료 | - | 2차 GX10 자동 배포 대응 완료, KB-004/005 해결 |
-| Phase 1 | AI 모델 다운로드 | ✅ 완료 | 10분 35초 | qwen2.5-coder:32b(19GB) + 7b(4.7GB) + deepseek-coder-v2:16b(8.9GB) + nomic-embed(274MB) |
-| Phase 2 | Vision Brain Docker | ✅ 완료 | 4분 20초 | NGC 25.12, PyTorch 2.10.0, CUDA 13.1, GB10 정상 |
-| Phase 3 | Brain Switch API | ✅ 완료 | ~3분 | Brain 전환 API 구축 완료 |
-| Phase 4 | WebUI 설치 | ✅ 완료 | ~3분 | Open WebUI 8080 포트, KB-011 해결 |
-| Phase 5 | 최종 검증 | ✅ 완료 | ~2분 | GPU/메모리/Brain 정상, KB-012 수정 |
-
-### 최근 작업 로그
-
-| 일시 | 작업 | 결과 |
-|------|------|------|
-| 02-03 14:35 | Phase 5 jq 오류 수정 (KB-012) — `--arg` 옵션 적용 | ✅ 스크립트 수정 |
-| 02-03 14:30 | Phase 4 HTTPS 오류 수정 (KB-011) — HTTP 모드로 재설정 | ✅ 8080 포트 정상 |
-| 02-03 14:20 | Phase 4 실행 — Open WebUI HTTPS 연결 오류 발견 | ⚠️ KB-011 생성 |
-| 02-03 14:10 | Phase 3 완료 — Brain Switch API 구축 | ✅ |
-| 02-03 13:50 | Phase 3 중첩 heredoc 오류 수정 (KB-010) | ✅ `EOF` → `BRAIN_JSON` |
-| 02-03 13:45 | Phase 2 재빌드 성공 — NGC 25.12, CUDA 13.1, GB10 정상 | ✅ PyTorch 2.10.0 |
-| 02-03 13:35 | Phase 2 Dockerfile 수정 — NGC 25.12로 업그레이드 (KB-009: GB10 sm_121 호환) | ✅ 재빌드 대기 |
-| 02-03 12:55 | Phase 1 완료 — 4개 모델 다운로드 (10분 35초), Quick Test 성공 | ✅ 32b, 7b, 16b, embed |
-| 02-03 13:34 | Phase 2 첫 빌드 — GB10 CUDA 호환성 오류 발견 | ⚠️ KB-009 생성 |
-| 02-03 13:20 | lib/ 전체 런타임 감사 — log() 시그니처 + state-manager 수정 (KB-008) | ✅ set -u 호환 검증 완료 |
-| 02-03 13:10 | lib/error-handler.sh phase 파싱 오류 수정 (KB-007) | ✅ `%%-*` → `##*-` 수정 |
-| 02-03 13:00 | lib/security.sh 문법 오류 수정 (KB-006), bash -n 전체 검증 통과 | ✅ regex 수정, 전 스크립트 문법 OK |
-| 02-03 12:30 | 스크립트 번호 재정렬 + DOC-ID 수정 + 실행 권한 수정 (KB-005) | ✅ 레거시 삭제, 01-05 재번호, chmod +x |
-| 02-03 11:30 | 최종 감사: sudo 잔존 호출 수정 (KB-004), sudoers 추가, Phase 0 → 8개 섹션 | ✅ 03, 05 스크립트 수정 |
-| 02-03 11:10 | 전체 스크립트/문서 감사 → 2차 GX10 자동 배포 대응 업데이트 | ✅ 00-install-all.sh, README 전면 개편 |
-| 02-03 11:00 | KB-002, KB-003 오류 기록 생성, 문서 반영 | ✅ memory/errors/ |
-| 02-03 10:50 | Ollama models 권한 수정 (`chown ollama:ollama`), 서비스 정상 가동 | ✅ v0.15.4 API 응답 확인 |
-| 02-03 10:45 | Ollama 크래시 원인 분석 (models 디렉토리 permission denied) | ✅ 원인 확정 |
-| 02-03 10:30 | main 커밋/푸시, `feature/gx10-setup-phase1` 브랜치 생성 | ✅ |
-| 02-03 10:15 | `sudo ./00-sudo-prereqs.sh` 실행 (Phase 0) | ✅ 7개 섹션 모두 성공 |
-| 02-03 10:13 | `00-sudo-prereqs.sh` 스크립트 생성 | ✅ sudo 작업 일괄 분리 |
-| 02-03 09:50 | GX10 본체 사전 점검 (OS/GPU/메모리/디스크) | ✅ 기본 인프라 정상 |
-
-### 발견된 이슈
-
-| # | 이슈 | 상태 | 해결 방법 |
-|---|------|------|---------|
-| 1 | Ollama models 권한 (KB-002) | ✅ 해결 | `chown ollama:ollama` → Phase 0에 반영 완료 |
-| 2 | Docker 소켓 권한 (KB-003) | ✅ 해결 | 재로그인 후 정상 (Phase 0 안내에 포함) |
-| 3 | 활성 스크립트 sudo 잔존 (KB-004) | ✅ 해결 | sudoers 설정 Phase 0 추가, 03/05 스크립트 수정 |
-| 4 | 스크립트 실행 권한 누락 (KB-005) | ✅ 해결 | chmod +x 전체 .sh 파일, Git에 mode 반영 |
-| 5 | lib/security.sh regex 문법 오류 (KB-006) | ✅ 해결 | `[!@#$%^&*]` → `[^a-zA-Z0-9]` 수정 |
-| 6 | lib/error-handler.sh phase 파싱 (KB-007) | ✅ 해결 | `%%-*` → `##*-` + 숫자 검증 추가 |
-| 7 | lib/ 런타임 오류 — log() 1인자, set -u (KB-008) | ✅ 해결 | log() 1/2인자 호환 + state-manager 파라미터 수정 |
-| 8 | GB10 GPU CUDA 호환성 (KB-009) | ✅ 해결 | NGC 25.12 컨테이너로 업그레이드 (sm_121 지원) |
-| 9 | 중첩 heredoc 구분자 충돌 (KB-010) | ✅ 해결 | 내부 heredoc `EOF` → `BRAIN_JSON` 변경 |
-| 10 | Open WebUI HTTPS 미지원 (KB-011) | ✅ 해결 | HTTP(8080) 모드로 변경, 스크립트 v2.1.0 |
-| 11 | switch.sh jq 변수 문법 오류 (KB-012) | ✅ 해결 | `--arg` 옵션 사용, 배포 스크립트 수정 필요 |
-
-### 다음 할 일
-
-> Phase 5 완료 (02-03 14:35), 배포 스크립트 수정 후 PR 대기
-
-1. **배포된 switch.sh 수정** (수동): KB-012 jq 오류 수정
-2. Brain 전환 재테스트: `sudo /gx10/api/switch.sh code`
-3. PR 생성 및 main 브랜치 머지
+> **프로젝트 상태**: ✅ **1차 구축 완료** (2026-02-03)
+> **목표**: 2차 이후 GX10에서 **Full Auto** 구축 가능
 
 ---
 
-## 📋 문서 개요
+## 🚀 2차 GX10 Full Auto 구축 가이드
 
-이 프로젝트는 GX10 하드웨어(ARM 기반, 128GB Unified Memory, NVIDIA Blackwell GB10 GPU)에서 고품질 코드 생산을 위한 **Two Brain 아키텍처**를 구현하는 것을 목표로 합니다.
+### 개요
 
-### 프로젝트 목표
+| 단계 | 작업 | 시간 | sudo 필요 |
+|------|------|------|-----------|
+| **준비** | git clone, 재로그인 | 5분 | ❌ |
+| **Phase 0** | sudo 사전 실행 | 2분 | ✅ (1회) |
+| **Phase 1-5** | 자동 설치 | ~25분 | ❌ |
+| **합계** | - | **~32분** | - |
 
-> **이 프로젝트는 "재현 가능한 자동 구축"이 최종 목표입니다.**
+### Step 0: 사전 요구사항
 
-- **1차 구축 (현재)**: 첫 번째 GX10에서 수동+자동 혼합으로 구축하며 모든 과정을 기록
-- **2차 이후**: 다른 GX10에 `git clone` → `sudo ./00-sudo-prereqs.sh` → 나머지 자동 실행으로 동일 환경 구축
-- 1차에서 발생하는 실수/실패는 스크립트와 문서에 즉시 반영하여 2차부터는 반복되지 않도록 함
-- `memory/errors/`에 모든 오류와 해결책을 기록하여 지식 베이스로 축적
+| 항목 | 요구사항 |
+|------|----------|
+| 하드웨어 | ASUS Ascent GX10 (128GB RAM, GB10 GPU) |
+| OS | DGX OS 7.2.3 (Ubuntu 24.04 기반) |
+| 네트워크 | 인터넷 연결 (모델 다운로드용) |
+| 계정 | sudo 권한 있는 사용자 |
 
-### 핵심 철학
-
-> **"AI를 많이 쓰는 구조가 아니라, 코드 품질을 지키기 위해 AI를 통제하는 구조"**
-
-- 장기 유지보수가 가능한 고품질 코드 생산이 최우선 목표
-- 개발 속도, 자동화 범위, 비용 절감은 모두 부차 목표
-
-### 2차 GX10 구축 방법 (Quick Start)
+### Step 1: 준비 단계
 
 ```bash
-# 새로운 GX10에서 실행
+# 1. 저장소 클론
 git clone https://github.com/holee9/gx10-install.git
 cd gx10-install/scripts/install
 
-# Step 1: sudo 작업 일괄 실행 (1회)
+# 2. Phase 0 실행 (sudo 필요 - 1회만)
 sudo ./00-sudo-prereqs.sh
 
-# Step 2: 재로그인 후 나머지 자동 실행 (sudo 불필요)
-./01-code-models-download.sh
-./02-vision-brain-build.sh
-./03-brain-switch-api.sh
-./04-webui-install.sh
-./05-final-validation.sh
+# 3. 재로그인 (docker 그룹 반영 필수!)
+logout
+# 다시 SSH 로그인
 ```
 
-## 📚 문서 구조
+**Phase 0이 수행하는 작업:**
+- 시스템 패키지 업데이트 (apt)
+- SSH, UFW 방화벽 설정
+- `/gx10` 디렉토리 생성 및 소유권 이전
+- Docker 그룹에 사용자 추가
+- Ollama 설치 및 systemd 서비스 설정
+- sudoers 설정 (이후 Phase에서 sudo 불필요)
+- 스크립트 wrapper 생성
 
-| 문서 | 버전 | 설명 | 상태 |
-|------|------|------|------|
-| [GX10-00-install-guide.md](GX10-00-install-guide.md) | 1.0 | DGX OS 기본 설치 가이드 | ✅ 완료 |
-| [GX10-01-Setup-Plan.md](GX10-01-Setup-Plan.md) | 1.0 | 초기 개념 설계 및 계획서 | ✅ 완료 |
-| [GX10-02-Setup-Supplement-v1.1.md](GX10-02-Setup-Supplement-v1.1.md) | 1.0 | v1.0 보완 지침서 | ✅ 완료 |
-| [GX10-03-Final-Implementation-Guide.md](GX10-03-Final-Implementation-Guide.md) | 2.0 | **딥 리서치 기반 최종 구현 가이드** | ⭐ 추천 |
-| [GX10-04-Build-Checklist.md](GX10-04-Build-Checklist.md) | 1.0 | 실제 구축 체크리스트 | ✅ 완료 |
-| [GX10-05-Execution-Plan.md](GX10-05-Execution-Plan.md) | 0.1 | Execution Plan 템플릿 (초안) | ⚠️ 미완성 |
-| [GX10-06-Comprehensive-Guide.md](GX10-06-Comprehensive-Guide.md) | 1.0 | 통합 가이드 및 실행 표준 | 🆕 신규 |
+### Step 2: 자동 설치 (Full Auto)
 
-## 🎯 주요 문서 안내
+```bash
+# 재로그인 후 실행
+cd ~/gx10-install/scripts/install
 
-### 1. 최종 구현 가이드 (GX10-03) - **시작하기**
+# 전체 자동 설치 (권장)
+./00-install-all.sh
 
-가장 최신이며 완성도가 높은 문서입니다. 2025년 실측 벤치마크를 기반으로 작성되었습니다.
+# 또는 개별 Phase 실행
+./01-code-models-download.sh   # ~11분 (AI 모델 다운로드)
+./02-vision-brain-build.sh     # ~5분  (Vision Brain Docker)
+./03-brain-switch-api.sh       # ~1분  (Brain 전환 API)
+./04-webui-install.sh          # ~3분  (Open WebUI)
+./05-final-validation.sh       # ~2분  (최종 검증)
+```
 
-**주요 내용:**
-- Part A: 운영 규칙 및 아키텍처 (Two Brain 구조)
-- Part B: 기술 구현 가이드 (단계별 설정)
-- Part C: 빠른 참조 (명령어, 서비스 URL)
-- Part D: 개발자 PC 연동 (Aider, Continue.dev, OpenHands)
-- Part E: 최종 아키텍처 다이어그램
+### Step 3: 설치 완료 확인
 
-**시작 순서:**
-1. GX10-03의 "Phase 1: 초기 설정"부터 차례대로 실행
-2. 각 Phase 완료 후 체크리스트(GX10-04)로 검증
-3. 문제 발생 시 "문제 해결" 섹션 참조
+```bash
+# Brain 상태 확인
+/gx10/api/status.sh
 
-### 2. 구축 체크리스트 (GX10-04)
+# Brain 전환 테스트
+sudo /gx10/api/switch.sh code
+sudo /gx10/api/switch.sh vision
+sudo /gx10/api/switch.sh code
 
-실제 구축 시 각 단계를 체크하고 검증하기 위한 문서입니다.
+# WebUI 접속
+# http://<GX10-IP>:8080
+```
 
-**활용 방법:**
-- 각 항목을 실행하며 ⬜ → ✅ 로 변경
-- "검증" 섹션을 통해 올바른 구축 확인
-- 최종 판정으로 구축 완료 여부 결정
+### 설치 결과
 
-### 3. Execution Plan 템플릿 (GX10-05)
+| 서비스 | URL/명령어 | 설명 |
+|--------|-----------|------|
+| Open WebUI | `http://<IP>:8080` | AI 채팅 인터페이스 |
+| Brain Status | `/gx10/api/status.sh` | 현재 Brain 상태 확인 |
+| Brain Switch | `sudo /gx10/api/switch.sh [code\|vision]` | Brain 전환 (5-17초) |
+| Ollama API | `http://localhost:11434` | Code Brain API |
 
-**⚠️ 현재 미완성 상태입니다.**
+---
 
-GX10 Code Brain에 작업을 지시할 때 사용하는 표준 포맷입니다.
+## 📋 1차 구축 완료 기록 (2026-02-03)
 
-**보완 필요:**
-- JSON Schema 정의 (GX10-02의 1-1 섹션 참조)
-- YAML 예시 추가
-- 버전 관리 규칙
+### 구축 결과 요약
+
+| 항목 | 결과 |
+|------|------|
+| **총 소요 시간** | ~4시간 (문제 해결 포함) |
+| **Phase 완료** | 0~5 전체 완료 |
+| **발견된 이슈** | 12개 (KB-001 ~ KB-012) |
+| **이슈 해결** | 12개 모두 해결, 스크립트 반영 |
+
+### Phase별 실행 결과
+
+| Phase | 작업 | 소요 시간 | 결과 |
+|-------|------|----------|------|
+| Phase 0 | sudo 사전 실행 | 2분 | ✅ 8개 섹션 완료 |
+| Phase 1 | AI 모델 다운로드 | 10분 35초 | ✅ 4개 모델 (32GB) |
+| Phase 2 | Vision Brain Docker | 4분 20초 | ✅ NGC 25.12, CUDA 13.1 |
+| Phase 3 | Brain Switch API | 3분 | ✅ 5-17초 전환 달성 |
+| Phase 4 | WebUI 설치 | 3분 | ✅ HTTP 8080 |
+| Phase 5 | 최종 검증 | 2분 | ✅ 전체 테스트 통과 |
+
+### 다운로드된 AI 모델
+
+| 모델 | 크기 | 용도 |
+|------|------|------|
+| qwen2.5-coder:32b | 19GB | 메인 코딩 |
+| qwen2.5-coder:7b | 4.7GB | 빠른 응답 |
+| deepseek-coder-v2:16b | 8.9GB | 수학/논리 |
+| nomic-embed-text | 274MB | 임베딩 |
+
+### 발견 및 해결된 이슈 (Knowledge Base)
+
+| KB | 이슈 | 해결 | 스크립트 반영 |
+|----|------|------|--------------|
+| KB-001 | KV cache inconsistent | 메모리 최적화 | ✅ |
+| KB-002 | Ollama models 권한 | chown ollama:ollama | ✅ Phase 0 |
+| KB-003 | Docker 소켓 권한 | 재로그인 필요 | ✅ 안내 추가 |
+| KB-004 | sudo 잔존 호출 | sudoers 설정 | ✅ Phase 0 |
+| KB-005 | 스크립트 실행 권한 | chmod +x | ✅ Git mode |
+| KB-006 | security.sh regex | 패턴 수정 | ✅ |
+| KB-007 | error-handler 파싱 | 문자열 처리 수정 | ✅ |
+| KB-008 | lib/ set -u 오류 | 파라미터 기본값 | ✅ |
+| KB-009 | GB10 CUDA 호환성 | NGC 25.12 업그레이드 | ✅ Dockerfile |
+| KB-010 | 중첩 heredoc 충돌 | 구분자 변경 | ✅ |
+| KB-011 | WebUI HTTPS 미지원 | HTTP 모드 | ✅ |
+| KB-012 | switch.sh jq/PID/컨테이너 | 다중 수정 | ✅ |
+
+> 상세 내용: `memory/errors/KB-*.md`
+
+### 1차 구축 작업 로그
+
+<details>
+<summary>전체 작업 로그 (클릭하여 펼치기)</summary>
+
+| 일시 | 작업 | 결과 |
+|------|------|------|
+| 02-03 15:10 | PR 머지, main 브랜치 완료 | ✅ |
+| 02-03 15:07 | Brain 전환 테스트 (code↔vision) 성공 | ✅ |
+| 02-03 15:03 | KB-012 PID/컨테이너 오류 수정 | ✅ |
+| 02-03 14:35 | KB-012 jq 오류 수정 | ✅ |
+| 02-03 14:30 | KB-011 HTTP 모드 수정 | ✅ |
+| 02-03 14:10 | Phase 3-5 완료 | ✅ |
+| 02-03 13:50 | KB-010 heredoc 수정 | ✅ |
+| 02-03 13:45 | Phase 2 재빌드 (NGC 25.12) | ✅ |
+| 02-03 13:35 | KB-009 GB10 CUDA 호환성 발견 | ⚠️ |
+| 02-03 12:55 | Phase 1 완료 | ✅ |
+| 02-03 13:00 | KB-006~008 lib/ 오류 수정 | ✅ |
+| 02-03 12:30 | KB-005 실행 권한 수정 | ✅ |
+| 02-03 11:30 | KB-004 sudo 잔존 수정 | ✅ |
+| 02-03 10:50 | KB-002,003 Ollama/Docker 권한 | ✅ |
+| 02-03 10:15 | Phase 0 실행 | ✅ |
+| 02-03 09:50 | GX10 사전 점검 | ✅ |
+
+</details>
+
+---
+
+## 📚 프로젝트 구조
+
+```
+gx10-install/
+├── README.md                    # 이 문서
+├── scripts/
+│   └── install/
+│       ├── 00-sudo-prereqs.sh   # Phase 0: sudo 사전 실행
+│       ├── 00-install-all.sh    # 전체 자동 설치
+│       ├── 01-code-models-download.sh  # Phase 1
+│       ├── 02-vision-brain-build.sh    # Phase 2
+│       ├── 03-brain-switch-api.sh      # Phase 3
+│       ├── 04-webui-install.sh         # Phase 4
+│       ├── 05-final-validation.sh      # Phase 5
+│       └── lib/                 # 공통 라이브러리
+├── memory/
+│   └── errors/                  # Knowledge Base (KB-001~012)
+├── GX10-*.md                    # 상세 가이드 문서
+└── gx10-scripts/                # 추가 유틸리티
+```
+
+### 설치 후 GX10 디렉토리 구조
+
+```
+/gx10/
+├── api/
+│   ├── status.sh      # Brain 상태 조회
+│   ├── switch.sh      # Brain 전환
+│   ├── predict.sh     # 패턴 기반 예측
+│   └── benchmark.sh   # 성능 벤치마크
+├── brains/
+│   ├── code/          # Code Brain 데이터
+│   └── vision/        # Vision Brain 모델
+├── runtime/
+│   ├── active_brain.json
+│   ├── certs/
+│   ├── logs/
+│   └── state/
+└── automation/
+    └── n8n/
+```
+
+---
 
 ## 🏗️ Two Brain 아키텍처
 
@@ -181,8 +228,8 @@ GX10 Code Brain에 작업을 지시할 때 사용하는 표준 포맷입니다.
 │  │    (Native Mode)    │      │   (Docker Mode)     │          │
 │  ├─────────────────────┤      ├─────────────────────┤          │
 │  │ Ollama (systemd)    │      │ PyTorch Container   │          │
-│  │ • Qwen2.5-Coder-32B │      │ • Qwen2.5-VL-72B    │          │
-│  │ • DeepSeek-Coder    │      │ • YOLO/SAM2         │          │
+│  │ • Qwen2.5-Coder-32B │      │ • NGC 25.12         │          │
+│  │ • DeepSeek-Coder    │      │ • CUDA 13.1         │          │
 │  │ • Qwen2.5-Coder-7B  │      │ • TensorRT          │          │
 │  ├─────────────────────┤      ├─────────────────────┤          │
 │  │ 메모리: 30-40GB     │      │ 메모리: 70-90GB     │          │
@@ -190,156 +237,25 @@ GX10 Code Brain에 작업을 지시할 때 사용하는 표준 포맷입니다.
 │  └─────────────────────┘      └─────────────────────┘          │
 │                                                                 │
 │  ⚠️ 동시 실행 금지 - 단일 Brain만 활성화                         │
+│  🔄 전환 시간: 5-17초 (Buffer Cache 플러시 포함)                 │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Code Brain (Native Mode)
-
-**책임:** Execution Plan을 입력받아 코드 구현을 끝까지 책임지는 로컬 실행 엔진
-
-**주요 작업:**
-- 디렉토리 생성, 파일 생성 및 수정
-- 다파일 동시 구현
-- 테스트 실패 시 재수정
-- 리팩토링, 컨텍스트 유지
-
-**모델 구성:**
-| 용도 | 모델 | 메모리 | 속도 |
-|------|------|--------|------|
-| 메인 코딩 | qwen2.5-coder:32b | ~20GB | ~9.5 tok/s |
-| 빠른 응답 | qwen2.5-coder:7b | ~5GB | ~46 tok/s |
-| 수학/논리 | deepseek-coder-v2:16b | ~10GB | ~18 tok/s |
-
-### Vision Brain (Docker Mode)
-
-**책임:** 성능 재현성, 수치 안정성, 파라미터 영향, 하드웨어 효율 기반 판단
-
-**주요 작업:**
-- CUDA / TensorRT 실험
-- latency / throughput 측정
-- 성능 리포트 생성
-
-**모델 구성:**
-| 용도 | 모델 | 메모리 |
-|------|------|--------|
-| Vision LLM | qwen2.5-vl:72b | ~45GB |
-| Object Detection | YOLOv8x | ~100MB |
-| Segmentation | SAM2-Large | ~2.5GB |
-
-## 🔄 기본 파이프라인
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Agent Coding Pipeline                            │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
-│  │ 1️⃣ Claude    │───▶│ 2️⃣ GX10      │───▶│ 3️⃣ Claude    │          │
-│  │    Code      │    │ Code Brain   │    │    Code      │          │
-│  ├──────────────┤    ├──────────────┤    ├──────────────┤          │
-│  │ • 요구사항    │    │ • 파일별 구현 │    │ • 전체 리뷰   │          │
-│  │ • 설계       │    │ • 반복 수정   │    │ • corner case│          │
-│  │ • 파일 구조   │    │ • 테스트 통과 │    │ • 리팩토링   │          │
-│  │ • 인터페이스  │    │              │    │              │          │
-│  └──────────────┘    └──────────────┘    └──────────────┘          │
-│         │                   │                   │                  │
-│         ▼                   ▼                   ▼                  │
-│  ┌─────────────────────────────────────────────────────────┐       │
-│  │                    4️⃣ Warp Terminal                     │       │
-│  │         빌드 → 테스트 → 스크립트 실행 → Git 커밋          │       │
-│  └─────────────────────────────────────────────────────────┘       │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-## 🚀 빠른 시작
-
-### 1. 필수 조건
-
-- GX10 하드웨어 (128GB RAM, NVIDIA Blackwell GB10)
-- DGX OS 7.2.3 설치 완료 (Ubuntu 24.04 기반)
-- 개발자 PC와 SSH 연결 가능
-
-### 2. 2-Step 구축 (권장)
-
-#### Step 1: sudo 사전 실행 (15-20분, 한 번만 sudo)
+### Brain 전환 명령
 
 ```bash
-# 모든 sudo 필요 작업을 일괄 실행
-cd ~/workspace/gx10-install/scripts/install
-sudo ./00-sudo-prereqs.sh
+# Code Brain 활성화 (개발 작업)
+sudo /gx10/api/switch.sh code
 
-# 재로그인 (docker 그룹 반영)
-logout  # 후 다시 로그인
-```
+# Vision Brain 활성화 (비전 실험)
+sudo /gx10/api/switch.sh vision
 
-Phase 0이 수행하는 작업:
-- 시스템 패키지 업데이트, SSH/방화벽 설정
-- /gx10 디렉토리 생성 및 소유권 이전
-- Docker 그룹 추가, Ollama 설치 및 서비스 설정
-
-#### Step 2: 나머지 설치 (1시간 25분, sudo 불필요)
-
-```bash
-# AI 모델 다운로드 (~40분)
-ollama pull qwen2.5-coder:32b
-ollama pull qwen2.5-coder:7b
-
-# Vision Brain Docker 빌드 (~20분)
-cd ~/workspace/gx10-install/scripts/install
-./02-vision-brain-build.sh
-
-# Brain 전환 API + WebUI + 검증
-./03-brain-switch-api.sh
-./04-webui-install.sh
-./05-final-validation.sh
-
-# 테스트
-ollama run qwen2.5-coder:32b "Hello, GX10!"
-```
-
-> Claude Code 등 자동화 도구 사용 시: Step 1만 터미널에서 실행하면 Step 2는 자동화 가능
-
-#### Phase 3-4: Brain 전환 시스템 + WebUI (Step 2에 포함)
-
-```bash
-# 상태 조회 스크립트 생성
-cat > /gx10/api/status.sh << 'EOF'
-#!/bin/bash
-echo "=== GX10 Brain Status ==="
-echo "📊 Memory:"
-free -h | grep -E "Mem|Swap"
-echo ""
-echo "🎮 GPU:"
-nvidia-smi --query-gpu=name,memory.used,memory.total --format=csv,noheader
-EOF
-chmod +x /gx10/api/status.sh
-
-# 실행
+# 상태 확인
 /gx10/api/status.sh
 ```
 
-### 3. 개발자 PC 연동
-
-```bash
-# SSH 터널 생성
-ssh -N -L 11434:localhost:11434 user@gx10-brain.local
-
-# Aider 연결
-export OLLAMA_API_BASE=http://localhost:11434
-aider --model ollama_chat/qwen2.5-coder:32b
-```
-
-## 📖 상세 가이드
-
-각 단계의 상세 내용은 다음 문서를 참조하세요:
-
-1. **초기 설정**: [GX10-03-Final-Implementation-Guide.md](GX10-03-Final-Implementation-Guide.md) - Part B, Phase 1
-2. **Code Brain**: [GX10-03-Final-Implementation-Guide.md](GX10-03-Final-Implementation-Guide.md) - Part B, Phase 2
-3. **Vision Brain**: [GX10-03-Final-Implementation-Guide.md](GX10-03-Final-Implementation-Guide.md) - Part B, Phase 3
-4. **Brain 전환**: [GX10-03-Final-Implementation-Guide.md](GX10-03-Final-Implementation-Guide.md) - Part B, Phase 4
-5. **자동화**: [GX10-03-Final-Implementation-Guide.md](GX10-03-Final-Implementation-Guide.md) - Part B, Phase 5-7
+---
 
 ## 🔧 문제 해결
 
@@ -358,19 +274,34 @@ sudo sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches'
 
 # 실행 중인 모델 확인
 ollama ps
-ollama stop <model-name>
 ```
 
 ### Brain 전환 실패
 
 ```bash
-# 강제 정리
-docker stop vision-brain 2>/dev/null
-sudo systemctl stop ollama
-sudo sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches'
-sleep 10
-/gx10/api/switch.sh code
+# Vision 컨테이너 강제 정리
+sudo docker rm -f gx10-vision-brain
+
+# Ollama 재시작
+sudo systemctl restart ollama
+
+# 다시 전환
+sudo /gx10/api/switch.sh code
 ```
+
+### WebUI 접속 불가
+
+```bash
+# 컨테이너 상태 확인
+sudo docker ps | grep open-webui
+
+# 컨테이너 재시작
+sudo docker restart open-webui
+```
+
+> 추가 문제 해결: `memory/errors/KB-*.md` 참조
+
+---
 
 ## 📊 하드웨어 사양
 
@@ -381,89 +312,35 @@ sleep 10
 | 메모리 | 128GB LPDDR5x Unified Memory |
 | 메모리 대역폭 | 273 GB/s (CPU+GPU 공유) |
 | 스토리지 | 1TB NVMe SSD |
-| 네트워크 | 10GbE + ConnectX-7 (200Gbps QSFP) |
 | OS | DGX OS 7.2.3 (Ubuntu 24.04 LTS 기반) |
-
-### UMA(Unified Memory Architecture) 특성
-
-**⚠️ 중요: 이 사양은 일반 PC와 다르게 동작합니다.**
-
-- CPU와 GPU가 동일한 메모리 풀을 공유
-- PCIe 전송 병목 없음 (NVLink-C2C)
-- Buffer Cache가 GPU 메모리를 점유할 수 있음
-- 대역폭(273 GB/s)이 주요 병목
-
-## 🔗 참조
-
-### 벤치마크 출처
-
-- [LMSYS Org](https://lmsys.org/blog/2025-10-13-nvidia-dgx-spark/) - SGLang 배치, DeepSeek-R1 83.5 tok/s
-- [ProX PC](https://www.proxpc.com/blogs/nvidia-dgx-spark-gb10-performance-test-vs-5090-llm-image-and-video-generation) - Qwen2.5-72B: 4.6 tok/s
-- [NVIDIA Blog](https://developer.nvidia.com/blog/how-nvidia-dgx-sparks-performance-enables-intensive-ai-tasks/) - Qwen3-235B 듀얼: 23,477 tok/s
-- [Brandon RC](https://brandonrc.github.io/benchmark-spark/phase1/index.html) - Docker 20-30GB 오버헤드
-
-### 라이선스
-
-| 구성요소 | 라이선스 | 상업적 사용 |
-|----------|----------|-------------|
-| Qwen2.5-Coder | Apache 2.0 | ✅ |
-| Qwen2.5-VL | Apache 2.0 | ✅ |
-| DeepSeek-Coder-V2 | DeepSeek License | ✅ |
-| Ollama | MIT | ✅ |
-| n8n | Sustainable Use | ⚠️ 조건부 |
-
-## 📝 문서 버전
-
-- **최종 수정**: 2026-02-02
-- **주요 변경사항**:
-  - DGX OS 7.2.3 (Ubuntu 24.04 기반) 기반으로 정정
-  - DGX OS 사전 설치된 컴포넌트 활용 가이드
-  - Python 3.12 및 PEP 668 관련 내용 유지
-  - DGX OS 특정 설정 추가
-
-## 👥 기여
-
-이 프로젝트는 실제 GX10 하드웨어를 활용한 로컬 AI 개발 환경 구축 경험을 문서화한 것입니다.
-
-개선 제안이나 버그 리포트는 GitHub Issues를 통해 제출해 주세요.
 
 ---
 
-## 📜 수정 이력
+## 📖 상세 문서
 
-문서의 주요 수정 사항을 기록합니다.
-
-| 일자 | 버전 | 설명 | 리뷰어 |
-|------|------|------|--------|
-| 2026-02-03 | 1.4 | 설치 진행 상황(Live) 섹션 추가, Phase 0 실행 결과 반영 | holee |
-| 2026-02-03 | 1.3 | 빠른 시작을 2-Step(sudo/non-sudo) 플로우로 재구성 | holee |
-| 2026-02-02 | 1.2 | DGX OS 기반으로 정정 (DGX OS는 Ubuntu 24.04 기반 NVIDIA 커스텀 OS) | drake |
-| 2026-02-02 | 1.1 | Ubuntu 24.04 LTS 변경 사항 반영 | drake |
-| 2026-02-01 | 1.0 | README 통합 작성, 작성자/리뷰어 정보 추가 | drake |
+| 문서 | 설명 |
+|------|------|
+| [GX10-03-Final-Implementation-Guide.md](GX10-03-Final-Implementation-Guide.md) | 딥 리서치 기반 최종 구현 가이드 |
+| [GX10-04-Build-Checklist.md](GX10-04-Build-Checklist.md) | 구축 체크리스트 |
+| [GX10-09-Two-Brain-Optimization.md](GX10-09-Two-Brain-Optimization.md) | Two Brain 최적화 전략 |
+| [scripts/install/README.md](scripts/install/README.md) | 스크립트 상세 설명 |
 
 ---
 
 ## 📝 문서 정보
 
-**작성자**:
+| 항목 | 내용 |
+|------|------|
+| **버전** | 2.0.0 |
+| **최종 수정** | 2026-02-03 |
+| **1차 구축 완료** | 2026-02-03 |
+| **작성** | Claude Opus 4.5 + MoAI-ADK |
+| **리뷰** | holee |
 
-- AI: Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
-- 환경: MoAI-ADK v11.0.0 (Claude Code + Korean Language Support)
-- 작성일: 2026-02-01
+### 변경 이력
 
-**리뷰어**:
-
-- drake
-
-**문서 버전**: 1.0
-
-**최종 수정**: 2026-02-01
-
-**주요 변경사항**:
-
-- README 통합 작성
-- 문서 간 중복 내용 정리
-- 빠른 시작 가이드 추가
-- 작성자 및 리뷰어 정보 추가
-
-**프로젝트 상태**: 활성 개발 중
+| 버전 | 일자 | 설명 |
+|------|------|------|
+| 2.0.0 | 2026-02-03 | 2차 GX10 Full Auto 가이드 중심 재작성, 1차 구축 기록 정리 |
+| 1.4 | 2026-02-03 | Live 진행 상황 추가, Phase 0-5 완료 |
+| 1.0 | 2026-02-01 | 초기 작성 |
