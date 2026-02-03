@@ -259,7 +259,7 @@ PID=$(pgrep -a "$TARGET_BRAIN" | head -1 | awk '{print $1}' || echo "null")
 TIMESTAMP=$(date -Iseconds)
 SWITCH_COUNT=$(cat "$STATUS_FILE" | jq -r '.switch_count + 1')
 
-cat > "$STATUS_FILE" << EOF
+cat > "$STATUS_FILE" << BRAIN_JSON
 {
   "brain": "$TARGET_BRAIN",
   "pid": $PID,
@@ -268,11 +268,11 @@ cat > "$STATUS_FILE" << EOF
   "switch_count": $SWITCH_COUNT,
   "last_cache_flush": "$TIMESTAMP"
 }
-EOF
+BRAIN_JSON
 
 # Update usage pattern statistics
 FROM_TO="${CURRENT}_to_${TARGET_BRAIN}"
-jq ".statistics.total_switches += 1 | .statistics.${FROM_TO} += 1" "$PATTERN_FILE" > "${PATTERN_FILE}.tmp"
+jq ".statistics.total_switches += 1 | .statistics.\${FROM_TO} += 1" "$PATTERN_FILE" > "${PATTERN_FILE}.tmp"
 mv "${PATTERN_FILE}.tmp" "$PATTERN_FILE"
 
 # Calculate elapsed time
