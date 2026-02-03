@@ -74,15 +74,14 @@ log "Building Vision Brain Docker image..."
 # Create Dockerfile
 log "Creating Dockerfile..."
 cat > /gx10/brains/vision/Dockerfile << 'EOF'
-FROM nvcr.io/nvidia/pytorch:24.01-py3
+# GB10 GPU (sm_121 Blackwell) requires NGC 25.11+ for proper CUDA support
+# Reference: https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-25-12.html
+FROM nvcr.io/nvidia/pytorch:25.12-py3
 
 WORKDIR /workspace
 
-# Update PyTorch and dependencies
+# Update pip (NGC container already has compatible PyTorch)
 RUN pip install --upgrade pip
-
-# Install PyTorch with CUDA 12.1 support
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 # Computer Vision libraries
 RUN pip install \
