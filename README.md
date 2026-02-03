@@ -21,7 +21,7 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 |-------|------|------|---------|------|
 | Phase 0 | sudo 사전 실행 (8개 섹션) | ✅ 완료 | 2분 | 패키지, SSH/UFW, 디렉토리, Docker, Ollama, systemd, sudoers, wrapper |
 | Phase 0+ | 후속 조치 (수동) | ✅ 완료 | 5분 | Ollama 권한 수정 후 정상 가동 확인 |
-| 감사 | 전체 스크립트/문서 감사 | ✅ 완료 | - | 2차 GX10 자동 배포 대응 완료, KB-004 해결 |
+| 감사 | 전체 스크립트/문서 감사 | ✅ 완료 | - | 2차 GX10 자동 배포 대응 완료, KB-004/005 해결 |
 | Phase 1 | AI 모델 다운로드 | ⬜ 미시작 | ~50분 예상 | qwen2.5-coder:32b + 7b + deepseek-coder-v2:16b + nomic-embed |
 | Phase 2 | Vision Brain Docker | ⬜ 미시작 | ~25분 예상 | Docker 빌드 + API |
 | Phase 3 | Brain Switch API | ⬜ 미시작 | ~5분 예상 | Brain 전환 API 구축 |
@@ -32,6 +32,7 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 
 | 일시 | 작업 | 결과 |
 |------|------|------|
+| 02-03 12:30 | 스크립트 번호 재정렬 + DOC-ID 수정 + 실행 권한 수정 (KB-005) | ✅ 레거시 삭제, 01-05 재번호, chmod +x |
 | 02-03 11:30 | 최종 감사: sudo 잔존 호출 수정 (KB-004), sudoers 추가, Phase 0 → 8개 섹션 | ✅ 03, 05 스크립트 수정 |
 | 02-03 11:10 | 전체 스크립트/문서 감사 → 2차 GX10 자동 배포 대응 업데이트 | ✅ 00-install-all.sh, README 전면 개편 |
 | 02-03 11:00 | KB-002, KB-003 오류 기록 생성, 문서 반영 | ✅ memory/errors/ |
@@ -49,12 +50,13 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 | 1 | Ollama models 권한 (KB-002) | ✅ 해결 | `chown ollama:ollama` → Phase 0에 반영 완료 |
 | 2 | Docker 소켓 권한 (KB-003) | ✅ 해결 | 재로그인 후 정상 (Phase 0 안내에 포함) |
 | 3 | 활성 스크립트 sudo 잔존 (KB-004) | ✅ 해결 | sudoers 설정 Phase 0 추가, 03/05 스크립트 수정 |
+| 4 | 스크립트 실행 권한 누락 (KB-005) | ✅ 해결 | chmod +x 전체 .sh 파일, Git에 mode 반영 |
 
 ### 다음 할 일
 
-> ⚠️ **Phase 0 재실행 필요**: sudoers 설정(섹션 8)이 추가되었으므로, GX10 터미널에서 `sudo ./00-sudo-prereqs.sh` 재실행 권장
+> Phase 0 재실행 완료 (02-03 11:22, Section 8 sudoers 적용됨)
 
-1. **Phase 0 재실행** (sudoers 추가분 반영): `sudo ./00-sudo-prereqs.sh`
+1. **Phase 1 실행** (AI 모델 다운로드): `git pull && cd scripts/install && ./01-code-models-download.sh`
 2. AI 모델 다운로드 — `ollama pull` 4개 모델 (~50분)
 3. Vision Brain Docker 빌드 (~20분)
 4. Brain Switch API + WebUI + 최종 검증

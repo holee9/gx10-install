@@ -42,6 +42,8 @@ cd ~/gx10-install/scripts/install   # 또는 clone 경로
 ./00-install-all.sh
 ```
 
+> **참고 (KB-005)**: `Permission denied` 오류 시 sudo가 아닌 `chmod +x *.sh`를 먼저 확인하세요. Git clone 시 실행 권한이 자동 반영됩니다.
+
 ### 단계별 수동 설치
 
 개별 Phase를 하나씩 실행하려면:

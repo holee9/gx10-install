@@ -60,6 +60,8 @@ sudo ./00-sudo-prereqs.sh
 
 > ⚠️ **주의사항 (KB-002)**: Ollama 서비스는 `ollama` 시스템 유저로 실행됩니다. `OLLAMA_MODELS` 경로의 소유권은 반드시 `ollama:ollama`로 설정해야 합니다. 전체 `/gx10`을 사용자 소유로 설정한 후 models 디렉토리만 별도 `chown`이 필요합니다.
 
+> ⚠️ **주의사항 (KB-005)**: 모든 `.sh` 스크립트는 실행 권한(`chmod +x`)이 Git에 반영되어 있습니다. `Permission denied` 오류 시 sudo가 아닌 `chmod +x`를 먼저 확인하세요.
+
 ---
 
 ## 01. 초기 설정 (01-initial-setup.sh)

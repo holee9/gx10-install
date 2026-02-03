@@ -58,6 +58,9 @@ Phase 0이 수행하는 작업 (8개 섹션):
 7. 모니터링 서비스 등록
 8. Brain 전환 sudoers 설정 + /usr/local/bin wrapper (KB-004)
 
+> **주의**: 모든 .sh 파일은 `chmod +x` 실행 권한이 Git에 반영되어 있습니다.
+> `Permission denied` 발생 시 sudo가 아닌 `chmod +x`를 먼저 확인 (KB-005).
+
 **Phase 0 완료 후 반드시 재로그인** (docker 그룹 반영):
 ```bash
 # 방법 1: 재로그인
