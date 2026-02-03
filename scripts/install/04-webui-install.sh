@@ -32,8 +32,9 @@
 # Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 4: WebUI Install"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "User Interface Integration"
 # Related: KB-011 (Open WebUI HTTPS 내부 미지원)
+# Related: KB-013 (Reinstall idempotency - docker container conflict)
 #
-# Version: 2.1.0
+# Version: 2.2.0
 # Status: RELEASED
 # Dependencies: DOC-SCR-000 (Phase 0)
 #
@@ -80,6 +81,10 @@ docker pull ghcr.io/open-webui/open-webui:main >> "$LOG_FILE" 2>&1
 # Start Open WebUI container (HTTP mode - 8080)
 # Note: Open WebUI does not support internal HTTPS (KB-011)
 log "Starting Open WebUI container (HTTP mode)..."
+
+# Remove existing container if present (idempotent reinstall - KB-013)
+docker rm -f open-webui 2>/dev/null || true
+
 docker run -d \
   --name open-webui \
   --restart unless-stopped \
