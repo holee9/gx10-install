@@ -44,3 +44,6 @@ GX10 Code/Vision Brain 구축 관련 문서입니다.
 | [archive/GX10-06-Comprehensive-Guide.md](archive/GX10-06-Comprehensive-Guide.md) | 종합 가이드 |
 | [archive/GX10-07-Auto-Installation-Plan.md](archive/GX10-07-Auto-Installation-Plan.md) | 자동 설치 계획 |
 | [archive/GX10-08-CodeBrain-Memory-Optimization.md](archive/GX10-08-CodeBrain-Memory-Optimization.md) | Code Brain 메모리 최적화 |
+| [archive/GX10_Local_AI_Development_Guide.md](archive/GX10_Local_AI_Development_Guide.md) | 로컬 AI 개발 가이드 |
+| [archive/INSTALLATION-CHECKLIST.md](archive/INSTALLATION-CHECKLIST.md) | 설치 체크리스트 (초기) |
+| [archive/INSTALLATION_SCRIPTS_REPORT.md](archive/INSTALLATION_SCRIPTS_REPORT.md) | 스크립트 개발 보고서 |
