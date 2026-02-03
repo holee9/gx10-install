@@ -30,6 +30,8 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 
 | 일시 | 작업 | 결과 |
 |------|------|------|
+| 02-03 11:10 | 전체 스크립트/문서 감사 → 2차 GX10 자동 배포 대응 업데이트 | ✅ 00-install-all.sh, README 전면 개편 |
+| 02-03 11:00 | KB-002, KB-003 오류 기록 생성, 문서 반영 | ✅ memory/errors/ |
 | 02-03 10:50 | Ollama models 권한 수정 (`chown ollama:ollama`), 서비스 정상 가동 | ✅ v0.15.4 API 응답 확인 |
 | 02-03 10:45 | Ollama 크래시 원인 분석 (models 디렉토리 permission denied) | ✅ 원인 확정 |
 | 02-03 10:30 | main 커밋/푸시, `feature/gx10-setup-phase1` 브랜치 생성 | ✅ |
