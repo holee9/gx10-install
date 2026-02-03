@@ -162,12 +162,12 @@ test_https_config() {
 test_library_sourcing() {
     print_header "검사 4: 라이브러리 소싱 확인"
 
-    # 각 스크립트는 최소 4개의 라이브러리 소싱 (lib/utils.sh 등)
+    # 각 스크립트는 최소 4개의 라이브러리 소싱 (lib/logger.sh 등)
     local source_count
     source_count=$(grep -rn "source.*lib/" "${SCRIPT_DIR}"/*.sh 2>/dev/null | wc -l)
 
-    # 예상: 10개 스크립트 × 4개 라이브러리 = 40개 이상
-    local expected=40
+    # 예상: 5개 스크립트 × 4개 라이브러리 = 20개 이상
+    local expected=20
 
     if [[ $source_count -ge $expected ]]; then
         print_pass "라이브러리 소싱이 충분합니다 ($source_count 개 발견, 예상: $expected+)"
@@ -175,10 +175,10 @@ test_library_sourcing() {
         print_fail "라이브러리 소싱이 부족합니다 ($source_count 개 발견, 예상: $expected+)"
         echo ""
         echo "수정 제안: 각 스크립트에 다음 라이브러리 추가:"
-        echo "  source \"\${SCRIPT_ROOT}/lib/utils.sh\""
         echo "  source \"\${SCRIPT_ROOT}/lib/logger.sh\""
-        echo "  source \"\${SCRIPT_ROOT}/lib/validator.sh\""
-        echo "  source \"\${SCRIPT_ROOT}/lib/installer.sh\""
+        echo "  source \"\${SCRIPT_ROOT}/lib/state-manager.sh\""
+        echo "  source \"\${SCRIPT_ROOT}/lib/error-handler.sh\""
+        echo "  source \"\${SCRIPT_ROOT}/lib/security.sh\""
     fi
 }
 

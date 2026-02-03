@@ -33,14 +33,14 @@
 # 💡 참고: 자체 서명 인증서는 브라우저 경고 표시됨 - 사용자 안내 필요
 
 #
-# Document-ID: DOC-SCR-008
+# Document-ID: DOC-SCR-004
 # Document-Name: GX10 Auto-Installation Script - Phase 04
 # Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 4: WebUI Install"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "User Interface Integration"
 #
 # Version: 2.0.0
 # Status: RELEASED
-# Dependencies: DOC-SCR-004
+# Dependencies: DOC-SCR-000 (Phase 0)
 #
 
 set -e

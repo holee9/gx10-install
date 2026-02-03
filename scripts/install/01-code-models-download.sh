@@ -23,14 +23,14 @@
 # 💡 제안: 향후 KV Cache 값을 환경별로 설정 가능하도록 파라미터화 권장
 
 #
-# Document-ID: DOC-SCR-005
+# Document-ID: DOC-SCR-001
 # Document-Name: GX10 Auto-Installation Script - Phase 01
 # Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 1: Code Models Download"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "KV Cache Optimization"
 #
 # Version: 2.0.0
 # Status: RELEASED
-# Dependencies: DOC-SCR-004
+# Dependencies: DOC-SCR-000 (Phase 0)
 #
 
 set -e

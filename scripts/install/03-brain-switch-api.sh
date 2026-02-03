@@ -24,17 +24,17 @@
 
 # alfrad review (v2.0.0 updates):
 # ✅ 체크포인트로 API 구축 실패 시 롤백 가능
-# ✅ 문서 메타데이터 추가 (DOC-SCR-007, Dependencies: DOC-SCR-006)
+# ✅ 문서 메타데이터 추가 (DOC-SCR-003, Dependencies: DOC-SCR-001, DOC-SCR-002)
 
 #
-# Document-ID: DOC-SCR-007
+# Document-ID: DOC-SCR-003
 # Document-Name: GX10 Auto-Installation Script - Phase 03
 # Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 3: Brain Switch API"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "L1-1: Switch Caching"
 #
 # Version: 2.0.0
 # Status: RELEASED
-# Dependencies: DOC-SCR-004, DOC-SCR-006
+# Dependencies: DOC-SCR-001, DOC-SCR-002
 #
 
 set -e

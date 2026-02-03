@@ -15,9 +15,10 @@
 | DOC-SCR-004 | 04-webui-install.sh | PRD.md L5-1 | GX10-05 | RELEASED |
 | DOC-SCR-P0-009 | ~~09-service-automation.sh~~ | PRD.md L5-2 | GX10-06 | Phase 0에 통합됨 (삭제됨) |
 | DOC-SCR-005 | 05-final-validation.sh | PRD.md L6-1 | GX10-07 | RELEASED |
-| DOC-SCR-011 | lib/common.sh | All scripts | SEC-001, SEC-002 | RELEASED |
-| DOC-SCR-012 | lib/checkpoint.sh | All scripts | GX10-07-P0 | RELEASED |
-| DOC-SCR-013 | lib/validator.sh | All scripts | GX10-07-P0 | RELEASED |
+| DOC-SCR-LIB-001 | lib/logger.sh | All scripts | Logging | RELEASED |
+| DOC-SCR-LIB-002 | lib/state-manager.sh | All scripts | GX10-07-P0 | RELEASED |
+| DOC-SCR-LIB-003 | lib/error-handler.sh | All scripts | SEC-001 | RELEASED |
+| DOC-SCR-LIB-004 | lib/security.sh | All scripts | SEC-001, SEC-002 | RELEASED |
 
 ## Requirement Traceability
 
@@ -52,15 +53,11 @@
 | DOC-ID | Version | Date | Changes | Author |
 |--------|---------|------|---------|--------|
 | DOC-SCR-000 | 2.0.0 | 2026-02-02 | Added error handling, security enhancements | Claude Sonnet 4.5 |
-| DOC-SCR-001 | 1.0.0 | 2026-02-01 | Initial release | Claude Sonnet 4.5 |
-| DOC-SCR-002 | 1.0.0 | 2026-02-01 | Initial release | Claude Sonnet 4.5 |
-| DOC-SCR-003 | 1.0.0 | 2026-02-01 | Initial release | Claude Sonnet 4.5 |
-| DOC-SCR-004 | 1.0.0 | 2026-02-01 | Initial release | Claude Sonnet 4.5 |
-| DOC-SCR-001 | 1.0.0 | 2026-02-01 | Initial release (was 05-code-models-download.sh) | Claude Sonnet 4.5 |
-| DOC-SCR-002 | 1.0.0 | 2026-02-01 | Initial release (was 06-vision-brain-build.sh) | Claude Sonnet 4.5 |
-| DOC-SCR-003 | 1.0.0 | 2026-02-01 | Initial release (was 07-brain-switch-api.sh) | Claude Sonnet 4.5 |
-| DOC-SCR-004 | 2.0.0 | 2026-02-02 | Added HTTPS support, security features (was 08-webui-install.sh) | Claude Sonnet 4.5 |
-| DOC-SCR-005 | 2.0.0 | 2026-02-02 | Enhanced validation with checkpoints (was 10-final-validation.sh) | Claude Sonnet 4.5 |
+| DOC-SCR-001 | 1.0.0 | 2026-02-01 | Code models download (was 05-code-models-download.sh) | Claude Sonnet 4.5 |
+| DOC-SCR-002 | 1.0.0 | 2026-02-01 | Vision Brain Docker build (was 06-vision-brain-build.sh) | Claude Sonnet 4.5 |
+| DOC-SCR-003 | 1.0.0 | 2026-02-01 | Brain switch API (was 07-brain-switch-api.sh) | Claude Sonnet 4.5 |
+| DOC-SCR-004 | 2.0.0 | 2026-02-02 | WebUI + HTTPS support (was 08-webui-install.sh) | Claude Sonnet 4.5 |
+| DOC-SCR-005 | 2.0.0 | 2026-02-02 | Final validation + checkpoints (was 10-final-validation.sh) | Claude Sonnet 4.5 |
 
 ## Environment Variables
 
@@ -68,8 +65,8 @@
 |----------|---------|--------|----------|
 | GX10_PASSWORD | Admin password for services | 04-webui-install.sh | Yes |
 | GX10_HTTPS_PORT | HTTPS port for Open WebUI | 04-webui-install.sh | No (default: 443) |
-| GX10_CHECKPOINT_DIR | Checkpoint storage location | lib/checkpoint.sh | No (default: /gx10/runtime/state) |
-| GX10_LOG_DIR | Log file directory | lib/common.sh | No (default: /gx10/runtime/logs) |
+| GX10_CHECKPOINT_DIR | Checkpoint storage location | lib/state-manager.sh | No (default: /gx10/runtime/state) |
+| GX10_LOG_DIR | Log file directory | lib/logger.sh | No (default: /gx10/runtime/logs) |
 | NONINTERACTIVE | Disable prompts for CI/CD | 00-install-all.sh | No |
 
 ## Security Features
@@ -88,13 +85,13 @@
 
 ```bash
 # Verify all scripts are executable
-grep -r "^#!/bin/bash" scripts/install/*.sh | wc -l  # Expected: 10
+grep -r "^#!/bin/bash" scripts/install/*.sh | wc -l  # Expected: 7
 
 # Check for hardcoded passwords (should be empty)
 grep -r "password=" scripts/install/*.sh | grep -v "GX10_PASSWORD"
 
-# Verify checkpoint system implementation
-test -f scripts/install/lib/checkpoint.sh && echo "PASS" || echo "FAIL"
+# Verify state manager implementation
+test -f scripts/install/lib/state-manager.sh && echo "PASS" || echo "FAIL"
 
 # Verify security features
 grep -r "openssl" scripts/install/*.sh | wc -l  # Expected: >0

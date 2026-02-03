@@ -24,18 +24,18 @@
 
 # alfrad review (v2.0.0 updates):
 # ✅ 체크포인트로 Docker build 실패 시 롤백 가능
-# ✅ 문서 메타데이터 추가 (DOC-SCR-006, Dependencies: DOC-SCR-005)
+# ✅ 문서 메타데이터 추가 (DOC-SCR-002, Dependencies: DOC-SCR-001)
 # ⚠️ 확인: Docker build 실패 시 디스크 공간 정리 로직 필요
 
 #
-# Document-ID: DOC-SCR-006
+# Document-ID: DOC-SCR-002
 # Document-Name: GX10 Auto-Installation Script - Phase 02
 # Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 2: Vision Brain Build"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "Vision Brain Architecture"
 #
 # Version: 2.0.0
 # Status: RELEASED
-# Dependencies: DOC-SCR-003
+# Dependencies: DOC-SCR-001
 #
 
 set -e

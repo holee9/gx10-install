@@ -26,7 +26,7 @@
 # alfrad review (v2.0.0 updates):
 # ✅ 체크포인트 시스템으로 검증 실패 시 이전 단계로 롤백 가능
 # ✅ 모든 Phase 의존성 명시로 완전성 검증 체계 확립
-# ✅ 문서 메타데이터 추가 (DOC-SCR-010, All previous phases as dependencies)
+# ✅ 문서 메타데이터 추가 (DOC-SCR-005, All previous phases as dependencies)
 
 #
 # Document-ID: DOC-SCR-005
@@ -36,7 +36,7 @@
 #
 # Version: 2.0.0
 # Status: RELEASED
-# Dependencies: DOC-SCR-001, DOC-SCR-002, DOC-SCR-003, DOC-SCR-004, DOC-SCR-005, DOC-SCR-006, DOC-SCR-007, DOC-SCR-008, DOC-SCR-009
+# Dependencies: DOC-SCR-001, DOC-SCR-002, DOC-SCR-003, DOC-SCR-004
 #
 
 set -e
