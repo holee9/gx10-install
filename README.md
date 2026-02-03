@@ -7,12 +7,12 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 ## 🔴 설치 진행 상황 (Live)
 
 > **현재 브랜치**: `feature/gx10-setup-phase1`
-> **마지막 업데이트**: 2026-02-03 10:30 KST
+> **마지막 업데이트**: 2026-02-03 10:50 KST
 
 ### 전체 진행률
 
 ```
-[████████████░░░░░░░░] 55% - Phase 0 완료, 후속 조치 대기 중
+[█████████████░░░░░░░] 60% - Phase 0+ 완료, AI 모델 다운로드 대기
 ```
 
 ### Phase 체크리스트
@@ -20,7 +20,7 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 | Phase | 작업 | 상태 | 소요 시간 | 비고 |
 |-------|------|------|---------|------|
 | Phase 0 | sudo 사전 실행 | ✅ 완료 | 2분 | 패키지, SSH/UFW, 디렉토리, Docker, Ollama, systemd |
-| Phase 0+ | 후속 조치 (수동) | ⏳ 대기 | - | Ollama 재시작, Docker 세션 반영 필요 |
+| Phase 0+ | 후속 조치 (수동) | ✅ 완료 | 5분 | Ollama 권한 수정 후 정상 가동 확인 |
 | Phase 2 | AI 모델 다운로드 | ⬜ 미시작 | ~50분 예상 | qwen2.5-coder:32b + 7b |
 | Phase 3 | Vision Brain Docker | ⬜ 미시작 | ~25분 예상 | Docker 빌드 + API |
 | Phase 4 | 서비스/설정 | ⬜ 미시작 | ~10분 예상 | bashrc, WebUI, cron |
@@ -30,6 +30,8 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 
 | 일시 | 작업 | 결과 |
 |------|------|------|
+| 02-03 10:50 | Ollama models 권한 수정 (`chown ollama:ollama`), 서비스 정상 가동 | ✅ v0.15.4 API 응답 확인 |
+| 02-03 10:45 | Ollama 크래시 원인 분석 (models 디렉토리 permission denied) | ✅ 원인 확정 |
 | 02-03 10:30 | main 커밋/푸시, `feature/gx10-setup-phase1` 브랜치 생성 | ✅ |
 | 02-03 10:15 | `sudo ./00-sudo-prereqs.sh` 실행 (Phase 0) | ✅ 7개 섹션 모두 성공 |
 | 02-03 10:13 | `00-sudo-prereqs.sh` 스크립트 생성 | ✅ sudo 작업 일괄 분리 |
@@ -39,19 +41,14 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 
 | # | 이슈 | 상태 | 해결 방법 |
 |---|------|------|---------|
-| 1 | Ollama 서비스 미응답 | ⏳ 미해결 | `sudo systemctl restart ollama` 실행 필요 |
-| 2 | Docker 소켓 권한 (현재 세션) | ⏳ 미해결 | `newgrp docker` 또는 Claude Code 재시작 |
+| 1 | Ollama models 권한 (ollama 유저 접근불가) | ✅ 해결 | `chown -R ollama:ollama /gx10/brains/code/models` |
+| 2 | Docker 소켓 권한 (현재 세션) | ⚠️ 확인필요 | `newgrp docker` 또는 Claude Code 재시작 |
 
 ### 다음 할 일
 
-1. **수동 조치 2건 실행** (터미널에서):
-   ```bash
-   sudo systemctl restart ollama && ollama list
-   newgrp docker && docker ps
-   ```
-2. AI 모델 다운로드 (Phase 2) - Claude Code 자동 진행
-3. Vision Brain Docker 빌드 (Phase 3)
-4. 서비스 설정 및 최종 검증 (Phase 4-5)
+1. AI 모델 다운로드 (Phase 2) - `ollama pull qwen2.5-coder:32b` (~30분) + `:7b` (~10분)
+2. Vision Brain Docker 빌드 (Phase 3)
+3. 서비스 설정 및 최종 검증 (Phase 4-5)
 
 ---
 

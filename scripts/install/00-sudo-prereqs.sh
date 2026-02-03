@@ -90,7 +90,11 @@ mkdir -p /gx10/system/{monitoring,update,backup}
 # Transfer ownership to actual user
 chown -R "$ACTUAL_USER:$ACTUAL_USER" /gx10
 
-log "Section 3 complete: /gx10 directory structure created, owned by $ACTUAL_USER"
+# Ollama service runs as 'ollama' user - grant models directory access
+# This must happen after the general chown above
+chown -R ollama:ollama /gx10/brains/code/models
+
+log "Section 3 complete: /gx10 directory structure created, owned by $ACTUAL_USER (models -> ollama)"
 
 # ==========================================
 # Section 4: Docker Group Setup
