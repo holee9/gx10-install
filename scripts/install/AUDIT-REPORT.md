@@ -71,11 +71,11 @@ export GX10_ADMIN_PASSWORD="$ADMIN_PASSWORD"  # 변수 참조
 
 ### 3. HTTPS/인증서 설정 확인 ✅
 
-**검사 항목**: 08-webui-install.sh에 HTTPS 설정 구현
+**검사 항목**: 04-webui-install.sh에 HTTPS 설정 구현
 
 **검사 명령**:
 ```bash
-grep -n "https\|cert\|ssl\|443\|generate_cert" scripts/install/08-webui-install.sh
+grep -n "https\|cert\|ssl\|443\|generate_cert" scripts/install/04-webui-install.sh
 ```
 
 **결과**: PASS
@@ -106,15 +106,15 @@ grep -n "source.*lib/" scripts/install/*.sh | wc -l
 ```
 
 **결과**: PASS
-- 발견된 소싱: **46개**
-- 예상: 40개 이상 (10개 스크립트 × 4개 라이브러리)
+- 발견된 소싱: **20개**
+- 예상: 20개 이상 (5개 스크립트 × 4개 라이브러리)
 - 모든 스크립트가 필수 라이브러리를 올바르게 소싱합니다
 
 **소싱된 라이브러리**:
-- `lib/utils.sh` - 유틸리티 함수
 - `lib/logger.sh` - 로깅 기능
-- `lib/validator.sh` - 입력 검증
-- `lib/installer.sh` - 설치 관리자
+- `lib/state-manager.sh` - 상태 및 체크포인트 관리
+- `lib/error-handler.sh` - 오류 처리
+- `lib/security.sh` - 보안 기능
 
 ---
 

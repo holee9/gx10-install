@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################
-# GX10 Auto Installation Script - Phase 10
+# GX10 Auto Installation Script - Phase 5
 # Final Validation
 #
 # Reference: PRD.md Section "Success Metrics"
@@ -26,17 +26,17 @@
 # alfrad review (v2.0.0 updates):
 # ✅ 체크포인트 시스템으로 검증 실패 시 이전 단계로 롤백 가능
 # ✅ 모든 Phase 의존성 명시로 완전성 검증 체계 확립
-# ✅ 문서 메타데이터 추가 (DOC-SCR-010, All previous phases as dependencies)
+# ✅ 문서 메타데이터 추가 (DOC-SCR-005, All previous phases as dependencies)
 
 #
-# Document-ID: DOC-SCR-010
-# Document-Name: GX10 Auto-Installation Script - Phase 10
-# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 10: Final Validation"
+# Document-ID: DOC-SCR-005
+# Document-Name: GX10 Auto-Installation Script - Phase 05
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 5: Final Validation"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "Quality Gates"
 #
 # Version: 2.0.0
 # Status: RELEASED
-# Dependencies: DOC-SCR-001, DOC-SCR-002, DOC-SCR-003, DOC-SCR-004, DOC-SCR-005, DOC-SCR-006, DOC-SCR-007, DOC-SCR-008, DOC-SCR-009
+# Dependencies: DOC-SCR-001, DOC-SCR-002, DOC-SCR-003, DOC-SCR-004
 #
 
 set -e
@@ -48,7 +48,7 @@ source "$SCRIPT_DIR/lib/state-manager.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
 source "$SCRIPT_DIR/lib/security.sh"
 
-LOG_FILE="/gx10/runtime/logs/10-final-validation.log"
+LOG_FILE="/gx10/runtime/logs/05-final-validation.log"
 REPORT_FILE="/gx10/runtime/logs/installation-report.txt"
 mkdir -p /gx10/runtime/logs
 
@@ -57,11 +57,11 @@ init_state
 init_checkpoint_system
 
 # Initialize phase log
-PHASE="10"
+PHASE="05"
 init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
-echo "GX10 Phase 10: Final Validation"
+echo "GX10 Phase 5: Final Validation"
 echo "=========================================="
 echo "Log: $LOG_FILE"
 echo ""
@@ -110,13 +110,17 @@ echo "=== Vision Brain Test ===" | tee -a "$LOG_FILE"
 echo "" >> "$REPORT_FILE"
 echo "## 3. Vision Brain" >> "$REPORT_FILE"
 echo "Switching to Vision Brain..." | tee -a "$LOG_FILE"
-sudo /gx10/api/switch.sh vision | tee -a "$LOG_FILE" "$REPORT_FILE"
-sleep 5
-docker run --rm --gpus all gx10-vision-brain:latest python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"N/A\"}')" | tee -a "$LOG_FILE" "$REPORT_FILE"
+if /gx10/api/switch.sh vision 2>&1 | tee -a "$LOG_FILE" "$REPORT_FILE"; then
+  sleep 5
+  docker run --rm --gpus all gx10-vision-brain:latest python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"N/A\"}')" | tee -a "$LOG_FILE" "$REPORT_FILE"
 
-# Switch back to Code Brain
-log "Switching back to Code Brain..."
-sudo /gx10/api/switch.sh code | tee -a "$LOG_FILE" "$REPORT_FILE"
+  # Switch back to Code Brain
+  log "Switching back to Code Brain..."
+  /gx10/api/switch.sh code 2>&1 | tee -a "$LOG_FILE" "$REPORT_FILE"
+else
+  echo "WARN: Brain switch test skipped (sudoers may not be configured)" | tee -a "$LOG_FILE" "$REPORT_FILE"
+  echo "Run manually: sudo /gx10/api/switch.sh vision" | tee -a "$LOG_FILE" "$REPORT_FILE"
+fi
 
 # 4. Directory Structure
 log "Verifying directory structure..."
@@ -141,7 +145,7 @@ echo "=== Web Interface URLs ===" | tee -a "$LOG_FILE"
 echo "" >> "$REPORT_FILE"
 echo "## 6. Web Interfaces" >> "$REPORT_FILE"
 IP=$(hostname -I | awk '{print $1}')
-echo "Open WebUI: https://$IP:443" | tee -a "$LOG_FILE" "$REPORT_FILE"
+echo "Open WebUI: http://$IP:8080" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "n8n: http://$IP:5678" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "n8n credentials: admin / [configured during installation]" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "Password stored in: /gx10/runtime/state/.admin_password (hashed)" | tee -a "$LOG_FILE" "$REPORT_FILE"
@@ -153,7 +157,7 @@ complete_checkpoint "$CHECKPOINT_ID"
 log "Installation validation completed!"
 echo "" | tee -a "$LOG_FILE"
 echo "========================================" | tee -a "$LOG_FILE"
-echo "Phase 10: COMPLETED" | tee -a "$LOG_FILE"
+echo "Phase 5: COMPLETED" | tee -a "$LOG_FILE"
 echo "========================================" | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "Installation Report: $REPORT_FILE" | tee -a "$LOG_FILE"

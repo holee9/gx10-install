@@ -71,10 +71,16 @@ checkpoint() {
 
     _check_jq || return 1
 
-    # Extract phase number from phase_name (e.g., "01-initial-setup" -> "1")
-    local phase_num="${phase_name%%-*}"
-    # Remove leading zeros
-    phase_num=$((10#$phase_num))
+    # Extract phase number from phase_name (e.g., "phase-01" -> "1", "01-code-models" -> "1")
+    local phase_num="${phase_name##*-}"
+    # If still not a number (e.g., only text), use the raw name
+    if [[ "$phase_num" =~ ^[0-9]+$ ]]; then
+        phase_num=$((10#$phase_num))
+    else
+        # Try extracting digits from anywhere in the string
+        phase_num=$(echo "$phase_name" | grep -oE '[0-9]+' | head -1)
+        phase_num=${phase_num:-0}
+    fi
 
     local timestamp=$(date -u +"%Y%m%d-%H%M%S")
     local checkpoint_id="cp-${phase_num}-${timestamp}"

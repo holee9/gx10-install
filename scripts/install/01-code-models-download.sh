@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################
-# GX10 Auto Installation Script - Phase 5
+# GX10 Auto Installation Script - Phase 1
 # Code Models Download
 #
 # Reference: PRD.md Section "Functional Requirements > 1. Code Brain"
@@ -23,14 +23,14 @@
 # 💡 제안: 향후 KV Cache 값을 환경별로 설정 가능하도록 파라미터화 권장
 
 #
-# Document-ID: DOC-SCR-005
-# Document-Name: GX10 Auto-Installation Script - Phase 05
-# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 5: Code Models Download"
+# Document-ID: DOC-SCR-001
+# Document-Name: GX10 Auto-Installation Script - Phase 01
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 1: Code Models Download"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "KV Cache Optimization"
 #
 # Version: 2.0.0
 # Status: RELEASED
-# Dependencies: DOC-SCR-004
+# Dependencies: DOC-SCR-000 (Phase 0)
 #
 
 set -e
@@ -42,7 +42,7 @@ source "$SCRIPT_DIR/lib/state-manager.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
 source "$SCRIPT_DIR/lib/security.sh"
 
-LOG_FILE="/gx10/runtime/logs/05-code-models-download.log"
+LOG_FILE="/gx10/runtime/logs/01-code-models-download.log"
 mkdir -p /gx10/runtime/logs
 
 # Initialize state management
@@ -50,11 +50,11 @@ init_state
 init_checkpoint_system
 
 # Initialize phase log
-PHASE="05"
+PHASE="01"
 init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
-echo "GX10 Phase 5: Code Models Download"
+echo "GX10 Phase 1: Code Models Download"
 echo "=========================================="
 echo "Log: $LOG_FILE"
 echo "WARNING: This may take 40-60 minutes"
@@ -109,9 +109,9 @@ time ollama run qwen2.5-coder:32b "def hello(): print('Hello GX10')" >> "$LOG_FI
 # Mark checkpoint as completed
 complete_checkpoint "$CHECKPOINT_ID"
 
-log "Phase 5 completed successfully!"
+log "Phase 1 completed successfully!"
 echo "=========================================="
-echo "Phase 5: COMPLETED"
+echo "Phase 1: COMPLETED"
 echo "=========================================="
 echo "Models installed:"
 echo "  - qwen2.5-coder:32b (Main)"

@@ -32,8 +32,9 @@ DGX OS 7.2.3이 설치된 ASUS Ascent GX10용 구축 절차입니다.
 - [x] /gx10 디렉토리 구조 생성됨
 - [x] 디스크 공간 충분 (832GB 가용)
 - [x] 메모리 충분 (115GB 가용)
-- [ ] Docker 그룹 권한 설정 (`sudo usermod -aG docker holee`)
-- [ ] Ollama 설치
+- [x] Docker 그룹 권한 설정 (Phase 0에서 완료)
+- [x] Ollama 설치 (Phase 0에서 완료, v0.15.4)
+- [x] Ollama models 디렉토리 권한 수정 (`chown ollama:ollama` — KB-002 참조)
 - [ ] AI 모델 다운로드
 
 ## 📋 구축 절차
@@ -47,13 +48,18 @@ cd scripts/install
 sudo ./00-sudo-prereqs.sh
 ```
 
-Phase 0이 수행하는 작업:
-- 시스템 패키지 업데이트 및 설치 (apt update/upgrade, 개발 도구)
-- SSH 활성화 및 방화벽 설정 (포트 22, 11434, 8080, 5678)
-- /gx10 디렉토리 전체 구조 생성 및 소유권 이전
-- Docker 그룹에 사용자 추가
-- Ollama 설치 및 systemd 서비스 설정
-- 모니터링 서비스 등록
+Phase 0이 수행하는 작업 (8개 섹션):
+1. 시스템 패키지 업데이트 및 설치 (apt update/upgrade, 개발 도구)
+2. SSH 활성화 및 방화벽 설정 (포트 22, 11434, 8080, 5678)
+3. /gx10 디렉토리 구조 생성 + 소유권 (⚠️ models → `ollama:ollama`, KB-002)
+4. Docker 그룹에 사용자 추가
+5. Ollama 설치
+6. Ollama systemd 서비스 설정 (override.conf)
+7. 모니터링 서비스 등록
+8. Brain 전환 sudoers 설정 + /usr/local/bin wrapper (KB-004)
+
+> **주의**: 모든 .sh 파일은 `chmod +x` 실행 권한이 Git에 반영되어 있습니다.
+> `Permission denied` 발생 시 sudo가 아닌 `chmod +x`를 먼저 확인 (KB-005).
 
 **Phase 0 완료 후 반드시 재로그인** (docker 그룹 반영):
 ```bash
@@ -65,7 +71,7 @@ logout
 newgrp docker
 ```
 
-### Phase 1: 기본 시스템 설정 (Phase 0에서 완료됨)
+### [레거시] 기본 시스템 설정 (Phase 0에 통합됨)
 
 > Phase 0을 실행했다면 이 단계는 건너뛰세요.
 
@@ -85,7 +91,7 @@ docker --version    # Docker
 nvidia-ctk --version # NVIDIA Container Toolkit
 ```
 
-### Phase 2: 디렉토리 구조 생성 (Phase 0에서 완료됨)
+### [레거시] 디렉토리 구조 생성 (Phase 0에 통합됨)
 
 > Phase 0을 실행했다면 이 단계는 건너뛰세요.
 
@@ -100,7 +106,7 @@ mkdir -p ~/workspace/{scripts,models,projects}
 sudo chown -R $USER:$USER /gx10
 ```
 
-### Phase 3: 스크립트 설치 (10분, sudo 불필요)
+### [레거시] 스크립트 설치 (Phase 0에 통합됨)
 
 ```bash
 # 개발자 PC에서 GX10으로 스크립트 전송
@@ -128,7 +134,7 @@ cp workspace-scripts/*.sh ~/workspace/scripts/
 chmod +x ~/workspace/scripts/*.sh
 ```
 
-### Phase 4: Ollama 설치 (Phase 0에서 완료됨)
+### [레거시] Ollama 설치 (Phase 0에 통합됨)
 
 > Phase 0을 실행했다면 이 단계는 건너뛰세요.
 
@@ -157,7 +163,7 @@ ollama --version
 curl http://localhost:11434/api/version
 ```
 
-### Phase 5: Code Brain 모델 다운로드 (40-60분, sudo 불필요)
+### Phase 1: Code Brain 모델 다운로드 (40-60분, sudo 불필요)
 
 ```bash
 # 메인 코딩 모델 (32B) - 약 30분
@@ -176,7 +182,7 @@ ollama pull nomic-embed-text
 ollama list
 ```
 
-### Phase 6: Vision Brain 빌드 (20-30분, sudo 불필요)
+### Phase 2: Vision Brain 빌드 (20-30분, sudo 불필요)
 
 ```bash
 # 1. Dockerfile 확인
@@ -190,7 +196,7 @@ docker build -t gx10-vision-brain:latest .
 docker images | grep gx10-vision-brain
 ```
 
-### Phase 7: bashrc 설정 (5분, sudo 불필요)
+### Phase 3: bashrc 설정 (5분, sudo 불필요)
 
 ```bash
 cat >> ~/.bashrc << 'EOF'
@@ -214,7 +220,7 @@ EOF
 source ~/.bashrc
 ```
 
-### Phase 8: Health Check cron 설정 (2분, sudo 불필요)
+### Phase 4: Health Check cron 설정 (2분, sudo 불필요)
 
 ```bash
 # 5분마다 헬스체크
@@ -224,7 +230,7 @@ source ~/.bashrc
 (crontab -l 2>/dev/null; echo "@reboot sleep 60 && /gx10/system/start-all.sh >> /gx10/runtime/logs/startup.log 2>&1") | crontab -
 ```
 
-### Phase 9: 시스템 테스트 (10분, sudo 불필요)
+### Phase 5: 시스템 테스트 (10분, sudo 불필요)
 
 ```bash
 # 1. 시스템 상태 확인
@@ -262,17 +268,17 @@ cat /gx10/runtime/logs/health.log
 - [ ] Ollama 서비스 정상 기동 확인 (`sudo systemctl restart ollama` → `ollama list`)
 - [ ] Docker 세션 반영 (Claude Code 재시작 또는 `newgrp docker` → `docker ps`)
 
-### Phase 2: Code Brain 모델 다운로드
+### Phase 1: Code Brain 모델 다운로드
 
 - [ ] 메인 코딩 모델 (qwen2.5-coder:32b) 다운로드
 - [ ] 빠른 모델 (qwen2.5-coder:7b) 다운로드
 
-### Phase 3: Vision Brain 설치
+### Phase 2: Vision Brain 설치
 
 - [ ] Vision Brain Docker 이미지 빌드
 - [ ] Brain 전환 API 배포
 
-### Phase 4: 서비스 및 설정
+### Phase 3-4: 서비스 및 설정
 
 - [ ] bashrc alias 설정
 - [ ] Open WebUI 설치
@@ -297,9 +303,9 @@ cat /gx10/runtime/logs/health.log
 |------|---------|---------|------|
 | ~~Phase 0 (sudo 사전실행)~~ | ~~15-20분~~ | ~~완료~~ | ✅ 2분 소요 (대부분 이미 설치됨) |
 | Phase 0 후속 (수동) | 2분 | 2분 | Ollama 재시작 + Docker 세션 반영 |
-| Phase 2 (모델 다운로드) | 50분 | 50분 | qwen2.5-coder:32b + 7b |
-| Phase 3 (Vision Brain) | 25분 | 25분 | Docker 빌드(20분) + API(5분) |
-| Phase 4 (서비스/설정) | 10분 | 10분 | bashrc, WebUI, cron |
+| Phase 1 (모델 다운로드) | 50분 | 50분 | qwen2.5-coder:32b + 7b |
+| Phase 2 (Vision Brain) | 25분 | 25분 | Docker 빌드(20분) + API(5분) |
+| Phase 3-4 (서비스/설정) | 10분 | 10분 | bashrc, WebUI, cron |
 | Phase 5 (검증) | 10분 | 10분 | 전체 테스트 + Brain 전환 |
 | **총합** | | **~1시간 37분** | Phase 0 완료, 후속 조치 2건 필요 |
 

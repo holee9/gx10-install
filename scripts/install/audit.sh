@@ -117,16 +117,16 @@ test_hardcoded_passwords() {
 
 ################################################################################
 # Test 3: HTTPS/Certificate Check
-# 08-webui-install.sh에 HTTPS 설정이 포함되어 있는지 확인
+# 04-webui-install.sh에 HTTPS 설정이 포함되어 있는지 확인
 ################################################################################
 
 test_https_config() {
     print_header "검사 3: HTTPS/인증서 설정 확인"
 
-    local webui_script="${SCRIPT_DIR}/08-webui-install.sh"
+    local webui_script="${SCRIPT_DIR}/04-webui-install.sh"
 
     if [[ ! -f "$webui_script" ]]; then
-        print_fail "08-webui-install.sh 파일을 찾을 수 없습니다"
+        print_fail "04-webui-install.sh 파일을 찾을 수 없습니다"
         return
     fi
 
@@ -148,7 +148,7 @@ test_https_config() {
         [[ $has_cert -eq 0 ]] && print_info "  - 인증서 생성 기능 (generate_cert) 누락"
         [[ $has_443 -eq 0 ]] && print_info "  - HTTPS 포트 (443) 설정 누락"
         echo ""
-        echo "수정 제안: 08-webui-install.sh에 다음 기능 추가:"
+        echo "수정 제안: 04-webui-install.sh에 다음 기능 추가:"
         echo "  1. 자체 서명된 인증서 생성 함수 구현"
         echo "  2. HTTPS 포트 (443) 설정 추가"
     fi
@@ -162,12 +162,12 @@ test_https_config() {
 test_library_sourcing() {
     print_header "검사 4: 라이브러리 소싱 확인"
 
-    # 각 스크립트는 최소 4개의 라이브러리 소싱 (lib/utils.sh 등)
+    # 각 스크립트는 최소 4개의 라이브러리 소싱 (lib/logger.sh 등)
     local source_count
     source_count=$(grep -rn "source.*lib/" "${SCRIPT_DIR}"/*.sh 2>/dev/null | wc -l)
 
-    # 예상: 10개 스크립트 × 4개 라이브러리 = 40개 이상
-    local expected=40
+    # 예상: 5개 스크립트 × 4개 라이브러리 = 20개 이상
+    local expected=20
 
     if [[ $source_count -ge $expected ]]; then
         print_pass "라이브러리 소싱이 충분합니다 ($source_count 개 발견, 예상: $expected+)"
@@ -175,10 +175,10 @@ test_library_sourcing() {
         print_fail "라이브러리 소싱이 부족합니다 ($source_count 개 발견, 예상: $expected+)"
         echo ""
         echo "수정 제안: 각 스크립트에 다음 라이브러리 추가:"
-        echo "  source \"\${SCRIPT_ROOT}/lib/utils.sh\""
         echo "  source \"\${SCRIPT_ROOT}/lib/logger.sh\""
-        echo "  source \"\${SCRIPT_ROOT}/lib/validator.sh\""
-        echo "  source \"\${SCRIPT_ROOT}/lib/installer.sh\""
+        echo "  source \"\${SCRIPT_ROOT}/lib/state-manager.sh\""
+        echo "  source \"\${SCRIPT_ROOT}/lib/error-handler.sh\""
+        echo "  source \"\${SCRIPT_ROOT}/lib/security.sh\""
     fi
 }
 
@@ -226,7 +226,7 @@ test_quantization() {
         print_warning "양자화 관련 문서를 찾을 수 없습니다 (선택 사항)"
         echo ""
         echo "참고: 양자화 전략은 선택적 최적화 항목입니다."
-        echo "필요시 05-code-models-download.sh에 다음 내용 추가:"
+        echo "필요시 01-code-models-download.sh에 다음 내용 추가:"
         echo "  # 양자화 전략: INT8 모델 사용으로 메모리 절약"
     fi
 }

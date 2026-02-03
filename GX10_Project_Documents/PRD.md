@@ -189,6 +189,7 @@ GX10 시스템은 **Two Brain Architecture**를 기반으로 작동합니다:
 
 **기술 사양**:
 - Docker 실행 (의존성 관리)
+- **NGC 컨테이너**: `nvcr.io/nvidia/pytorch:25.12-py3` (GB10 sm_121 호환 필수)
 - Qwen2.5-VL-72B (고품질 분석)
 - Qwen2.5-VL-7B (빠른 확인)
 - YOLOv8x (Object Detection)

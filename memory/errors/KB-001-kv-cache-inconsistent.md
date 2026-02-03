@@ -15,7 +15,7 @@
 `type: code`
 `status: mitigated`
 `recurrence: first-time`
-`component: 05-code-models-download.sh`
+`component: 01-code-models-download.sh`
 
 ---
 
@@ -23,7 +23,7 @@
 
 ### What Happened?
 
-Phase 5 스크립트(`05-code-models-download.sh`)에서 KV Cache 설정이 메인 모델(qwen2.5-coder:32b)에만 적용되고, 7B 및 16B 모델에는 적용되지 않았습니다.
+Phase 1 스크립트(`01-code-models-download.sh`)에서 KV Cache 설정이 메인 모델(qwen2.5-coder:32b)에만 적용되고, 7B 및 16B 모델에는 적용되지 않았습니다.
 
 ### When Did It Happen?
 
@@ -114,7 +114,7 @@ GX10 Code Brain 설치 단계에서 Ollama 모델 다운로드 시 환경변수 
 
 1. **환경변수 파라미터화**:
 ```bash
-# scripts/install/05-code-models-download.sh
+# scripts/install/01-code-models-download.sh
 KV_CACHE_SIZE=${KV_CACHE_SIZE:-16384}  # Default 16K
 export OLLAMA_NUM_CTX=$KV_CACHE_SIZE
 ```
@@ -147,7 +147,7 @@ ollama run qwen2.5-coder:7b "echo $(ollama show qwen2.5-coder:7b --num_ctx)"
 ### Related Documents
 
 - [PRD.md line 169](../PRD.md#L169) - "qwen2.5-coder:32b: 24GB (16K KV Cache)"
-- [05-code-models-download.sh](../scripts/install/05-code-models-download.sh) - 수정된 스크립트
+- [01-code-models-download.sh](../scripts/install/01-code-models-download.sh) - 수정된 스크립트
 
 ### External Resources
 

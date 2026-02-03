@@ -2,9 +2,97 @@
 
 ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입니다.
 
+---
+
+## 🔴 설치 진행 상황 (Live)
+
+> **현재 브랜치**: `feature/gx10-setup-phase1`
+> **마지막 업데이트**: 2026-02-03 14:30 KST
+
+### 전체 진행률
+
+```
+[████████████████████] 100% - 전체 Phase 완료, 배포 스크립트 수정 후 PR 대기
+```
+
+### Phase 체크리스트
+
+| Phase | 작업 | 상태 | 소요 시간 | 비고 |
+|-------|------|------|---------|------|
+| Phase 0 | sudo 사전 실행 (8개 섹션) | ✅ 완료 | 2분 | 패키지, SSH/UFW, 디렉토리, Docker, Ollama, systemd, sudoers, wrapper |
+| Phase 0+ | 후속 조치 (수동) | ✅ 완료 | 5분 | Ollama 권한 수정 후 정상 가동 확인 |
+| 감사 | 전체 스크립트/문서 감사 | ✅ 완료 | - | 2차 GX10 자동 배포 대응 완료, KB-004/005 해결 |
+| Phase 1 | AI 모델 다운로드 | ✅ 완료 | 10분 35초 | qwen2.5-coder:32b(19GB) + 7b(4.7GB) + deepseek-coder-v2:16b(8.9GB) + nomic-embed(274MB) |
+| Phase 2 | Vision Brain Docker | ✅ 완료 | 4분 20초 | NGC 25.12, PyTorch 2.10.0, CUDA 13.1, GB10 정상 |
+| Phase 3 | Brain Switch API | ✅ 완료 | ~3분 | Brain 전환 API 구축 완료 |
+| Phase 4 | WebUI 설치 | ✅ 완료 | ~3분 | Open WebUI 8080 포트, KB-011 해결 |
+| Phase 5 | 최종 검증 | ✅ 완료 | ~2분 | GPU/메모리/Brain 정상, KB-012 수정 |
+
+### 최근 작업 로그
+
+| 일시 | 작업 | 결과 |
+|------|------|------|
+| 02-03 14:35 | Phase 5 jq 오류 수정 (KB-012) — `--arg` 옵션 적용 | ✅ 스크립트 수정 |
+| 02-03 14:30 | Phase 4 HTTPS 오류 수정 (KB-011) — HTTP 모드로 재설정 | ✅ 8080 포트 정상 |
+| 02-03 14:20 | Phase 4 실행 — Open WebUI HTTPS 연결 오류 발견 | ⚠️ KB-011 생성 |
+| 02-03 14:10 | Phase 3 완료 — Brain Switch API 구축 | ✅ |
+| 02-03 13:50 | Phase 3 중첩 heredoc 오류 수정 (KB-010) | ✅ `EOF` → `BRAIN_JSON` |
+| 02-03 13:45 | Phase 2 재빌드 성공 — NGC 25.12, CUDA 13.1, GB10 정상 | ✅ PyTorch 2.10.0 |
+| 02-03 13:35 | Phase 2 Dockerfile 수정 — NGC 25.12로 업그레이드 (KB-009: GB10 sm_121 호환) | ✅ 재빌드 대기 |
+| 02-03 12:55 | Phase 1 완료 — 4개 모델 다운로드 (10분 35초), Quick Test 성공 | ✅ 32b, 7b, 16b, embed |
+| 02-03 13:34 | Phase 2 첫 빌드 — GB10 CUDA 호환성 오류 발견 | ⚠️ KB-009 생성 |
+| 02-03 13:20 | lib/ 전체 런타임 감사 — log() 시그니처 + state-manager 수정 (KB-008) | ✅ set -u 호환 검증 완료 |
+| 02-03 13:10 | lib/error-handler.sh phase 파싱 오류 수정 (KB-007) | ✅ `%%-*` → `##*-` 수정 |
+| 02-03 13:00 | lib/security.sh 문법 오류 수정 (KB-006), bash -n 전체 검증 통과 | ✅ regex 수정, 전 스크립트 문법 OK |
+| 02-03 12:30 | 스크립트 번호 재정렬 + DOC-ID 수정 + 실행 권한 수정 (KB-005) | ✅ 레거시 삭제, 01-05 재번호, chmod +x |
+| 02-03 11:30 | 최종 감사: sudo 잔존 호출 수정 (KB-004), sudoers 추가, Phase 0 → 8개 섹션 | ✅ 03, 05 스크립트 수정 |
+| 02-03 11:10 | 전체 스크립트/문서 감사 → 2차 GX10 자동 배포 대응 업데이트 | ✅ 00-install-all.sh, README 전면 개편 |
+| 02-03 11:00 | KB-002, KB-003 오류 기록 생성, 문서 반영 | ✅ memory/errors/ |
+| 02-03 10:50 | Ollama models 권한 수정 (`chown ollama:ollama`), 서비스 정상 가동 | ✅ v0.15.4 API 응답 확인 |
+| 02-03 10:45 | Ollama 크래시 원인 분석 (models 디렉토리 permission denied) | ✅ 원인 확정 |
+| 02-03 10:30 | main 커밋/푸시, `feature/gx10-setup-phase1` 브랜치 생성 | ✅ |
+| 02-03 10:15 | `sudo ./00-sudo-prereqs.sh` 실행 (Phase 0) | ✅ 7개 섹션 모두 성공 |
+| 02-03 10:13 | `00-sudo-prereqs.sh` 스크립트 생성 | ✅ sudo 작업 일괄 분리 |
+| 02-03 09:50 | GX10 본체 사전 점검 (OS/GPU/메모리/디스크) | ✅ 기본 인프라 정상 |
+
+### 발견된 이슈
+
+| # | 이슈 | 상태 | 해결 방법 |
+|---|------|------|---------|
+| 1 | Ollama models 권한 (KB-002) | ✅ 해결 | `chown ollama:ollama` → Phase 0에 반영 완료 |
+| 2 | Docker 소켓 권한 (KB-003) | ✅ 해결 | 재로그인 후 정상 (Phase 0 안내에 포함) |
+| 3 | 활성 스크립트 sudo 잔존 (KB-004) | ✅ 해결 | sudoers 설정 Phase 0 추가, 03/05 스크립트 수정 |
+| 4 | 스크립트 실행 권한 누락 (KB-005) | ✅ 해결 | chmod +x 전체 .sh 파일, Git에 mode 반영 |
+| 5 | lib/security.sh regex 문법 오류 (KB-006) | ✅ 해결 | `[!@#$%^&*]` → `[^a-zA-Z0-9]` 수정 |
+| 6 | lib/error-handler.sh phase 파싱 (KB-007) | ✅ 해결 | `%%-*` → `##*-` + 숫자 검증 추가 |
+| 7 | lib/ 런타임 오류 — log() 1인자, set -u (KB-008) | ✅ 해결 | log() 1/2인자 호환 + state-manager 파라미터 수정 |
+| 8 | GB10 GPU CUDA 호환성 (KB-009) | ✅ 해결 | NGC 25.12 컨테이너로 업그레이드 (sm_121 지원) |
+| 9 | 중첩 heredoc 구분자 충돌 (KB-010) | ✅ 해결 | 내부 heredoc `EOF` → `BRAIN_JSON` 변경 |
+| 10 | Open WebUI HTTPS 미지원 (KB-011) | ✅ 해결 | HTTP(8080) 모드로 변경, 스크립트 v2.1.0 |
+| 11 | switch.sh jq 변수 문법 오류 (KB-012) | ✅ 해결 | `--arg` 옵션 사용, 배포 스크립트 수정 필요 |
+
+### 다음 할 일
+
+> Phase 5 완료 (02-03 14:35), 배포 스크립트 수정 후 PR 대기
+
+1. **배포된 switch.sh 수정** (수동): KB-012 jq 오류 수정
+2. Brain 전환 재테스트: `sudo /gx10/api/switch.sh code`
+3. PR 생성 및 main 브랜치 머지
+
+---
+
 ## 📋 문서 개요
 
 이 프로젝트는 GX10 하드웨어(ARM 기반, 128GB Unified Memory, NVIDIA Blackwell GB10 GPU)에서 고품질 코드 생산을 위한 **Two Brain 아키텍처**를 구현하는 것을 목표로 합니다.
+
+### 프로젝트 목표
+
+> **이 프로젝트는 "재현 가능한 자동 구축"이 최종 목표입니다.**
+
+- **1차 구축 (현재)**: 첫 번째 GX10에서 수동+자동 혼합으로 구축하며 모든 과정을 기록
+- **2차 이후**: 다른 GX10에 `git clone` → `sudo ./00-sudo-prereqs.sh` → 나머지 자동 실행으로 동일 환경 구축
+- 1차에서 발생하는 실수/실패는 스크립트와 문서에 즉시 반영하여 2차부터는 반복되지 않도록 함
+- `memory/errors/`에 모든 오류와 해결책을 기록하여 지식 베이스로 축적
 
 ### 핵심 철학
 
@@ -12,6 +100,24 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 
 - 장기 유지보수가 가능한 고품질 코드 생산이 최우선 목표
 - 개발 속도, 자동화 범위, 비용 절감은 모두 부차 목표
+
+### 2차 GX10 구축 방법 (Quick Start)
+
+```bash
+# 새로운 GX10에서 실행
+git clone https://github.com/holee9/gx10-install.git
+cd gx10-install/scripts/install
+
+# Step 1: sudo 작업 일괄 실행 (1회)
+sudo ./00-sudo-prereqs.sh
+
+# Step 2: 재로그인 후 나머지 자동 실행 (sudo 불필요)
+./01-code-models-download.sh
+./02-vision-brain-build.sh
+./03-brain-switch-api.sh
+./04-webui-install.sh
+./05-final-validation.sh
+```
 
 ## 📚 문서 구조
 
@@ -182,12 +288,12 @@ ollama pull qwen2.5-coder:7b
 
 # Vision Brain Docker 빌드 (~20분)
 cd ~/workspace/gx10-install/scripts/install
-./06-vision-brain-build.sh
+./02-vision-brain-build.sh
 
 # Brain 전환 API + WebUI + 검증
-./07-brain-switch-api.sh
-./08-webui-install.sh
-./10-final-validation.sh
+./03-brain-switch-api.sh
+./04-webui-install.sh
+./05-final-validation.sh
 
 # 테스트
 ollama run qwen2.5-coder:32b "Hello, GX10!"
@@ -195,7 +301,7 @@ ollama run qwen2.5-coder:32b "Hello, GX10!"
 
 > Claude Code 등 자동화 도구 사용 시: Step 1만 터미널에서 실행하면 Step 2는 자동화 가능
 
-#### Phase 3: Brain 전환 시스템 (Step 2에 포함)
+#### Phase 3-4: Brain 전환 시스템 + WebUI (Step 2에 포함)
 
 ```bash
 # 상태 조회 스크립트 생성
@@ -329,6 +435,8 @@ sleep 10
 
 | 일자 | 버전 | 설명 | 리뷰어 |
 |------|------|------|--------|
+| 2026-02-03 | 1.4 | 설치 진행 상황(Live) 섹션 추가, Phase 0 실행 결과 반영 | holee |
+| 2026-02-03 | 1.3 | 빠른 시작을 2-Step(sudo/non-sudo) 플로우로 재구성 | holee |
 | 2026-02-02 | 1.2 | DGX OS 기반으로 정정 (DGX OS는 Ubuntu 24.04 기반 NVIDIA 커스텀 OS) | drake |
 | 2026-02-02 | 1.1 | Ubuntu 24.04 LTS 변경 사항 반영 | drake |
 | 2026-02-01 | 1.0 | README 통합 작성, 작성자/리뷰어 정보 추가 | drake |

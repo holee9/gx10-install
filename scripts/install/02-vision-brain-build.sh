@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################
-# GX10 Auto Installation Script - Phase 6
+# GX10 Auto Installation Script - Phase 2
 # Vision Brain Docker Build
 #
 # Reference: PRD.md Section "Functional Requirements > 2. Vision Brain"
@@ -24,18 +24,18 @@
 
 # alfrad review (v2.0.0 updates):
 # ✅ 체크포인트로 Docker build 실패 시 롤백 가능
-# ✅ 문서 메타데이터 추가 (DOC-SCR-006, Dependencies: DOC-SCR-005)
+# ✅ 문서 메타데이터 추가 (DOC-SCR-002, Dependencies: DOC-SCR-001)
 # ⚠️ 확인: Docker build 실패 시 디스크 공간 정리 로직 필요
 
 #
-# Document-ID: DOC-SCR-006
-# Document-Name: GX10 Auto-Installation Script - Phase 06
-# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 6: Vision Brain Build"
+# Document-ID: DOC-SCR-002
+# Document-Name: GX10 Auto-Installation Script - Phase 02
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 2: Vision Brain Build"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "Vision Brain Architecture"
 #
 # Version: 2.0.0
 # Status: RELEASED
-# Dependencies: DOC-SCR-003
+# Dependencies: DOC-SCR-001
 #
 
 set -e
@@ -47,7 +47,7 @@ source "$SCRIPT_DIR/lib/state-manager.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
 source "$SCRIPT_DIR/lib/security.sh"
 
-LOG_FILE="/gx10/runtime/logs/06-vision-brain-build.log"
+LOG_FILE="/gx10/runtime/logs/02-vision-brain-build.log"
 mkdir -p /gx10/runtime/logs
 
 # Initialize state management
@@ -55,11 +55,11 @@ init_state
 init_checkpoint_system
 
 # Initialize phase log
-PHASE="06"
+PHASE="02"
 init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
-echo "GX10 Phase 6: Vision Brain Build"
+echo "GX10 Phase 2: Vision Brain Build"
 echo "=========================================="
 echo "Log: $LOG_FILE"
 echo "WARNING: This may take 20-30 minutes"
@@ -74,15 +74,14 @@ log "Building Vision Brain Docker image..."
 # Create Dockerfile
 log "Creating Dockerfile..."
 cat > /gx10/brains/vision/Dockerfile << 'EOF'
-FROM nvcr.io/nvidia/pytorch:24.01-py3
+# GB10 GPU (sm_121 Blackwell) requires NGC 25.11+ for proper CUDA support
+# Reference: https://docs.nvidia.com/deeplearning/frameworks/pytorch-release-notes/rel-25-12.html
+FROM nvcr.io/nvidia/pytorch:25.12-py3
 
 WORKDIR /workspace
 
-# Update PyTorch and dependencies
+# Update pip (NGC container already has compatible PyTorch)
 RUN pip install --upgrade pip
-
-# Install PyTorch with CUDA 12.1 support
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 # Computer Vision libraries
 RUN pip install \
@@ -126,8 +125,8 @@ docker run --rm --gpus all gx10-vision-brain:latest python -c "import torch; pri
 # Mark checkpoint as completed
 complete_checkpoint "$CHECKPOINT_ID"
 
-log "Phase 6 completed successfully!"
+log "Phase 2 completed successfully!"
 echo "=========================================="
-echo "Phase 6: COMPLETED"
+echo "Phase 2: COMPLETED"
 echo "=========================================="
 echo "Vision Brain Docker image: gx10-vision-brain:latest"

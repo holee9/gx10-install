@@ -37,15 +37,32 @@ LOG_DIR="/gx10/runtime/logs"
 mkdir -p "$LOG_DIR"
 
 # log(): Unified logging function
-# Args: $1=level (DEBUG|INFO|WARN|ERROR|CRITICAL), $2=message
+# Args: $1=message OR $1=level, $2=message
+# Pattern 1 (simple): log "message" -> defaults to INFO level
+# Pattern 2 (explicit): log "WARN" "message" -> uses specified level
 # Side effect: Outputs to stdout and log file
 log() {
-    local level="$1"
-    local message="$2"
+    local level
+    local message
+
+    # Support both calling patterns
+    if [ $# -eq 1 ]; then
+        # Single argument: treat as message with default INFO level
+        level="INFO"
+        message="$1"
+    elif [ $# -ge 2 ]; then
+        # Two or more arguments: first is level, rest is message
+        level="$1"
+        message="$2"
+    else
+        # No arguments (shouldn't happen with set -u)
+        return 1
+    fi
+
     local timestamp=$(date +'%Y-%m-%d %H:%M:%S')
 
     # Validate log level
-    if [ -z "${LOG_LEVELS[$level]}" ]; then
+    if [ -z "${LOG_LEVELS[$level]:-}" ]; then
         echo "[$timestamp] [ERROR] Invalid log level: $level" >&2
         level="ERROR"
     fi

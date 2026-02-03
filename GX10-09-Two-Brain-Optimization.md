@@ -108,7 +108,7 @@ Vision Brain: 48-76GB VRAM
 # - 예상 시간: 30초 → 5초 (83% 단축)
 ```
 
-**구현 가이드**: [scripts/install/07-brain-switch-api.sh](scripts/install/07-brain-switch-api.sh)
+**구현 가이드**: [scripts/install/03-brain-switch-api.sh](scripts/install/03-brain-switch-api.sh)
 
 #### L1-2: 패턴 기반 예약 시스템
 
@@ -167,7 +167,7 @@ Ollama 오버헤드: 4GB
 버퍼: 7-17GB
 ```
 
-**구현 가이드**: [scripts/install/03-environment-config.sh](scripts/install/03-environment-config.sh)
+**구현 가이드**: 00-sudo-prereqs.sh (Phase 0에 통합됨, 구 03-environment-config.sh)
 
 #### L2-2: KV Cache 최적화
 
@@ -323,7 +323,7 @@ outputs = model.process_batch(images, batch_size=4)
 
 ### 4.1 P0 즉시 조치 (필수)
 
-**Step 1: scripts/install/03-environment-config.sh**
+**Step 1: 00-sudo-prereqs.sh (Phase 0, 구 03-environment-config.sh)**
 ```bash
 # Code Brain 메모리 설정
 export GX10_CODE_BRAIN_MEMORY=60  # GB
@@ -335,7 +335,7 @@ export OLLAMA_MAX_LOADED_MODELS=3
 export GX10_VISION_BRAIN_MEMORY=90 # GB
 ```
 
-**Step 2: scripts/install/07-brain-switch-api.sh**
+**Step 2: scripts/install/03-brain-switch-api.sh**
 ```bash
 # 전환 캐싱 메커니즘 추가
 # - 메모리 풀링
