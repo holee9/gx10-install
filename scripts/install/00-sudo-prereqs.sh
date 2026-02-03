@@ -71,6 +71,7 @@ ufw allow ssh
 ufw allow 11434/tcp   # Ollama API
 ufw allow 8080/tcp    # Open WebUI
 ufw allow 5678/tcp    # n8n
+ufw allow 9000/tcp    # GX10 Dashboard
 ufw --force enable
 
 log "Section 2 complete: SSH enabled, firewall configured"
@@ -197,6 +198,15 @@ $ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/tee /proc/sys/vm/drop_caches
 $ACTUAL_USER ALL=(ALL) NOPASSWD: /gx10/api/switch.sh
 $ACTUAL_USER ALL=(ALL) NOPASSWD: /gx10/api/switch.sh code
 $ACTUAL_USER ALL=(ALL) NOPASSWD: /gx10/api/switch.sh vision
+# GX10 Dashboard - systemd service management
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl daemon-reload
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl enable gx10-dashboard
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl disable gx10-dashboard
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl start gx10-dashboard
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop gx10-dashboard
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart gx10-dashboard
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/systemd/system/gx10-dashboard.service
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/sbin/iptables -I INPUT -p tcp --dport 9000 -j ACCEPT
 EOF
 chmod 440 /etc/sudoers.d/gx10-brain-switch
 
@@ -219,13 +229,13 @@ echo "=========================================="
 echo ""
 echo "Completed operations:"
 echo "  [OK] System packages updated and installed"
-echo "  [OK] SSH enabled, firewall configured (ports: 22, 11434, 8080, 5678)"
+echo "  [OK] SSH enabled, firewall configured (ports: 22, 11434, 8080, 5678, 9000)"
 echo "  [OK] /gx10 directory structure created (owned by $ACTUAL_USER)"
 echo "  [OK] Docker group: $ACTUAL_USER added"
 echo "  [OK] Ollama installed and service configured"
 echo "  [OK] Ollama systemd override (0.0.0.0, /gx10/brains/code/models)"
 echo "  [OK] Monitoring service registered"
-echo "  [OK] Sudoers for brain switch (passwordless ollama control)"
+echo "  [OK] Sudoers for brain switch & dashboard (passwordless service control)"
 echo "  [OK] /usr/local/bin/gx10-brain-switch wrapper installed"
 echo ""
 echo "=========================================="
@@ -249,6 +259,7 @@ echo "   ./02-vision-brain-build.sh"
 echo "   ./03-brain-switch-api.sh"
 echo "   ./04-webui-install.sh"
 echo "   ./05-final-validation.sh"
+echo "   ./06-dashboard-install.sh"
 echo ""
 echo "All remaining phases can run WITHOUT sudo."
 echo "=========================================="

@@ -9,6 +9,7 @@
 # - Vision Brain (Docker + GPU)
 # - Brain switching (both directions)
 # - Open WebUI (HTTP response)
+# - Dashboard (Health, Metrics, External access)
 #
 # NO manual intervention required.
 #
@@ -44,6 +45,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
+
+# Network
+IP=$(hostname -I | awk '{print $1}')
 
 # Initialize phase log
 PHASE="05"
@@ -343,6 +347,45 @@ for script in "${API_SCRIPTS[@]}"; do
 done
 
 #############################################
+# TEST 7: Dashboard
+#############################################
+section_header "7. Dashboard"
+
+# Test 7.1: Dashboard Service
+if systemctl is-active --quiet gx10-dashboard 2>/dev/null; then
+    test_pass "Dashboard Service" "systemd service active"
+else
+    test_fail "Dashboard Service" "not running"
+fi
+
+# Test 7.2: Dashboard Health API
+DASHBOARD_HEALTH=$(curl -s http://localhost:9000/api/health 2>/dev/null)
+if echo "$DASHBOARD_HEALTH" | jq -e '.status == "ok"' > /dev/null 2>&1; then
+    UPTIME=$(echo "$DASHBOARD_HEALTH" | jq -r '.uptime' 2>/dev/null | cut -d'.' -f1)
+    test_pass "Dashboard Health" "API responding (uptime: ${UPTIME}s)"
+else
+    test_fail "Dashboard Health" "not responding on port 9000"
+fi
+
+# Test 7.3: Dashboard Status API
+DASHBOARD_STATUS=$(curl -s http://localhost:9000/api/status 2>/dev/null)
+if echo "$DASHBOARD_STATUS" | jq -e '.cpu and .memory and .gpu' > /dev/null 2>&1; then
+    CPU_USAGE=$(echo "$DASHBOARD_STATUS" | jq -r '.cpu.usage' 2>/dev/null)
+    MEM_PCT=$(echo "$DASHBOARD_STATUS" | jq -r '.memory.percentage' 2>/dev/null)
+    test_pass "Dashboard Metrics" "CPU:${CPU_USAGE}%, Memory:${MEM_PCT}%"
+else
+    test_fail "Dashboard Metrics" "/api/status not returning valid data"
+fi
+
+# Test 7.4: Dashboard External Access
+DASHBOARD_EXTERNAL=$(curl -s -o /dev/null -w "%{http_code}" http://$IP:9000/api/health 2>/dev/null || echo "000")
+if [ "$DASHBOARD_EXTERNAL" == "200" ]; then
+    test_pass "Dashboard External" "accessible from http://$IP:9000"
+else
+    test_fail "Dashboard External" "not accessible externally (HTTP $DASHBOARD_EXTERNAL)"
+fi
+
+#############################################
 # FINAL SUMMARY
 #############################################
 section_header "VALIDATION SUMMARY"
@@ -378,10 +421,10 @@ echo "  Total:  $TESTS_TOTAL" >> "$REPORT_FILE"
 echo "  Rate:   ${PASS_RATE}%" >> "$REPORT_FILE"
 
 # Access Information
-IP=$(hostname -I | awk '{print $1}')
 echo "" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "ACCESS INFORMATION:" | tee -a "$LOG_FILE" "$REPORT_FILE"
-echo "  Open WebUI: http://$IP:8080" | tee -a "$LOG_FILE" "$REPORT_FILE"
+echo "  Dashboard:    http://$IP:9000" | tee -a "$LOG_FILE" "$REPORT_FILE"
+echo "  Open WebUI:   http://$IP:8080" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "  Brain Status: /gx10/api/status.sh" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "  Brain Switch: sudo /gx10/api/switch.sh [code|vision]" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "" | tee -a "$LOG_FILE" "$REPORT_FILE"
