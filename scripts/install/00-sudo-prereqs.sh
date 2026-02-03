@@ -188,10 +188,15 @@ log "=== Section 8/8: Sudoers for Brain Switch ==="
 # Required for brain switching (switch.sh) to work without interactive sudo
 tee /etc/sudoers.d/gx10-brain-switch > /dev/null << EOF
 # GX10 Brain Switch - passwordless sudo for specific commands
+# Individual commands used by switch.sh
 $ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop ollama
 $ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl start ollama
 $ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart ollama
 $ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/tee /proc/sys/vm/drop_caches
+# Full switch.sh script (for automated validation - KB-014)
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /gx10/api/switch.sh
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /gx10/api/switch.sh code
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /gx10/api/switch.sh vision
 EOF
 chmod 440 /etc/sudoers.d/gx10-brain-switch
 
