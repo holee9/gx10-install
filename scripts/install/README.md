@@ -98,7 +98,7 @@ Phase 0이 수행하는 작업:
 | `02-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | ~5분 |
 | `03-brain-switch-api.sh` | Brain 전환 API 구축 | No | ~1분 |
 | `04-webui-install.sh` | Open WebUI 설치 | No | ~3분 |
-| `05-final-validation.sh` | 최종 검증 및 테스트 | No | ~2분 |
+| `05-final-validation.sh` | 최종 검증 (22개 자동화 테스트, v3.0.0) | No | ~1분 |
 
 **총 예상 시간**: Phase 0 (~2분) + 재로그인 + Phase 1-5 (~25분) = **약 30분**
 
@@ -176,7 +176,7 @@ ollama list
 
 - [메인 README](../../README.md) — 프로젝트 개요 및 Full Auto 가이드
 - [GX10-03 구현 가이드](../../GX10-03-Final-Implementation-Guide.md) — 상세 구현 가이드
-- [memory/errors/](../../memory/errors/) — 오류 기록 및 해결책 (KB-001~012)
+- [memory/errors/](../../memory/errors/) — 오류 기록 및 해결책 (KB-001~014)
 
 ---
 
@@ -184,7 +184,7 @@ ollama list
 
 | 항목 | 내용 |
 |------|------|
-| **버전** | 4.0.0 |
+| **버전** | 4.1.0 |
 | **상태** | RELEASED |
 | **최종 수정** | 2026-02-03 |
 | **작성** | Claude Opus 4.5 / MoAI-ADK |
@@ -194,6 +194,7 @@ ollama list
 
 | 버전 | 일자 | 설명 |
 |------|------|------|
+| 4.1.0 | 2026-02-03 | KB-013~014 반영, Phase 5 자동화 테스트 v3.0.0 |
 | 4.0.0 | 2026-02-03 | 실측 시간 반영 (~30분), 레거시 스크립트 목록 제거 |
 | 3.0.0 | 2026-02-03 | Phase 0 패턴 반영, 2차 GX10 배포 대응 |
 | 2.0.0 | 2026-02-02 | 오류 처리, 보안 강화 추가 |
