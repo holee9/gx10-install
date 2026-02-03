@@ -32,8 +32,9 @@ DGX OS 7.2.3이 설치된 ASUS Ascent GX10용 구축 절차입니다.
 - [x] /gx10 디렉토리 구조 생성됨
 - [x] 디스크 공간 충분 (832GB 가용)
 - [x] 메모리 충분 (115GB 가용)
-- [ ] Docker 그룹 권한 설정 (`sudo usermod -aG docker holee`)
-- [ ] Ollama 설치
+- [x] Docker 그룹 권한 설정 (Phase 0에서 완료)
+- [x] Ollama 설치 (Phase 0에서 완료, v0.15.4)
+- [x] Ollama models 디렉토리 권한 수정 (`chown ollama:ollama` — KB-002 참조)
 - [ ] AI 모델 다운로드
 
 ## 📋 구축 절차
@@ -50,7 +51,7 @@ sudo ./00-sudo-prereqs.sh
 Phase 0이 수행하는 작업:
 - 시스템 패키지 업데이트 및 설치 (apt update/upgrade, 개발 도구)
 - SSH 활성화 및 방화벽 설정 (포트 22, 11434, 8080, 5678)
-- /gx10 디렉토리 전체 구조 생성 및 소유권 이전
+- /gx10 디렉토리 전체 구조 생성 및 소유권 이전 (⚠️ models → `ollama:ollama` 별도 설정)
 - Docker 그룹에 사용자 추가
 - Ollama 설치 및 systemd 서비스 설정
 - 모니터링 서비스 등록

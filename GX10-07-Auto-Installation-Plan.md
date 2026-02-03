@@ -46,9 +46,12 @@ sudo ./00-sudo-prereqs.sh
 | 패키지 설치 | apt update/upgrade, 개발 도구 설치 | Phase 1 |
 | SSH/방화벽 | SSH 활성화, UFW 포트 설정 (22, 11434, 8080, 5678) | Phase 1 |
 | 디렉토리 생성 | /gx10 전체 구조 생성 및 소유권 설정 | Phase 2 |
+| 디렉토리 권한 | models → `ollama:ollama` 소유권 분리 (KB-002) | Phase 2 |
 | Docker 그룹 | 사용자를 docker 그룹에 추가 | Phase 3 |
 | Ollama 설치 | curl 설치 + systemd 서비스 등록 | Phase 4 |
 | 서비스 설정 | Ollama override.conf, 모니터링 서비스 등록 | Phase 4, 9 |
+
+> ⚠️ **주의사항 (KB-002)**: Ollama 서비스는 `ollama` 시스템 유저로 실행됩니다. `OLLAMA_MODELS` 경로의 소유권은 반드시 `ollama:ollama`로 설정해야 합니다. 전체 `/gx10`을 사용자 소유로 설정한 후 models 디렉토리만 별도 `chown`이 필요합니다.
 
 ---
 
