@@ -370,7 +370,7 @@ check_password_strength() {
     [[ "$password" =~ [A-Z] ]] && ((score++))
     [[ "$password" =~ [a-z] ]] && ((score++))
     [[ "$password" =~ [0-9] ]] && ((score++))
-    [[ "$password" =~ [!@#$%^&*] ]] && ((score++))
+    [[ "$password" =~ [^a-zA-Z0-9] ]] && ((score++))
 
     # Determine strength
     if [ $score -lt 3 ]; then
