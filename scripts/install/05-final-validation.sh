@@ -394,6 +394,25 @@ else
     test_fail "Dashboard Brain API" "/api/brain not returning valid data"
 fi
 
+# Test 7.6: Dashboard Storage API
+DASHBOARD_STORAGE=$(curl -s http://localhost:9000/api/metrics/storage 2>/dev/null)
+if echo "$DASHBOARD_STORAGE" | jq -e '.disks' > /dev/null 2>&1; then
+    DISK_COUNT=$(echo "$DASHBOARD_STORAGE" | jq '.disks | length' 2>/dev/null)
+    test_pass "Dashboard Storage API" "${DISK_COUNT} disk(s) detected"
+else
+    test_fail "Dashboard Storage API" "/api/metrics/storage not returning valid data"
+fi
+
+# Test 7.7: Dashboard Network API
+DASHBOARD_NETWORK=$(curl -s http://localhost:9000/api/metrics/network 2>/dev/null)
+if echo "$DASHBOARD_NETWORK" | jq -e '.interfaces' > /dev/null 2>&1; then
+    IFACE_COUNT=$(echo "$DASHBOARD_NETWORK" | jq '.interfaces | length' 2>/dev/null)
+    PRIMARY_IP=$(echo "$DASHBOARD_NETWORK" | jq -r '.primaryIp // "N/A"' 2>/dev/null)
+    test_pass "Dashboard Network API" "${IFACE_COUNT} interfaces, Primary: $PRIMARY_IP"
+else
+    test_fail "Dashboard Network API" "/api/metrics/network not returning valid data"
+fi
+
 #############################################
 # FINAL SUMMARY
 #############################################
