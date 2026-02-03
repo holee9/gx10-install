@@ -15,8 +15,8 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 **완전 자동 구축** �
 |------|------|------|-----------|
 | **준비** | git clone, 재로그인 | 5분 | ❌ |
 | **Phase 0** | sudo 사전 실행 | 2분 | ✅ (1회) |
-| **Phase 1-5** | 자동 설치 | ~25분 | ❌ |
-| **합계** | - | **~32분** | - |
+| **Phase 1-6** | 자동 설치 | ~28분 | ❌ |
+| **합계** | - | **~35분** | - |
 
 ### Step 0: 사전 요구사항
 
@@ -66,6 +66,7 @@ cd ~/gx10-install/scripts/install
 ./03-brain-switch-api.sh       # ~1분  (Brain 전환 API)
 ./04-webui-install.sh          # ~3분  (Open WebUI)
 ./05-final-validation.sh       # ~2분  (최종 검증)
+./06-dashboard-install.sh      # ~3분  (시스템 모니터링 대시보드)
 ```
 
 ### Step 3: 설치 완료 확인
@@ -87,6 +88,7 @@ sudo /gx10/api/switch.sh code
 
 | 서비스 | URL/명령어 | 설명 |
 |--------|-----------|------|
+| **Dashboard** | `http://<IP>:9000` | 시스템 모니터링 대시보드 |
 | Open WebUI | `http://<IP>:8080` | AI 채팅 인터페이스 |
 | Brain Status | `/gx10/api/status.sh` | 현재 Brain 상태 확인 |
 | Brain Switch | `sudo /gx10/api/switch.sh [code\|vision]` | Brain 전환 (5-17초) |
@@ -117,6 +119,7 @@ sudo /gx10/api/switch.sh code
 | Phase 3 | Brain Switch API | 3분 | ✅ 5-17초 전환 달성 |
 | Phase 4 | WebUI 설치 | 3분 | ✅ HTTP 8080 |
 | Phase 5 | 최종 검증 | 44초 | ✅ 22개 자동화 테스트 통과 |
+| Phase 6 | Dashboard 설치 | 3분 | ✅ HTTP 9000 |
 
 ### 다운로드된 AI 모델
 
@@ -190,6 +193,7 @@ gx10-install/
 │       ├── 03-brain-switch-api.sh      # Phase 3
 │       ├── 04-webui-install.sh         # Phase 4
 │       ├── 05-final-validation.sh      # Phase 5
+│       ├── 06-dashboard-install.sh     # Phase 6
 │       └── lib/                 # 공통 라이브러리
 ├── memory/
 │   └── errors/                  # Knowledge Base (KB-001~014)
@@ -303,6 +307,32 @@ sudo docker ps | grep open-webui
 sudo docker restart open-webui
 ```
 
+### Dashboard 접속 불가
+
+```bash
+# 서비스 상태 확인
+sudo systemctl status gx10-dashboard
+
+# 서비스 재시작
+sudo systemctl restart gx10-dashboard
+
+# 로그 확인
+sudo journalctl -u gx10-dashboard -f
+
+# 포트 확인
+ss -tlnp | grep 9000
+```
+
+### Dashboard 외부 접속 시 연결 거부
+
+```bash
+# 방화벽에서 포트 9000 열기
+sudo iptables -I INPUT -p tcp --dport 9000 -j ACCEPT
+
+# 확인
+curl http://$(hostname -I | awk '{print $1}'):9000/api/health
+```
+
 > 추가 문제 해결: `memory/errors/KB-*.md` 참조
 
 ---
@@ -365,7 +395,7 @@ ollama pull qwen2.5-coder:32b
 
 | 항목 | 내용 |
 |------|------|
-| **버전** | 2.3.0 |
+| **버전** | 2.4.0 |
 | **최종 수정** | 2026-02-03 |
 | **1차 구축 완료** | 2026-02-03 |
 | **작성** | Claude Opus 4.5 + MoAI-ADK |
@@ -375,6 +405,7 @@ ollama pull qwen2.5-coder:32b
 
 | 버전 | 일자 | 설명 |
 |------|------|------|
+| 2.4.0 | 2026-02-03 | Phase 6 Dashboard 설치 추가 (시스템 모니터링 웹 대시보드) |
 | 2.3.0 | 2026-02-03 | 향후 검토 항목(Roadmap) 섹션 추가 |
 | 2.2.0 | 2026-02-03 | docs/ 폴더 구조 정리, 외부 접근 가이드 추가 |
 | 2.1.0 | 2026-02-03 | KB-013~014 추가, 검증 스크립트 v3.0.0 반영 |
