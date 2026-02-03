@@ -145,7 +145,7 @@ echo "=== Web Interface URLs ===" | tee -a "$LOG_FILE"
 echo "" >> "$REPORT_FILE"
 echo "## 6. Web Interfaces" >> "$REPORT_FILE"
 IP=$(hostname -I | awk '{print $1}')
-echo "Open WebUI: https://$IP:443" | tee -a "$LOG_FILE" "$REPORT_FILE"
+echo "Open WebUI: http://$IP:8080" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "n8n: http://$IP:5678" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "n8n credentials: admin / [configured during installation]" | tee -a "$LOG_FILE" "$REPORT_FILE"
 echo "Password stored in: /gx10/runtime/state/.admin_password (hashed)" | tee -a "$LOG_FILE" "$REPORT_FILE"

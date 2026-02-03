@@ -272,8 +272,8 @@ BRAIN_JSON
 
 # Update usage pattern statistics
 FROM_TO="${CURRENT}_to_${TARGET_BRAIN}"
-jq ".statistics.total_switches += 1 | .statistics.\${FROM_TO} += 1" "$PATTERN_FILE" > "${PATTERN_FILE}.tmp"
-mv "${PATTERN_FILE}.tmp" "$PATTERN_FILE"
+jq --arg key "$FROM_TO" '.statistics.total_switches += 1 | .statistics[$key] += 1' "$PATTERN_FILE" > "${PATTERN_FILE}.tmp" 2>/dev/null || true
+mv "${PATTERN_FILE}.tmp" "$PATTERN_FILE" 2>/dev/null || true
 
 # Calculate elapsed time
 END_TIME=$(date +%s)

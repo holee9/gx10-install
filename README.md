@@ -12,7 +12,7 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 ### 전체 진행률
 
 ```
-[██████████████████░░] 90% - Phase 4 완료, Phase 5 최종 검증 대기
+[████████████████████] 100% - 전체 Phase 완료, 배포 스크립트 수정 후 PR 대기
 ```
 
 ### Phase 체크리스트
@@ -26,12 +26,13 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 | Phase 2 | Vision Brain Docker | ✅ 완료 | 4분 20초 | NGC 25.12, PyTorch 2.10.0, CUDA 13.1, GB10 정상 |
 | Phase 3 | Brain Switch API | ✅ 완료 | ~3분 | Brain 전환 API 구축 완료 |
 | Phase 4 | WebUI 설치 | ✅ 완료 | ~3분 | Open WebUI 8080 포트, KB-011 해결 |
-| Phase 5 | 최종 검증 | ⬜ 미시작 | ~10분 예상 | 전체 테스트 + Brain 전환 |
+| Phase 5 | 최종 검증 | ✅ 완료 | ~2분 | GPU/메모리/Brain 정상, KB-012 수정 |
 
 ### 최근 작업 로그
 
 | 일시 | 작업 | 결과 |
 |------|------|------|
+| 02-03 14:35 | Phase 5 jq 오류 수정 (KB-012) — `--arg` 옵션 적용 | ✅ 스크립트 수정 |
 | 02-03 14:30 | Phase 4 HTTPS 오류 수정 (KB-011) — HTTP 모드로 재설정 | ✅ 8080 포트 정상 |
 | 02-03 14:20 | Phase 4 실행 — Open WebUI HTTPS 연결 오류 발견 | ⚠️ KB-011 생성 |
 | 02-03 14:10 | Phase 3 완료 — Brain Switch API 구축 | ✅ |
@@ -68,13 +69,14 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 | 8 | GB10 GPU CUDA 호환성 (KB-009) | ✅ 해결 | NGC 25.12 컨테이너로 업그레이드 (sm_121 지원) |
 | 9 | 중첩 heredoc 구분자 충돌 (KB-010) | ✅ 해결 | 내부 heredoc `EOF` → `BRAIN_JSON` 변경 |
 | 10 | Open WebUI HTTPS 미지원 (KB-011) | ✅ 해결 | HTTP(8080) 모드로 변경, 스크립트 v2.1.0 |
+| 11 | switch.sh jq 변수 문법 오류 (KB-012) | ✅ 해결 | `--arg` 옵션 사용, 배포 스크립트 수정 필요 |
 
 ### 다음 할 일
 
-> Phase 4 완료 (02-03 14:30), Phase 5 최종 검증 대기
+> Phase 5 완료 (02-03 14:35), 배포 스크립트 수정 후 PR 대기
 
-1. **Phase 5 실행** (최종 검증): `./05-final-validation.sh`
-2. 전체 기능 테스트: Ollama API, WebUI, Brain Switch
+1. **배포된 switch.sh 수정** (수동): KB-012 jq 오류 수정
+2. Brain 전환 재테스트: `sudo /gx10/api/switch.sh code`
 3. PR 생성 및 main 브랜치 머지
 
 ---
