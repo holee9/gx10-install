@@ -40,21 +40,21 @@ Phase 0 섹션: 패키지설치, SSH/UFW, 디렉토리/권한, Docker그룹, Oll
 | 파일 | 설명 | sudo 필요 | 예상 시간 |
 |------|------|-----------|---------|
 | 00-install-all.sh | 아래 Phase 일괄 자동 실행 | **No** | ~1시간 20분 |
-| 05-code-models-download.sh | 코딩 모델 다운로드 | No | 40분 |
-| 06-vision-brain-build.sh | Vision Brain Docker 빌드 | No | 20분 |
-| 07-brain-switch-api.sh | Brain 전환 API | No | 5분 |
-| 08-webui-install.sh | Open WebUI 설치 | No | 5분 |
-| 10-final-validation.sh | 최종 검증 및 테스트 | No | 10분 |
+| 01-code-models-download.sh | 코딩 모델 다운로드 | No | 40분 |
+| 02-vision-brain-build.sh | Vision Brain Docker 빌드 | No | 20분 |
+| 03-brain-switch-api.sh | Brain 전환 API | No | 5분 |
+| 04-webui-install.sh | Open WebUI 설치 | No | 5분 |
+| 05-final-validation.sh | 최종 검증 및 테스트 | No | 10분 |
 
 ### 레거시 스크립트 (Phase 0에서 대체됨)
 
 | 파일 | 설명 | 비고 |
 |------|------|------|
-| 01-initial-setup.sh | 시스템 업데이트 및 필수 패키지 | Phase 0 섹션 1-2에서 완료 |
-| 02-directory-structure.sh | 디렉토리 구조 생성 | Phase 0 섹션 3에서 완료 |
-| 03-environment-config.sh | 환경변수 및 Docker 설정 | Phase 0 섹션 4-6에서 완료 |
-| 04-code-brain-install.sh | Ollama 설치 | Phase 0 섹션 5-6에서 완료 |
-| 09-service-automation.sh | 서비스 자동화 | Phase 0 섹션 7에서 완료 |
+| 01-initial-setup.sh | 시스템 업데이트 및 필수 패키지 | Phase 0에 통합됨 (섹션 1-2) |
+| 02-directory-structure.sh | 디렉토리 구조 생성 | Phase 0에 통합됨 (섹션 3) |
+| 03-environment-config.sh | 환경변수 및 Docker 설정 | Phase 0에 통합됨 (섹션 4-6) |
+| 04-code-brain-install.sh | Ollama 설치 | Phase 0에 통합됨 (섹션 5-6) |
+| 09-service-automation.sh | 서비스 자동화 | Phase 0에 통합됨 (섹션 7, 삭제됨) |
 
 ---
 
@@ -204,7 +204,7 @@ feat: GX10 자동 구축 스크립트 추가
 1. **GX10 OS 설치**: [GX10-00-install-guide.md](GX10-00-install-guide.md) 참조
 2. **Phase 0 실행**: `cd scripts/install && sudo ./00-sudo-prereqs.sh`
 3. **재로그인** 후 **자동 설치**: `./00-install-all.sh`
-4. **검증**: 설치 완료 후 `10-final-validation.sh` 결과 확인
+4. **검증**: 설치 완료 후 `05-final-validation.sh` 결과 확인
 
 ### 선택 사항
 

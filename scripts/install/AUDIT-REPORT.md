@@ -71,11 +71,11 @@ export GX10_ADMIN_PASSWORD="$ADMIN_PASSWORD"  # 변수 참조
 
 ### 3. HTTPS/인증서 설정 확인 ✅
 
-**검사 항목**: 08-webui-install.sh에 HTTPS 설정 구현
+**검사 항목**: 04-webui-install.sh에 HTTPS 설정 구현
 
 **검사 명령**:
 ```bash
-grep -n "https\|cert\|ssl\|443\|generate_cert" scripts/install/08-webui-install.sh
+grep -n "https\|cert\|ssl\|443\|generate_cert" scripts/install/04-webui-install.sh
 ```
 
 **결과**: PASS

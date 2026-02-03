@@ -22,16 +22,17 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 | Phase 0 | sudo 사전 실행 (8개 섹션) | ✅ 완료 | 2분 | 패키지, SSH/UFW, 디렉토리, Docker, Ollama, systemd, sudoers, wrapper |
 | Phase 0+ | 후속 조치 (수동) | ✅ 완료 | 5분 | Ollama 권한 수정 후 정상 가동 확인 |
 | 감사 | 전체 스크립트/문서 감사 | ✅ 완료 | - | 2차 GX10 자동 배포 대응 완료, KB-004 해결 |
-| Phase 2 | AI 모델 다운로드 | ⬜ 미시작 | ~50분 예상 | qwen2.5-coder:32b + 7b + deepseek-coder-v2:16b + nomic-embed |
-| Phase 3 | Vision Brain Docker | ⬜ 미시작 | ~25분 예상 | Docker 빌드 + API |
-| Phase 4 | 서비스/설정 | ⬜ 미시작 | ~10분 예상 | WebUI 설치 |
+| Phase 1 | AI 모델 다운로드 | ⬜ 미시작 | ~50분 예상 | qwen2.5-coder:32b + 7b + deepseek-coder-v2:16b + nomic-embed |
+| Phase 2 | Vision Brain Docker | ⬜ 미시작 | ~25분 예상 | Docker 빌드 + API |
+| Phase 3 | Brain Switch API | ⬜ 미시작 | ~5분 예상 | Brain 전환 API 구축 |
+| Phase 4 | WebUI 설치 | ⬜ 미시작 | ~5분 예상 | Open WebUI 설치 |
 | Phase 5 | 최종 검증 | ⬜ 미시작 | ~10분 예상 | 전체 테스트 + Brain 전환 |
 
 ### 최근 작업 로그
 
 | 일시 | 작업 | 결과 |
 |------|------|------|
-| 02-03 11:30 | 최종 감사: sudo 잔존 호출 수정 (KB-004), sudoers 추가, Phase 0 → 8개 섹션 | ✅ 07, 10 스크립트 수정 |
+| 02-03 11:30 | 최종 감사: sudo 잔존 호출 수정 (KB-004), sudoers 추가, Phase 0 → 8개 섹션 | ✅ 03, 05 스크립트 수정 |
 | 02-03 11:10 | 전체 스크립트/문서 감사 → 2차 GX10 자동 배포 대응 업데이트 | ✅ 00-install-all.sh, README 전면 개편 |
 | 02-03 11:00 | KB-002, KB-003 오류 기록 생성, 문서 반영 | ✅ memory/errors/ |
 | 02-03 10:50 | Ollama models 권한 수정 (`chown ollama:ollama`), 서비스 정상 가동 | ✅ v0.15.4 API 응답 확인 |
@@ -47,7 +48,7 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 |---|------|------|---------|
 | 1 | Ollama models 권한 (KB-002) | ✅ 해결 | `chown ollama:ollama` → Phase 0에 반영 완료 |
 | 2 | Docker 소켓 권한 (KB-003) | ✅ 해결 | 재로그인 후 정상 (Phase 0 안내에 포함) |
-| 3 | 활성 스크립트 sudo 잔존 (KB-004) | ✅ 해결 | sudoers 설정 Phase 0 추가, 07/10 스크립트 수정 |
+| 3 | 활성 스크립트 sudo 잔존 (KB-004) | ✅ 해결 | sudoers 설정 Phase 0 추가, 03/05 스크립트 수정 |
 
 ### 다음 할 일
 
@@ -91,11 +92,11 @@ cd gx10-install/scripts/install
 sudo ./00-sudo-prereqs.sh
 
 # Step 2: 재로그인 후 나머지 자동 실행 (sudo 불필요)
-./05-code-models-download.sh
-./06-vision-brain-build.sh
-./07-brain-switch-api.sh
-./08-webui-install.sh
-./10-final-validation.sh
+./01-code-models-download.sh
+./02-vision-brain-build.sh
+./03-brain-switch-api.sh
+./04-webui-install.sh
+./05-final-validation.sh
 ```
 
 ## 📚 문서 구조
@@ -267,12 +268,12 @@ ollama pull qwen2.5-coder:7b
 
 # Vision Brain Docker 빌드 (~20분)
 cd ~/workspace/gx10-install/scripts/install
-./06-vision-brain-build.sh
+./02-vision-brain-build.sh
 
 # Brain 전환 API + WebUI + 검증
-./07-brain-switch-api.sh
-./08-webui-install.sh
-./10-final-validation.sh
+./03-brain-switch-api.sh
+./04-webui-install.sh
+./05-final-validation.sh
 
 # 테스트
 ollama run qwen2.5-coder:32b "Hello, GX10!"
@@ -280,7 +281,7 @@ ollama run qwen2.5-coder:32b "Hello, GX10!"
 
 > Claude Code 등 자동화 도구 사용 시: Step 1만 터미널에서 실행하면 Step 2는 자동화 가능
 
-#### Phase 3: Brain 전환 시스템 (Step 2에 포함)
+#### Phase 3-4: Brain 전환 시스템 + WebUI (Step 2에 포함)
 
 ```bash
 # 상태 조회 스크립트 생성

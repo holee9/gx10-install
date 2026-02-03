@@ -93,11 +93,11 @@ log "Starting GX10 automated installation (post Phase 0)..."
 # Phase scripts (all run WITHOUT sudo)
 # ==========================================
 SCRIPTS=(
-  "05-code-models-download.sh"
-  "06-vision-brain-build.sh"
-  "07-brain-switch-api.sh"
-  "08-webui-install.sh"
-  "10-final-validation.sh"
+  "01-code-models-download.sh"
+  "02-vision-brain-build.sh"
+  "03-brain-switch-api.sh"
+  "04-webui-install.sh"
+  "05-final-validation.sh"
 )
 
 TOTAL=${#SCRIPTS[@]}

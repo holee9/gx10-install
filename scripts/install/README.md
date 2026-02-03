@@ -54,19 +54,19 @@ sudo ./00-sudo-prereqs.sh
 # → 재로그인 필요 (docker 그룹 반영)
 
 # Step 2: AI 모델 다운로드 (~40분, sudo 불필요)
-./05-code-models-download.sh
+./01-code-models-download.sh
 
 # Step 3: Vision Brain Docker 빌드 (~20분, sudo 불필요)
-./06-vision-brain-build.sh
+./02-vision-brain-build.sh
 
 # Step 4: Brain 전환 API (~5분, sudo 불필요)
-./07-brain-switch-api.sh
+./03-brain-switch-api.sh
 
 # Step 5: Open WebUI 설치 (~5분, sudo 불필요)
-./08-webui-install.sh
+./04-webui-install.sh
 
 # Step 6: 최종 검증 (~10분, sudo 불필요)
-./10-final-validation.sh
+./05-final-validation.sh
 ```
 
 ---
@@ -93,21 +93,21 @@ Phase 0이 수행하는 작업:
 | 스크립트 | 설명 | sudo | 시간 |
 |---------|------|------|------|
 | `00-install-all.sh` | **전체 자동 실행 (아래 Phase 일괄)** | No | ~1시간 20분 |
-| `05-code-models-download.sh` | AI 코딩 모델 다운로드 (32B, 7B) | No | 40분 |
-| `06-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | 20분 |
-| `07-brain-switch-api.sh` | Brain 전환 API 구축 | No | 5분 |
-| `08-webui-install.sh` | Open WebUI 설치 | No | 5분 |
-| `10-final-validation.sh` | 최종 검증 및 테스트 | No | 10분 |
+| `01-code-models-download.sh` | AI 코딩 모델 다운로드 (32B, 7B) | No | 40분 |
+| `02-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | 20분 |
+| `03-brain-switch-api.sh` | Brain 전환 API 구축 | No | 5분 |
+| `04-webui-install.sh` | Open WebUI 설치 | No | 5분 |
+| `05-final-validation.sh` | 최종 검증 및 테스트 | No | 10분 |
 
 ### 레거시 스크립트 (Phase 0에서 대체됨)
 
 | 스크립트 | 설명 | 비고 |
 |---------|------|------|
-| `01-initial-setup.sh` | 시스템 업데이트 | Phase 0에서 완료 |
-| `02-directory-structure.sh` | 디렉토리 생성 | Phase 0에서 완료 |
-| `03-environment-config.sh` | 환경 설정 | Phase 0에서 완료 |
-| `04-code-brain-install.sh` | Ollama 설치 | Phase 0에서 완료 |
-| `09-service-automation.sh` | 서비스 자동화 | Phase 0에서 완료 |
+| `01-initial-setup.sh` | 시스템 업데이트 | Phase 0에 통합됨 |
+| `02-directory-structure.sh` | 디렉토리 생성 | Phase 0에 통합됨 |
+| `03-environment-config.sh` | 환경 설정 | Phase 0에 통합됨 |
+| `04-code-brain-install.sh` | Ollama 설치 | Phase 0에 통합됨 |
+| `09-service-automation.sh` | 서비스 자동화 | Phase 0에 통합됨 (삭제됨) |
 
 **총 예상 시간**: Phase 0 (15-20분) + Phase 1-5 (~1시간 20분) = **약 1시간 40분**
 

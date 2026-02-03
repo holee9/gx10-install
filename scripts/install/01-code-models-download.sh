@@ -1,6 +1,6 @@
 #!/bin/bash
 #############################################
-# GX10 Auto Installation Script - Phase 5
+# GX10 Auto Installation Script - Phase 1
 # Code Models Download
 #
 # Reference: PRD.md Section "Functional Requirements > 1. Code Brain"
@@ -24,8 +24,8 @@
 
 #
 # Document-ID: DOC-SCR-005
-# Document-Name: GX10 Auto-Installation Script - Phase 05
-# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 5: Code Models Download"
+# Document-Name: GX10 Auto-Installation Script - Phase 01
+# Reference: GX10-03-Final-Implementation-Guide.md Section "Phase 1: Code Models Download"
 # Reference: GX10-09-Two-Brain-Optimization.md Section "KV Cache Optimization"
 #
 # Version: 2.0.0
@@ -42,7 +42,7 @@ source "$SCRIPT_DIR/lib/state-manager.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
 source "$SCRIPT_DIR/lib/security.sh"
 
-LOG_FILE="/gx10/runtime/logs/05-code-models-download.log"
+LOG_FILE="/gx10/runtime/logs/01-code-models-download.log"
 mkdir -p /gx10/runtime/logs
 
 # Initialize state management
@@ -50,7 +50,7 @@ init_state
 init_checkpoint_system
 
 # Initialize phase log
-PHASE="05"
+PHASE="01"
 init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="

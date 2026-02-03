@@ -29,24 +29,20 @@ cd scripts/install
 sudo ./00-sudo-prereqs.sh
 ```
 
-### Phase 1-10: 자동 설치 (sudo 불필요)
+### Phase 1-5: 자동 설치 (sudo 불필요)
 
 | 단계 | 스크립트 | 설명 | sudo 필요 | 예상 소요 시간 |
 |------|---------|------|-----------|---------------|
-| 01 | `01-initial-setup.sh` | 시스템 업데이트 및 필수 패키지 설치 | Phase 0에서 완료 | - |
-| 02 | `02-directory-structure.sh` | 디렉토리 구조 생성 및 권한 설정 | Phase 0에서 완료 | - |
-| 03 | `03-environment-config.sh` | 환경변수 및 Docker 설정 | Phase 0에서 완료 | - |
-| 04 | `04-code-brain-install.sh` | Ollama 설치 및 Code Brain 구축 | Phase 0에서 완료 | - |
-| 05 | `05-code-models-download.sh` | 코딩 모델 다운로드 (32B, 7B) | No | 40분 |
-| 06 | `06-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | 20분 |
-| 07 | `07-brain-switch-api.sh` | Brain 전환 API 구축 | No | 5분 |
-| 08 | `08-webui-install.sh` | Open WebUI 설치 | No | 5분 |
-| 09 | `09-service-automation.sh` | 서비스 자동화 설정 | Phase 0에서 완료 | - |
-| 10 | `10-final-validation.sh` | 최종 검증 및 테스트 | No | 10분 |
+| 01 | `01-code-models-download.sh` | 코딩 모델 다운로드 (32B, 7B) | No | 40분 |
+| 02 | `02-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | 20분 |
+| 03 | `03-brain-switch-api.sh` | Brain 전환 API 구축 | No | 5분 |
+| 04 | `04-webui-install.sh` | Open WebUI 설치 | No | 5분 |
+| 05 | `05-final-validation.sh` | 최종 검증 및 테스트 | No | 10분 |
 
+> 레거시 스크립트(01-04, 09)는 Phase 0 (`00-sudo-prereqs.sh`)에 통합됨.
 > Brain 전환(systemctl stop/start ollama)의 sudo는 Phase 0 섹션 8의 sudoers 설정으로 패스워드 없이 실행됩니다 (KB-004).
 
-**총 예상 시간**: Phase 0 (15-20분) + Phase 5-10 (약 1시간 25분) = **약 1시간 45분**
+**총 예상 시간**: Phase 0 (15-20분) + Phase 1-5 (약 1시간 20분) = **약 1시간 40분**
 
 ### Phase 0이 커버하는 sudo 작업 요약
 
@@ -224,7 +220,7 @@ sudo systemctl enable ollama
 
 ---
 
-## 05. 모델 다운로드 (05-code-models-download.sh)
+## 01. 모델 다운로드 (01-code-models-download.sh)
 
 ### 목표
 - 코딩 모델 다운로드
@@ -255,7 +251,7 @@ time ollama run qwen2.5-coder:32b "Write a Python function to calculate fibonacc
 
 ---
 
-## 06. Vision Brain 빌드 (06-vision-brain-build.sh)
+## 02. Vision Brain 빌드 (02-vision-brain-build.sh)
 
 ### 목표
 - Vision Brain Docker 이미지 빌드
@@ -298,7 +294,7 @@ docker build -t gx10-vision-brain:latest /gx10/brains/vision/
 
 ---
 
-## 07. Brain 전환 API (07-brain-switch-api.sh)
+## 03. Brain 전환 API (03-brain-switch-api.sh)
 
 ### 목표
 - Brain 상태 관리 API 구축
@@ -365,7 +361,7 @@ chmod +x /gx10/api/switch.sh
 
 ---
 
-## 08. Open WebUI 설치 (08-webui-install.sh)
+## 04. Open WebUI 설치 (04-webui-install.sh)
 
 ### 목표
 - Open WebUI 컨테이너 실행
@@ -389,30 +385,13 @@ docker run -d \
 
 ---
 
-## 09. 서비스 자동화 (09-service-automation.sh)
+## ~~09. 서비스 자동화 (09-service-automation.sh)~~ -- Phase 0에 통합됨 (삭제됨)
 
-### 목표
-- systemd 서비스 등록
-- 자동 시작 설정
-
-### 주요 작업
-```bash
-# n8n 설치 (선택)
-docker run -d \
-  --name n8n \
-  --restart unless-stopped \
-  -p 5678:5678 \
-  -v /gx10/automation/n8n:/home/node/.n8n \
-  n8nio/n8n
-```
-
-### 검증
-- n8n 상태: `docker ps | grep n8n`
-- 웹 접속: `http://<gx10-ip>:5678`
+> 이 단계의 작업은 `00-sudo-prereqs.sh`(Phase 0)에 통합되었습니다.
 
 ---
 
-## 10. 최종 검증 (10-final-validation.sh)
+## 05. 최종 검증 (05-final-validation.sh)
 
 ### 목표
 - 전체 시스템 검증
@@ -463,11 +442,11 @@ sudo ./00-sudo-prereqs.sh
 # 또는: newgrp docker
 
 # Step 3: 나머지 단계 실행 (sudo 불필요)
-./05-code-models-download.sh    # AI 모델 다운로드 (~40분)
-./06-vision-brain-build.sh      # Vision Brain Docker 빌드 (~20분)
-./07-brain-switch-api.sh        # Brain 전환 API 배포
-./08-webui-install.sh           # Open WebUI 설치
-./10-final-validation.sh        # 최종 검증
+./01-code-models-download.sh    # AI 모델 다운로드 (~40분)
+./02-vision-brain-build.sh      # Vision Brain Docker 빌드 (~20분)
+./03-brain-switch-api.sh        # Brain 전환 API 배포
+./04-webui-install.sh           # Open WebUI 설치
+./05-final-validation.sh        # 최종 검증
 ```
 
 ### 대안: 기존 일괄 실행 (모든 단계에서 sudo 필요)
