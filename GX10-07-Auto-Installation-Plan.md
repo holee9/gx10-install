@@ -39,12 +39,12 @@ sudo ./00-sudo-prereqs.sh
 | 04 | `04-code-brain-install.sh` | Ollama 설치 및 Code Brain 구축 | Phase 0에서 완료 | - |
 | 05 | `05-code-models-download.sh` | 코딩 모델 다운로드 (32B, 7B) | No | 40분 |
 | 06 | `06-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | 20분 |
-| 07 | `07-brain-switch-api.sh` | Brain 전환 API 구축 | No* | 10분 |
+| 07 | `07-brain-switch-api.sh` | Brain 전환 API 구축 | No | 5분 |
 | 08 | `08-webui-install.sh` | Open WebUI 설치 | No | 5분 |
 | 09 | `09-service-automation.sh` | 서비스 자동화 설정 | Phase 0에서 완료 | - |
 | 10 | `10-final-validation.sh` | 최종 검증 및 테스트 | No | 10분 |
 
-> *Phase 7의 Brain 전환(systemctl stop/start ollama)은 런타임에 sudo가 필요합니다. 이는 sudoers 설정으로 해결할 수 있습니다.
+> Brain 전환(systemctl stop/start ollama)의 sudo는 Phase 0 섹션 8의 sudoers 설정으로 패스워드 없이 실행됩니다 (KB-004).
 
 **총 예상 시간**: Phase 0 (15-20분) + Phase 5-10 (약 1시간 25분) = **약 1시간 45분**
 
@@ -59,6 +59,8 @@ sudo ./00-sudo-prereqs.sh
 | Docker 그룹 | 사용자를 docker 그룹에 추가 | Phase 3 |
 | Ollama 설치 | curl 설치 + systemd 서비스 등록 | Phase 4 |
 | 서비스 설정 | Ollama override.conf, 모니터링 서비스 등록 | Phase 4, 9 |
+| Sudoers | Brain 전환용 패스워드 없는 sudo (KB-004) | 신규 |
+| Wrapper | `/usr/local/bin/gx10-brain-switch` 전역 명령 | 신규 |
 
 > ⚠️ **주의사항 (KB-002)**: Ollama 서비스는 `ollama` 시스템 유저로 실행됩니다. `OLLAMA_MODELS` 경로의 소유권은 반드시 `ollama:ollama`로 설정해야 합니다. 전체 `/gx10`을 사용자 소유로 설정한 후 models 디렉토리만 별도 `chown`이 필요합니다.
 

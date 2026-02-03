@@ -27,20 +27,34 @@ GX10 OS 설치 후 자동 구축을 위한 단계별 스크립트 개발 완료.
 
 | 파일 | 설명 | sudo 필요 | 예상 시간 |
 |------|------|-----------|---------|
-| **00-sudo-prereqs.sh** | **sudo 사전 실행 (Phase 0)** | **Yes** | **15-20분** |
-| 00-install-all.sh | 전체 자동 설치 (기존 방식) | Yes | 2시간 30분 |
-| 01-initial-setup.sh | 시스템 업데이트 및 필수 패키지 | Phase 0 | 10분 |
-| 02-directory-structure.sh | 디렉토리 구조 생성 | Phase 0 | 2분 |
-| 03-environment-config.sh | 환경변수 및 Docker 설정 | Phase 0 | 3분 |
-| 04-code-brain-install.sh | Ollama 설치 | Phase 0 | 5분 |
+### Phase 0: sudo 사전 실행 (1회, 유일한 sudo 필요 스크립트)
+
+| 파일 | 설명 | sudo 필요 | 예상 시간 |
+|------|------|-----------|---------|
+| **00-sudo-prereqs.sh** | **모든 sudo 작업 일괄 실행 (8개 섹션)** | **Yes** | **15-20분** |
+
+Phase 0 섹션: 패키지설치, SSH/UFW, 디렉토리/권한, Docker그룹, Ollama설치, Ollama서비스, 모니터링, **sudoers+wrapper (KB-004)**
+
+### Phase 1-5: 자동 설치 (sudo 불필요)
+
+| 파일 | 설명 | sudo 필요 | 예상 시간 |
+|------|------|-----------|---------|
+| 00-install-all.sh | 아래 Phase 일괄 자동 실행 | **No** | ~1시간 20분 |
 | 05-code-models-download.sh | 코딩 모델 다운로드 | No | 40분 |
 | 06-vision-brain-build.sh | Vision Brain Docker 빌드 | No | 20분 |
 | 07-brain-switch-api.sh | Brain 전환 API | No | 5분 |
 | 08-webui-install.sh | Open WebUI 설치 | No | 5분 |
-| 09-service-automation.sh | 서비스 자동화 | Phase 0 | 5분 |
 | 10-final-validation.sh | 최종 검증 및 테스트 | No | 10분 |
 
-> "Phase 0"은 `00-sudo-prereqs.sh`에서 이미 처리됨을 의미합니다.
+### 레거시 스크립트 (Phase 0에서 대체됨)
+
+| 파일 | 설명 | 비고 |
+|------|------|------|
+| 01-initial-setup.sh | 시스템 업데이트 및 필수 패키지 | Phase 0 섹션 1-2에서 완료 |
+| 02-directory-structure.sh | 디렉토리 구조 생성 | Phase 0 섹션 3에서 완료 |
+| 03-environment-config.sh | 환경변수 및 Docker 설정 | Phase 0 섹션 4-6에서 완료 |
+| 04-code-brain-install.sh | Ollama 설치 | Phase 0 섹션 5-6에서 완료 |
+| 09-service-automation.sh | 서비스 자동화 | Phase 0 섹션 7에서 완료 |
 
 ---
 
@@ -109,29 +123,30 @@ GX10 OS 설치 후 자동 구축을 위한 단계별 스크립트 개발 완료.
 
 ## 4. 사용 방법
 
-### 전체 자동 설치 (권장)
+### 2차+ GX10 배포 (권장)
 
 ```bash
-cd scripts/install
-sudo ./00-install-all.sh
-```
+git clone https://github.com/holee9/gx10-install.git
+cd gx10-install/scripts/install
 
-### 단계별 설치
+# Step 1: sudo 사전 실행 (1회)
+sudo ./00-sudo-prereqs.sh
 
-```bash
-cd scripts/install
-sudo ./01-initial-setup.sh
-sudo ./02-directory-structure.sh
-# ... (순서대로 실행)
+# Step 2: 재로그인 (docker 그룹 반영)
+logout && ssh user@gx10
+
+# Step 3: 나머지 자동 실행 (sudo 불필요)
+cd gx10-install/scripts/install
+./00-install-all.sh
 ```
 
 ### 개별 스크립트 재실행
 
-실패한 단계만 재실행:
+실패한 단계만 재실행 (sudo 불필요):
 
 ```bash
 cd scripts/install
-sudo ./XX-failed-script.sh
+./XX-failed-script.sh
 ```
 
 ---
@@ -187,8 +202,9 @@ feat: GX10 자동 구축 스크립트 추가
 ### 사용자 작업
 
 1. **GX10 OS 설치**: [GX10-00-install-guide.md](GX10-00-install-guide.md) 참조
-2. **스크립트 실행**: `cd scripts/install && sudo ./00-install-all.sh`
-3. **검증**: 설치 완료 후 `10-final-validation.sh` 결과 확인
+2. **Phase 0 실행**: `cd scripts/install && sudo ./00-sudo-prereqs.sh`
+3. **재로그인** 후 **자동 설치**: `./00-install-all.sh`
+4. **검증**: 설치 완료 후 `10-final-validation.sh` 결과 확인
 
 ### 선택 사항
 
@@ -225,3 +241,4 @@ feat: GX10 자동 구축 스크립트 추가
 |------|------|------|--------|
 | 2026-02-01 | 1.0 | 자동 구축 스크립트 개발 완료 보고서 작성 | drake |
 | 2026-02-03 | 1.1 | Phase 0 (00-sudo-prereqs.sh) 추가, sudo/non-sudo 분리 | holee |
+| 2026-02-03 | 2.0 | 2차 GX10 배포 대응: 00-install-all.sh 개편, 레거시 분리, KB-004 sudoers 반영 | holee |

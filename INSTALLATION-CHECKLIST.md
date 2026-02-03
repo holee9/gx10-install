@@ -48,13 +48,15 @@ cd scripts/install
 sudo ./00-sudo-prereqs.sh
 ```
 
-Phase 0이 수행하는 작업:
-- 시스템 패키지 업데이트 및 설치 (apt update/upgrade, 개발 도구)
-- SSH 활성화 및 방화벽 설정 (포트 22, 11434, 8080, 5678)
-- /gx10 디렉토리 전체 구조 생성 및 소유권 이전 (⚠️ models → `ollama:ollama` 별도 설정)
-- Docker 그룹에 사용자 추가
-- Ollama 설치 및 systemd 서비스 설정
-- 모니터링 서비스 등록
+Phase 0이 수행하는 작업 (8개 섹션):
+1. 시스템 패키지 업데이트 및 설치 (apt update/upgrade, 개발 도구)
+2. SSH 활성화 및 방화벽 설정 (포트 22, 11434, 8080, 5678)
+3. /gx10 디렉토리 구조 생성 + 소유권 (⚠️ models → `ollama:ollama`, KB-002)
+4. Docker 그룹에 사용자 추가
+5. Ollama 설치
+6. Ollama systemd 서비스 설정 (override.conf)
+7. 모니터링 서비스 등록
+8. Brain 전환 sudoers 설정 + /usr/local/bin wrapper (KB-004)
 
 **Phase 0 완료 후 반드시 재로그인** (docker 그룹 반영):
 ```bash
