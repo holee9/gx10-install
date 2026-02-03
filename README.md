@@ -322,10 +322,12 @@ sudo docker restart open-webui
 
 | 문서 | 설명 |
 |------|------|
-| [GX10-03-Final-Implementation-Guide.md](GX10-03-Final-Implementation-Guide.md) | 딥 리서치 기반 최종 구현 가이드 |
-| [GX10-04-Build-Checklist.md](GX10-04-Build-Checklist.md) | 구축 체크리스트 |
-| [GX10-09-Two-Brain-Optimization.md](GX10-09-Two-Brain-Optimization.md) | Two Brain 최적화 전략 |
+| [docs/implementation-guide.md](docs/implementation-guide.md) | 최종 구현 가이드 |
+| [docs/two-brain-architecture.md](docs/two-brain-architecture.md) | Two Brain 아키텍처 |
+| [docs/build-checklist.md](docs/build-checklist.md) | 구축 체크리스트 |
+| [docs/external-access.md](docs/external-access.md) | 외부 접근 가이드 (Tailscale) |
 | [scripts/install/README.md](scripts/install/README.md) | 스크립트 상세 설명 |
+| [memory/errors/](memory/errors/) | KB-001~014 오류 해결 |
 
 ---
 
@@ -333,7 +335,7 @@ sudo docker restart open-webui
 
 | 항목 | 내용 |
 |------|------|
-| **버전** | 2.1.0 |
+| **버전** | 2.2.0 |
 | **최종 수정** | 2026-02-03 |
 | **1차 구축 완료** | 2026-02-03 |
 | **작성** | Claude Opus 4.5 + MoAI-ADK |
@@ -343,6 +345,7 @@ sudo docker restart open-webui
 
 | 버전 | 일자 | 설명 |
 |------|------|------|
+| 2.2.0 | 2026-02-03 | docs/ 폴더 구조 정리, 외부 접근 가이드 추가 |
 | 2.1.0 | 2026-02-03 | KB-013~014 추가, 검증 스크립트 v3.0.0 반영 |
 | 2.0.0 | 2026-02-03 | 2차 GX10 Full Auto 가이드 중심 재작성, 1차 구축 기록 정리 |
 | 1.4 | 2026-02-03 | Live 진행 상황 추가, Phase 0-5 완료 |
