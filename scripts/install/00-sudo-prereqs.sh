@@ -46,7 +46,7 @@ log() {
 # ==========================================
 # Section 1: System Package Update
 # ==========================================
-log "=== Section 1/7: System Package Update ==="
+log "=== Section 1/8: System Package Update ==="
 
 apt update && apt upgrade -y
 
@@ -62,7 +62,7 @@ log "Section 1 complete: System packages installed"
 # ==========================================
 # Section 2: SSH and Firewall Configuration
 # ==========================================
-log "=== Section 2/7: SSH & Firewall ==="
+log "=== Section 2/8: SSH & Firewall ==="
 
 systemctl enable ssh
 systemctl start ssh
@@ -78,7 +78,7 @@ log "Section 2 complete: SSH enabled, firewall configured"
 # ==========================================
 # Section 3: Directory Structure & Permissions
 # ==========================================
-log "=== Section 3/7: Directory Structure ==="
+log "=== Section 3/8: Directory Structure ==="
 
 mkdir -p /gx10/brains/code/{models,prompts,execution,logs}
 mkdir -p /gx10/brains/vision/{models,cuda,benchmarks,logs}
@@ -99,7 +99,7 @@ log "Section 3 complete: /gx10 directory structure created, owned by $ACTUAL_USE
 # ==========================================
 # Section 4: Docker Group Setup
 # ==========================================
-log "=== Section 4/7: Docker Group ==="
+log "=== Section 4/8: Docker Group ==="
 
 if groups "$ACTUAL_USER" | grep -q docker; then
   log "User $ACTUAL_USER already in docker group"
@@ -112,7 +112,7 @@ fi
 # ==========================================
 # Section 5: Ollama Installation
 # ==========================================
-log "=== Section 5/7: Ollama Installation ==="
+log "=== Section 5/8: Ollama Installation ==="
 
 if command -v ollama &> /dev/null; then
   log "Ollama already installed: $(ollama --version)"
@@ -124,7 +124,7 @@ fi
 # ==========================================
 # Section 6: Ollama Service Configuration
 # ==========================================
-log "=== Section 6/7: Ollama Service Configuration ==="
+log "=== Section 6/8: Ollama Service Configuration ==="
 
 mkdir -p /etc/systemd/system/ollama.service.d
 
@@ -146,7 +146,7 @@ log "Section 6 complete: Ollama service configured and started"
 # ==========================================
 # Section 7: Monitoring Service (Optional)
 # ==========================================
-log "=== Section 7/7: Monitoring Service ==="
+log "=== Section 7/8: Monitoring Service ==="
 
 tee /etc/systemd/system/gx10-monitor.service > /dev/null << EOF
 [Unit]
@@ -180,6 +180,31 @@ systemctl daemon-reload
 log "Section 7 complete: Monitoring service registered (not enabled yet)"
 
 # ==========================================
+# Section 8: Sudoers for Brain Switch (KB-004)
+# ==========================================
+log "=== Section 8/8: Sudoers for Brain Switch ==="
+
+# Allow user to control ollama and flush caches without password
+# Required for brain switching (switch.sh) to work without interactive sudo
+tee /etc/sudoers.d/gx10-brain-switch > /dev/null << EOF
+# GX10 Brain Switch - passwordless sudo for specific commands
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl stop ollama
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl start ollama
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart ollama
+$ACTUAL_USER ALL=(ALL) NOPASSWD: /usr/bin/tee /proc/sys/vm/drop_caches
+EOF
+chmod 440 /etc/sudoers.d/gx10-brain-switch
+
+# Create global brain-switch wrapper in /usr/local/bin
+tee /usr/local/bin/gx10-brain-switch > /dev/null << 'EOF'
+#!/bin/bash
+/gx10/api/switch.sh "$@"
+EOF
+chmod +x /usr/local/bin/gx10-brain-switch
+
+log "Section 8 complete: Sudoers for brain switch configured, wrapper installed"
+
+# ==========================================
 # Summary
 # ==========================================
 echo ""
@@ -195,6 +220,8 @@ echo "  [OK] Docker group: $ACTUAL_USER added"
 echo "  [OK] Ollama installed and service configured"
 echo "  [OK] Ollama systemd override (0.0.0.0, /gx10/brains/code/models)"
 echo "  [OK] Monitoring service registered"
+echo "  [OK] Sudoers for brain switch (passwordless ollama control)"
+echo "  [OK] /usr/local/bin/gx10-brain-switch wrapper installed"
 echo ""
 echo "=========================================="
 echo "IMPORTANT: Next steps (NO sudo required)"

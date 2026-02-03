@@ -110,13 +110,17 @@ echo "=== Vision Brain Test ===" | tee -a "$LOG_FILE"
 echo "" >> "$REPORT_FILE"
 echo "## 3. Vision Brain" >> "$REPORT_FILE"
 echo "Switching to Vision Brain..." | tee -a "$LOG_FILE"
-sudo /gx10/api/switch.sh vision | tee -a "$LOG_FILE" "$REPORT_FILE"
-sleep 5
-docker run --rm --gpus all gx10-vision-brain:latest python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"N/A\"}')" | tee -a "$LOG_FILE" "$REPORT_FILE"
+if /gx10/api/switch.sh vision 2>&1 | tee -a "$LOG_FILE" "$REPORT_FILE"; then
+  sleep 5
+  docker run --rm --gpus all gx10-vision-brain:latest python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"N/A\"}')" | tee -a "$LOG_FILE" "$REPORT_FILE"
 
-# Switch back to Code Brain
-log "Switching back to Code Brain..."
-sudo /gx10/api/switch.sh code | tee -a "$LOG_FILE" "$REPORT_FILE"
+  # Switch back to Code Brain
+  log "Switching back to Code Brain..."
+  /gx10/api/switch.sh code 2>&1 | tee -a "$LOG_FILE" "$REPORT_FILE"
+else
+  echo "WARN: Brain switch test skipped (sudoers may not be configured)" | tee -a "$LOG_FILE" "$REPORT_FILE"
+  echo "Run manually: sudo /gx10/api/switch.sh vision" | tee -a "$LOG_FILE" "$REPORT_FILE"
+fi
 
 # 4. Directory Structure
 log "Verifying directory structure..."

@@ -395,13 +395,9 @@ fi
 EOF
 chmod +x /gx10/api/benchmark.sh
 
-# Create wrapper with sudo
-log "Creating sudo wrapper..."
-sudo tee /usr/local/bin/gx10-brain-switch > /dev/null << 'EOF'
-#!/bin/bash
-/gx10/api/switch.sh "$@"
-EOF
-sudo chmod +x /usr/local/bin/gx10-brain-switch
+# Note: /usr/local/bin/gx10-brain-switch wrapper is created in Phase 0 (00-sudo-prereqs.sh)
+# Note: sudoers for brain switch is also configured in Phase 0
+log "Skipping wrapper creation (handled by Phase 0)"
 
 # Verification
 log "Verifying Brain Switch API..."
