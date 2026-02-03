@@ -232,6 +232,8 @@ case $TARGET_BRAIN in
     done
     ;;
   vision)
+    # Remove existing container if exists (prevent conflict)
+    docker rm -f gx10-vision-brain 2>/dev/null || true
     # Apply Vision Brain memory settings (90GB)
     docker run -d \
       --name gx10-vision-brain \
@@ -255,9 +257,15 @@ esac
 
 # Step 5: Update state and statistics
 echo -e "${YELLOW}[5/5] Updating state...${NC}"
-PID=$(pgrep -a "$TARGET_BRAIN" | head -1 | awk '{print $1}' || echo "null")
+# Get PID based on brain type
+if [ "$TARGET_BRAIN" == "code" ]; then
+  PID=$(pgrep -f "ollama" 2>/dev/null | head -1 || true)
+elif [ "$TARGET_BRAIN" == "vision" ]; then
+  PID=$(docker inspect -f '{{.State.Pid}}' gx10-vision-brain 2>/dev/null || true)
+fi
+PID="${PID:-null}"
 TIMESTAMP=$(date -Iseconds)
-SWITCH_COUNT=$(cat "$STATUS_FILE" | jq -r '.switch_count + 1')
+SWITCH_COUNT=$(cat "$STATUS_FILE" | jq -r '.switch_count + 1' 2>/dev/null || echo "1")
 
 cat > "$STATUS_FILE" << BRAIN_JSON
 {

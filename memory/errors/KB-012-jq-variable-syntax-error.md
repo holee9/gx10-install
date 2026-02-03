@@ -1,4 +1,4 @@
-# KB-012: jq 변수 문법 오류 (switch.sh)
+# KB-012: switch.sh 다중 오류 (jq 변수, PID null, 컨테이너 충돌)
 
 ## 오류 정보
 
@@ -6,6 +6,7 @@
 - **Phase**: Phase 5 (Final Validation) 실행 중 발견
 - **스크립트**: `switch.sh` (생성: `03-brain-switch-api.sh`)
 - **심각도**: Medium
+- **상태**: ✅ 해결됨
 
 ## 증상
 
@@ -64,11 +65,53 @@ sudo /gx10/api/switch.sh vision
 # jq 오류 없이 전환 완료되어야 함
 ```
 
+## 추가 수정 사항 (같은 세션)
+
+### 이슈 2: PID null 오류
+
+**증상**: `"pid": ,` (빈 값)으로 JSON 파싱 오류
+
+**원인**: `pgrep -a "$TARGET_BRAIN"`이 프로세스를 찾지 못하면 빈 문자열 반환
+
+**해결**:
+```bash
+# Brain별 PID 조회 로직
+if [ "$TARGET_BRAIN" == "code" ]; then
+  PID=$(pgrep -f "ollama" 2>/dev/null | head -1 || true)
+elif [ "$TARGET_BRAIN" == "vision" ]; then
+  PID=$(docker inspect -f '{{.State.Pid}}' gx10-vision-brain 2>/dev/null || true)
+fi
+PID="${PID:-null}"
+```
+
+### 이슈 3: Vision 컨테이너 충돌
+
+**증상**: `docker: Error response from daemon: Conflict. The container name "/gx10-vision-brain" is already in use`
+
+**원인**: 이전 실행에서 컨테이너가 남아있음
+
+**해결**:
+```bash
+# Vision brain 시작 전 기존 컨테이너 제거
+docker rm -f gx10-vision-brain 2>/dev/null || true
+```
+
 ## 교훈
 
 1. jq 내에서 bash 변수 사용 시 `--arg` 또는 `--argjson` 옵션 필수
 2. 동적 키 접근은 `.$key`가 아닌 `.[$key]` 형식 사용
-3. 배포 전 다양한 시나리오로 스크립트 테스트 필요
+3. PID 조회 시 서비스별 적절한 명령어 사용 (systemd vs docker)
+4. 컨테이너 시작 전 기존 컨테이너 정리 로직 필수
+5. 배포 전 다양한 시나리오로 스크립트 테스트 필요
+
+## 검증 결과
+
+```
+none → code: 5초 ✅
+code → vision: 11초 ✅
+vision → code: 17초 ✅
+code → vision: 10초 ✅
+```
 
 ## 관련 문서
 
