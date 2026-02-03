@@ -15,6 +15,26 @@ GX10 Code/Vision Brain 구축 관련 문서입니다.
 
 ---
 
+## 프로젝트 기획 문서 (Specifications)
+
+| 문서 | 설명 |
+|------|------|
+| [specifications/PRD.md](specifications/PRD.md) | Product Requirements Document |
+| [specifications/MRD.md](specifications/MRD.md) | Market Requirements Document |
+| [specifications/SRS.md](specifications/SRS.md) | Software Requirements Specification |
+| [specifications/FRS.md](specifications/FRS.md) | Functional Requirements Specification |
+| [specifications/PRS.md](specifications/PRS.md) | Product Requirements Specification |
+| [specifications/MRS.md](specifications/MRS.md) | Module Requirements Specification |
+| [specifications/ADR-001-Native-vs-Docker.md](specifications/ADR-001-Native-vs-Docker.md) | ADR: Native vs Docker |
+| [specifications/ADR-002-Single-Brain-Policy.md](specifications/ADR-002-Single-Brain-Policy.md) | ADR: Single Brain Policy |
+| [specifications/Test_Plan.md](specifications/Test_Plan.md) | 테스트 계획 |
+| [specifications/Verification_and_Validation.md](specifications/Verification_and_Validation.md) | 검증 및 확인 |
+| [specifications/PORT-ALLOCATION-STANDARD.md](specifications/PORT-ALLOCATION-STANDARD.md) | 포트 할당 표준 |
+| [specifications/Evaluation_Report.md](specifications/Evaluation_Report.md) | 평가 보고서 |
+| [specifications/Final_Project_Report.md](specifications/Final_Project_Report.md) | 최종 프로젝트 보고서 |
+
+---
+
 ## 스크립트 문서
 
 | 문서 | 설명 |
