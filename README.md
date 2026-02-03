@@ -155,37 +155,47 @@ GX10 Code Brain에 작업을 지시할 때 사용하는 표준 포맷입니다.
 - DGX OS 7.2.3 설치 완료 (Ubuntu 24.04 기반)
 - 개발자 PC와 SSH 연결 가능
 
-### 2. 3단계 구축
+### 2. 2-Step 구축 (권장)
 
-#### Phase 1: 기본 시스템 설정 (1-2시간)
+#### Step 1: sudo 사전 실행 (15-20분, 한 번만 sudo)
 
 ```bash
-# 시스템 확인
-nvidia-smi
-free -h  # 119GiB 확인
+# 모든 sudo 필요 작업을 일괄 실행
+cd ~/workspace/gx10-install/scripts/install
+sudo ./00-sudo-prereqs.sh
 
-# 필수 패키지 설치
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y build-essential git curl docker.io
-
-# 디렉토리 구조 생성
-sudo mkdir -p /gx10/{brains,runtime,api,automation,system}
+# 재로그인 (docker 그룹 반영)
+logout  # 후 다시 로그인
 ```
 
-#### Phase 2: Code Brain 구축 (2-3시간)
+Phase 0이 수행하는 작업:
+- 시스템 패키지 업데이트, SSH/방화벽 설정
+- /gx10 디렉토리 생성 및 소유권 이전
+- Docker 그룹 추가, Ollama 설치 및 서비스 설정
+
+#### Step 2: 나머지 설치 (1시간 25분, sudo 불필요)
 
 ```bash
-# Ollama 설치
-curl -fsSL https://ollama.com/install.sh | sh
-
-# 메인 코딩 모델 다운로드
+# AI 모델 다운로드 (~40분)
 ollama pull qwen2.5-coder:32b
+ollama pull qwen2.5-coder:7b
+
+# Vision Brain Docker 빌드 (~20분)
+cd ~/workspace/gx10-install/scripts/install
+./06-vision-brain-build.sh
+
+# Brain 전환 API + WebUI + 검증
+./07-brain-switch-api.sh
+./08-webui-install.sh
+./10-final-validation.sh
 
 # 테스트
 ollama run qwen2.5-coder:32b "Hello, GX10!"
 ```
 
-#### Phase 3: Brain 전환 시스템 (1시간)
+> Claude Code 등 자동화 도구 사용 시: Step 1만 터미널에서 실행하면 Step 2는 자동화 가능
+
+#### Phase 3: Brain 전환 시스템 (Step 2에 포함)
 
 ```bash
 # 상태 조회 스크립트 생성

@@ -6,20 +6,49 @@
 
 ## 구축 단계 개요
 
-| 단계 | 스크립트 | 설명 | 예상 소요 시간 |
-|------|---------|------|---------------|
-| 01 | `01-initial-setup.sh` | 시스템 업데이트 및 필수 패키지 설치 | 10분 |
-| 02 | `02-directory-structure.sh` | 디렉토리 구조 생성 및 권한 설정 | 2분 |
-| 03 | `03-environment-config.sh` | 환경변수 및 Docker 설정 | 3분 |
-| 04 | `04-code-brain-install.sh` | Ollama 설치 및 Code Brain 구축 | 40분 |
-| 05 | `05-code-models-download.sh` | 코딩 모델 다운로드 (32B, 7B) | 40분 |
-| 06 | `06-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | 20분 |
-| 07 | `07-brain-switch-api.sh` | Brain 전환 API 구축 | 10분 |
-| 08 | `08-webui-install.sh` | Open WebUI 설치 | 5분 |
-| 09 | `09-service-automation.sh` | 서비스 자동화 설정 | 5분 |
-| 10 | `10-final-validation.sh` | 최종 검증 및 테스트 | 10분 |
+### Phase 0: Sudo 사전 실행 (권한 필요 작업 일괄 처리)
 
-**총 예상 시간**: 약 2시간 30분
+| 단계 | 스크립트 | 설명 | sudo 필요 | 예상 소요 시간 |
+|------|---------|------|-----------|---------------|
+| **00** | **`00-sudo-prereqs.sh`** | **모든 sudo 필요 작업 일괄 실행** | **Yes** | **15-20분** |
+
+Phase 0이 완료되면 이후 모든 단계는 **sudo 없이** 실행 가능합니다.
+
+```bash
+# Phase 0 실행 (한 번만 sudo 필요)
+cd scripts/install
+sudo ./00-sudo-prereqs.sh
+```
+
+### Phase 1-10: 자동 설치 (sudo 불필요)
+
+| 단계 | 스크립트 | 설명 | sudo 필요 | 예상 소요 시간 |
+|------|---------|------|-----------|---------------|
+| 01 | `01-initial-setup.sh` | 시스템 업데이트 및 필수 패키지 설치 | Phase 0에서 완료 | - |
+| 02 | `02-directory-structure.sh` | 디렉토리 구조 생성 및 권한 설정 | Phase 0에서 완료 | - |
+| 03 | `03-environment-config.sh` | 환경변수 및 Docker 설정 | Phase 0에서 완료 | - |
+| 04 | `04-code-brain-install.sh` | Ollama 설치 및 Code Brain 구축 | Phase 0에서 완료 | - |
+| 05 | `05-code-models-download.sh` | 코딩 모델 다운로드 (32B, 7B) | No | 40분 |
+| 06 | `06-vision-brain-build.sh` | Vision Brain Docker 이미지 빌드 | No | 20분 |
+| 07 | `07-brain-switch-api.sh` | Brain 전환 API 구축 | No* | 10분 |
+| 08 | `08-webui-install.sh` | Open WebUI 설치 | No | 5분 |
+| 09 | `09-service-automation.sh` | 서비스 자동화 설정 | Phase 0에서 완료 | - |
+| 10 | `10-final-validation.sh` | 최종 검증 및 테스트 | No | 10분 |
+
+> *Phase 7의 Brain 전환(systemctl stop/start ollama)은 런타임에 sudo가 필요합니다. 이는 sudoers 설정으로 해결할 수 있습니다.
+
+**총 예상 시간**: Phase 0 (15-20분) + Phase 5-10 (약 1시간 25분) = **약 1시간 45분**
+
+### Phase 0이 커버하는 sudo 작업 요약
+
+| 카테고리 | 작업 내용 | 기존 단계 |
+|---------|---------|---------|
+| 패키지 설치 | apt update/upgrade, 개발 도구 설치 | Phase 1 |
+| SSH/방화벽 | SSH 활성화, UFW 포트 설정 (22, 11434, 8080, 5678) | Phase 1 |
+| 디렉토리 생성 | /gx10 전체 구조 생성 및 소유권 설정 | Phase 2 |
+| Docker 그룹 | 사용자를 docker 그룹에 추가 | Phase 3 |
+| Ollama 설치 | curl 설치 + systemd 서비스 등록 | Phase 4 |
+| 서비스 설정 | Ollama override.conf, 모니터링 서비스 등록 | Phase 4, 9 |
 
 ---
 
@@ -409,25 +438,40 @@ tree /gx10 -L 2
 
 ## 스크립트 실행 순서
 
+### 권장: Phase 0 먼저 실행 후 나머지 자동 진행
+
 ```bash
-# 순차적 실행
-sudo ./01-initial-setup.sh
-sudo ./02-directory-structure.sh
-source ./03-environment-config.sh
-sudo ./04-code-brain-install.sh
-sudo ./05-code-models-download.sh
-sudo ./06-vision-brain-build.sh
-sudo ./07-brain-switch-api.sh
-sudo ./08-webui-install.sh
-sudo ./09-service-automation.sh
-sudo ./10-final-validation.sh
+# Step 1: sudo 사전 실행 (한 번만 sudo 필요)
+cd scripts/install
+sudo ./00-sudo-prereqs.sh
+
+# Step 2: 재로그인 (docker 그룹 반영)
+# 또는: newgrp docker
+
+# Step 3: 나머지 단계 실행 (sudo 불필요)
+./05-code-models-download.sh    # AI 모델 다운로드 (~40분)
+./06-vision-brain-build.sh      # Vision Brain Docker 빌드 (~20분)
+./07-brain-switch-api.sh        # Brain 전환 API 배포
+./08-webui-install.sh           # Open WebUI 설치
+./10-final-validation.sh        # 최종 검증
 ```
 
-또는 일괄 실행:
+### 대안: 기존 일괄 실행 (모든 단계에서 sudo 필요)
 
 ```bash
-# 모든 스크립트 순차 실행
-./00-install-all.sh
+# 모든 스크립트 순차 실행 (sudo 환경에서)
+sudo ./00-install-all.sh
+```
+
+### Claude Code 등 자동화 도구에서 실행할 때
+
+```bash
+# Phase 0을 터미널에서 수동 실행한 후,
+# Claude Code에서 나머지를 자동으로 진행 가능:
+ollama pull qwen2.5-coder:32b
+ollama pull qwen2.5-coder:7b
+docker build -t gx10-vision-brain:latest /gx10/brains/vision/
+# ... (이후 단계 모두 sudo 불필요)
 ```
 
 ---
@@ -460,3 +504,4 @@ sudo ./10-final-validation.sh
 | 일자 | 버전 | 설명 | 리뷰어 |
 |------|------|------|--------|
 | 2026-02-01 | 1.0 | 자동 구축 스크립트 계획서 작성 | drake |
+| 2026-02-03 | 1.1 | Phase 0 (sudo 사전 실행) 추가, sudo/non-sudo 분리 | holee |

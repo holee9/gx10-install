@@ -2,14 +2,72 @@
 
 DGX OS 7.2.3이 설치된 ASUS Ascent GX10용 구축 절차입니다.
 
-## ✅ 사전 확인 완료
+## ✅ 사전 점검 결과 (2026-02-03 실측)
+
+### 시스템 상태
+
+| 항목 | 상태 | 상세 |
+|------|------|------|
+| OS | ✅ 정상 | Ubuntu 24.04.3 LTS (DGX OS), aarch64, Kernel 6.14.0-1015-nvidia |
+| GPU | ✅ 정상 | NVIDIA GB10, 37°C, CUDA 13.0, Driver 580.126.09 |
+| 메모리 | ✅ 정상 | 총 119GB / 사용 4.1GB / 가용 115GB, 스왑 15GB |
+| 디스크 | ✅ 정상 | 916GB 중 38GB 사용 (832GB 가용) |
+| 인터넷 | ✅ 정상 | 외부 연결 확인됨 |
+| 기본 도구 | ✅ 정상 | git, curl, wget, python3 설치됨 |
+| NVIDIA Container Toolkit | ✅ 정상 | v1.18.2 |
+| Docker Engine | ✅ 설치됨 | v28.5.1 (Docker Compose v2.40.0, Buildx v0.29.1) |
+| /gx10 디렉토리 | ⚠️ 구조만 존재 | api, brains, system, automation, runtime (내용 비어있음) |
+| Docker 그룹 권한 | ⚠️ 수동 설정 필요 | `sudo usermod -aG docker holee` 실행 필요 |
+| Ollama | ❌ 미설치 | `curl -fsSL https://ollama.com/install.sh \| sudo sh` 필요 |
+| AI 모델 | ❌ 없음 | Ollama 설치 후 모델 다운로드 필요 |
+
+### 사전 확인 완료
 
 - [x] DGX OS 7.2.3 설치
 - [x] SSH 연결 확인
+- [x] GPU 드라이버 정상 (CUDA 13.0)
+- [x] Docker Engine 설치됨 (v28.5.1)
+- [x] NVIDIA Container Toolkit 설치됨 (v1.18.2)
+- [x] 기본 개발 도구 설치됨 (git, curl, wget, python3)
+- [x] /gx10 디렉토리 구조 생성됨
+- [x] 디스크 공간 충분 (832GB 가용)
+- [x] 메모리 충분 (115GB 가용)
+- [ ] Docker 그룹 권한 설정 (`sudo usermod -aG docker holee`)
+- [ ] Ollama 설치
+- [ ] AI 모델 다운로드
 
 ## 📋 구축 절차
 
-### Phase 1: 기본 시스템 설정 (15분)
+### Phase 0: Sudo 사전 실행 (15-20분) ⭐ 권장
+
+**모든 sudo 필요 작업을 한 번에 실행합니다.** 이후 단계는 sudo 없이 진행 가능합니다.
+
+```bash
+cd scripts/install
+sudo ./00-sudo-prereqs.sh
+```
+
+Phase 0이 수행하는 작업:
+- 시스템 패키지 업데이트 및 설치 (apt update/upgrade, 개발 도구)
+- SSH 활성화 및 방화벽 설정 (포트 22, 11434, 8080, 5678)
+- /gx10 디렉토리 전체 구조 생성 및 소유권 이전
+- Docker 그룹에 사용자 추가
+- Ollama 설치 및 systemd 서비스 설정
+- 모니터링 서비스 등록
+
+**Phase 0 완료 후 반드시 재로그인** (docker 그룹 반영):
+```bash
+# 방법 1: 재로그인
+logout
+# 다시 로그인
+
+# 방법 2: newgrp (현재 세션에서)
+newgrp docker
+```
+
+### Phase 1: 기본 시스템 설정 (Phase 0에서 완료됨)
+
+> Phase 0을 실행했다면 이 단계는 건너뛰세요.
 
 ```bash
 # 1. 시스템 업데이트
@@ -27,7 +85,9 @@ docker --version    # Docker
 nvidia-ctk --version # NVIDIA Container Toolkit
 ```
 
-### Phase 2: 디렉토리 구조 생성 (5분)
+### Phase 2: 디렉토리 구조 생성 (Phase 0에서 완료됨)
+
+> Phase 0을 실행했다면 이 단계는 건너뛰세요.
 
 ```bash
 # 1. GX10 기본 디렉토리
@@ -40,7 +100,7 @@ mkdir -p ~/workspace/{scripts,models,projects}
 sudo chown -R $USER:$USER /gx10
 ```
 
-### Phase 3: 스크립트 설치 (10분)
+### Phase 3: 스크립트 설치 (10분, sudo 불필요)
 
 ```bash
 # 개발자 PC에서 GX10으로 스크립트 전송
@@ -68,7 +128,9 @@ cp workspace-scripts/*.sh ~/workspace/scripts/
 chmod +x ~/workspace/scripts/*.sh
 ```
 
-### Phase 4: Ollama 설치 (10분)
+### Phase 4: Ollama 설치 (Phase 0에서 완료됨)
+
+> Phase 0을 실행했다면 이 단계는 건너뛰세요.
 
 ```bash
 # 1. Ollama 설치
@@ -95,7 +157,7 @@ ollama --version
 curl http://localhost:11434/api/version
 ```
 
-### Phase 5: Code Brain 모델 다운로드 (60분)
+### Phase 5: Code Brain 모델 다운로드 (40-60분, sudo 불필요)
 
 ```bash
 # 메인 코딩 모델 (32B) - 약 30분
@@ -114,7 +176,7 @@ ollama pull nomic-embed-text
 ollama list
 ```
 
-### Phase 6: Vision Brain 빌드 (30분)
+### Phase 6: Vision Brain 빌드 (20-30분, sudo 불필요)
 
 ```bash
 # 1. Dockerfile 확인
@@ -128,7 +190,7 @@ docker build -t gx10-vision-brain:latest .
 docker images | grep gx10-vision-brain
 ```
 
-### Phase 7: bashrc 설정 (5분)
+### Phase 7: bashrc 설정 (5분, sudo 불필요)
 
 ```bash
 cat >> ~/.bashrc << 'EOF'
@@ -152,7 +214,7 @@ EOF
 source ~/.bashrc
 ```
 
-### Phase 8: Health Check cron 설정 (2분)
+### Phase 8: Health Check cron 설정 (2분, sudo 불필요)
 
 ```bash
 # 5분마다 헬스체크
@@ -162,7 +224,7 @@ source ~/.bashrc
 (crontab -l 2>/dev/null; echo "@reboot sleep 60 && /gx10/system/start-all.sh >> /gx10/runtime/logs/startup.log 2>&1") | crontab -
 ```
 
-### Phase 9: 시스템 테스트 (10분)
+### Phase 9: 시스템 테스트 (10분, sudo 불필요)
 
 ```bash
 # 1. 시스템 상태 확인
@@ -185,41 +247,80 @@ cat /gx10/runtime/logs/health.log
 
 ## 🎯 완료 체크리스트
 
-### 필수 항목
+### Phase 0: Sudo 사전 실행 (2026-02-03 10:15 완료)
 
-- [ ] 시스템 업데이트 완료
-- [ ] 디렉토리 구조 생성 완료
-- [ ] 스크립트 설치 완료
-- [ ] Ollama 설치 및 서비스 등록 완료
-- [ ] 메인 코딩 모델 (32B) 다운로드 완료
-- [ ] bashrc alias 설정 완료
-- [ ] 헬스체크 cron 등록 완료
+- [x] 시스템 패키지 업데이트 (31개 업그레이드, 27개 신규)
+- [x] SSH 활성화 및 방화벽 설정 (포트 22, 11434, 8080, 5678)
+- [x] /gx10 디렉토리 구조 생성 (23개 디렉토리, holee 소유)
+- [x] Docker 그룹 등록 (holee → docker 그룹)
+- [x] Ollama 설치 (v0.15.4)
+- [x] Ollama systemd override 설정 (OLLAMA_HOST=0.0.0.0, MODELS=/gx10/brains/code/models)
+- [x] 모니터링 서비스 등록 (gx10-monitor.service/timer)
+
+### Phase 0 후속 조치 (수동 필요)
+
+- [ ] Ollama 서비스 정상 기동 확인 (`sudo systemctl restart ollama` → `ollama list`)
+- [ ] Docker 세션 반영 (Claude Code 재시작 또는 `newgrp docker` → `docker ps`)
+
+### Phase 2: Code Brain 모델 다운로드
+
+- [ ] 메인 코딩 모델 (qwen2.5-coder:32b) 다운로드
+- [ ] 빠른 모델 (qwen2.5-coder:7b) 다운로드
+
+### Phase 3: Vision Brain 설치
+
+- [ ] Vision Brain Docker 이미지 빌드
+- [ ] Brain 전환 API 배포
+
+### Phase 4: 서비스 및 설정
+
+- [ ] bashrc alias 설정
+- [ ] Open WebUI 설치
+- [ ] 헬스체크 cron 등록
+
+### Phase 5: 검증
+
 - [ ] 시스템 테스트 통과
+- [ ] Brain 전환 테스트 (Code ↔ Vision)
+- [ ] 개발자 PC 연동 확인
 
 ### 선택 항목
 
-- [ ] 빠른 모델 (7B) 다운로드 완료
-- [ ] DeepSeek 모델 다운로드 완료
-- [ ] Vision Brain Docker 이미지 빌드 완료
-- [ ] Open WebUI 설치 (추후)
-- [ ] n8n 설치 (추후)
+- [ ] DeepSeek 모델 다운로드
+- [ ] 임베딩 모델 (nomic-embed-text) 다운로드
+- [ ] n8n 워크플로우 설치
+- [ ] MCP 서버 설치
 
-## 📊 총 소요 시간
+## 📊 총 소요 시간 (2026-02-03 Phase 0 완료 후 수정)
 
-| 항목 | 시간 |
-|------|------|
-| Phase 1-3 (기본 설정) | 30분 |
-| Phase 4 (Ollama) | 10분 |
-| Phase 5 (모델 다운로드) | 60분 |
-| Phase 6 (Vision Brain) | 30분 |
-| Phase 7-9 (설정) | 20분 |
-| **총합** | **약 2.5시간** |
+| 항목 | 전체 시간 | 남은 시간 | 비고 |
+|------|---------|---------|------|
+| ~~Phase 0 (sudo 사전실행)~~ | ~~15-20분~~ | ~~완료~~ | ✅ 2분 소요 (대부분 이미 설치됨) |
+| Phase 0 후속 (수동) | 2분 | 2분 | Ollama 재시작 + Docker 세션 반영 |
+| Phase 2 (모델 다운로드) | 50분 | 50분 | qwen2.5-coder:32b + 7b |
+| Phase 3 (Vision Brain) | 25분 | 25분 | Docker 빌드(20분) + API(5분) |
+| Phase 4 (서비스/설정) | 10분 | 10분 | bashrc, WebUI, cron |
+| Phase 5 (검증) | 10분 | 10분 | 전체 테스트 + Brain 전환 |
+| **총합** | | **~1시간 37분** | Phase 0 완료, 후속 조치 2건 필요 |
 
-## 🚀 빠른 시작 (최소)
+## 🚀 빠른 시작
+
+### 권장: Phase 0 → 모델 다운로드 (2-Step)
 
 ```bash
-# 1줄 설치
-curl -fsSL https://ollama.com/install.sh | sh && \
+# Step 1: sudo 사전 실행 (15-20분, 한 번만)
+cd ~/workspace/gx10-install/scripts/install
+sudo ./00-sudo-prereqs.sh
+
+# Step 2: 재로그인 후 모델 다운로드 (sudo 불필요)
+ollama pull qwen2.5-coder:32b && \
+ollama run qwen2.5-coder:32b "Hello, GX10!"
+```
+
+### 최소 설치 (1-liner, sudo 환경)
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sudo sh && \
 sudo systemctl enable ollama && sudo systemctl start ollama && \
 ollama pull qwen2.5-coder:32b && \
 ollama run qwen2.5-coder:32b "Hello, GX10!"
@@ -273,3 +374,53 @@ sudo systemctl restart ollama
 ---
 
 *이 체크리스트는 DGX OS 7.2.3 환경에서 테스트되었습니다.*
+
+---
+
+## 📜 설치 진행 로그
+
+### 2026-02-03: 사전 점검 실시
+
+**실행 환경**: GX10 본체 직접 접속 (Claude Code)
+
+**점검 결과 요약**:
+- OS/커널/GPU/메모리/디스크: 모두 정상
+- Docker Engine v28.5.1 설치되어 있으나, 사용자 `holee`가 `docker` 그룹에 미등록
+- NVIDIA Container Toolkit v1.18.2 정상 설치
+- `/gx10/` 디렉토리 기본 구조(api, brains, system, automation, runtime) 존재하나 내용 비어있음
+- Ollama 미설치 상태
+- AI 모델 없음
+
+**필요 조치**:
+1. `sudo ./scripts/install/00-sudo-prereqs.sh` 실행 → 모든 sudo 작업 일괄 처리
+2. 재로그인 (docker 그룹 반영)
+3. 이후 모델 다운로드 및 서비스 설정은 Claude Code에서 자동화 가능
+
+**진행도**: 약 30% (기본 인프라 확인 완료)
+
+**대응**: `00-sudo-prereqs.sh` 스크립트 생성하여 모든 sudo 작업을 사전에 일괄 실행할 수 있도록 구성
+
+### 2026-02-03 10:15: Phase 0 실행 완료
+
+**실행 결과**: `sudo ./00-sudo-prereqs.sh` - 전체 성공 (약 2분 소요)
+
+| 섹션 | 결과 | 비고 |
+|------|------|------|
+| Section 1: 패키지 업데이트 | ✅ 성공 | 31개 업그레이드 + 27개 신규 설치 (Docker CE 29.1.3, neovim 등) |
+| Section 2: SSH/방화벽 | ✅ 성공 | UFW 활성화, 포트 22/11434/8080/5678 허용 |
+| Section 3: 디렉토리 구조 | ✅ 성공 | /gx10 전체 23개 디렉토리 생성, holee 소유권 |
+| Section 4: Docker 그룹 | ✅ 이미 등록됨 | holee 사용자 docker 그룹 확인됨 |
+| Section 5: Ollama 설치 | ✅ 이미 설치됨 | v0.15.4 |
+| Section 6: Ollama 서비스 | ✅ 성공 | override.conf 생성, 서비스 재시작 |
+| Section 7: 모니터링 서비스 | ✅ 성공 | gx10-monitor.service/timer 등록 |
+
+**발견된 문제 (2건)**:
+
+1. **Ollama 서비스 미응답**: `ollama list` 실행 시 "ollama server not responding" 오류
+   - override.conf 적용은 되었으나 서비스가 정상 기동되지 않음
+   - 원인: `/gx10/brains/code/models` 디렉토리를 OLLAMA_MODELS로 설정했으나 모델 파일 없음
+   - 조치: `sudo systemctl restart ollama` 또는 `ollama serve` 수동 시작 필요
+
+2. **Docker 소켓 권한**: `docker ps` 실행 시 permission denied
+   - docker 그룹에 등록되었으나(uid 988) **현재 세션에 미반영**
+   - 조치: Claude Code 재시작 또는 `newgrp docker` 필요
