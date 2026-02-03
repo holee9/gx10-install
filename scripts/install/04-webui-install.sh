@@ -64,7 +64,7 @@ PHASE="04"
 init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
-echo "GX10 Phase 8: Open WebUI Install"
+echo "GX10 Phase 4: Open WebUI Install"
 echo "=========================================="
 echo "Log: $LOG_FILE"
 echo ""
@@ -169,9 +169,9 @@ echo "Note: First access will require admin account creation" | tee -a "$LOG_FIL
 # Mark checkpoint as completed
 complete_checkpoint "$CHECKPOINT_ID"
 
-log "Phase 8 completed successfully!"
+log "Phase 4 completed successfully!"
 echo "=========================================="
-echo "Phase 8: COMPLETED"
+echo "Phase 4: COMPLETED"
 echo "=========================================="
 echo "Open WebUI is available at: $WEBUI_PROTOCOL://$IP:$WEBUI_PORT"
 if [ "$ENABLE_HTTPS" = true ]; then

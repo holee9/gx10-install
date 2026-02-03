@@ -59,7 +59,7 @@ PHASE="02"
 init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
-echo "GX10 Phase 6: Vision Brain Build"
+echo "GX10 Phase 2: Vision Brain Build"
 echo "=========================================="
 echo "Log: $LOG_FILE"
 echo "WARNING: This may take 20-30 minutes"
@@ -126,8 +126,8 @@ docker run --rm --gpus all gx10-vision-brain:latest python -c "import torch; pri
 # Mark checkpoint as completed
 complete_checkpoint "$CHECKPOINT_ID"
 
-log "Phase 6 completed successfully!"
+log "Phase 2 completed successfully!"
 echo "=========================================="
-echo "Phase 6: COMPLETED"
+echo "Phase 2: COMPLETED"
 echo "=========================================="
 echo "Vision Brain Docker image: gx10-vision-brain:latest"

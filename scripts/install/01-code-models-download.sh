@@ -54,7 +54,7 @@ PHASE="01"
 init_log "$PHASE" "$(basename "$0" .sh)"
 
 echo "=========================================="
-echo "GX10 Phase 5: Code Models Download"
+echo "GX10 Phase 1: Code Models Download"
 echo "=========================================="
 echo "Log: $LOG_FILE"
 echo "WARNING: This may take 40-60 minutes"
@@ -109,9 +109,9 @@ time ollama run qwen2.5-coder:32b "def hello(): print('Hello GX10')" >> "$LOG_FI
 # Mark checkpoint as completed
 complete_checkpoint "$CHECKPOINT_ID"
 
-log "Phase 5 completed successfully!"
+log "Phase 1 completed successfully!"
 echo "=========================================="
-echo "Phase 5: COMPLETED"
+echo "Phase 1: COMPLETED"
 echo "=========================================="
 echo "Models installed:"
 echo "  - qwen2.5-coder:32b (Main)"
