@@ -92,6 +92,8 @@ sudo /gx10/api/switch.sh code
 | Brain Switch | `sudo /gx10/api/switch.sh [code\|vision]` | Brain 전환 (5-17초) |
 | Ollama API | `http://localhost:11434` | Code Brain API |
 
+> 📡 **외부 접근**: Tailscale VPN으로 외부에서 GX10에 접근할 수 있습니다. → [외부 접근 가이드](docs/external-access.md)
+
 ---
 
 ## 📋 1차 구축 완료 기록 (2026-02-03)
