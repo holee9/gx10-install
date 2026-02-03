@@ -262,7 +262,7 @@ import_state() {
 # reset_state(): Reset state to initial values (use with caution)
 # Returns: 0=success, 1=failure
 reset_state() {
-    local confirmation="${2:-no}"
+    local confirmation="${1:-no}"
 
     if [ "$confirmation" != "yes-i-am-sure" ]; then
         echo "ERROR: State reset requires confirmation. Use: reset_state yes-i-am-sure" >&2

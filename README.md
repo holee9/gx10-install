@@ -32,6 +32,7 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 
 | 일시 | 작업 | 결과 |
 |------|------|------|
+| 02-03 13:20 | lib/ 전체 런타임 감사 — log() 시그니처 + state-manager 수정 (KB-008) | ✅ set -u 호환 검증 완료 |
 | 02-03 13:10 | lib/error-handler.sh phase 파싱 오류 수정 (KB-007) | ✅ `%%-*` → `##*-` 수정 |
 | 02-03 13:00 | lib/security.sh 문법 오류 수정 (KB-006), bash -n 전체 검증 통과 | ✅ regex 수정, 전 스크립트 문법 OK |
 | 02-03 12:30 | 스크립트 번호 재정렬 + DOC-ID 수정 + 실행 권한 수정 (KB-005) | ✅ 레거시 삭제, 01-05 재번호, chmod +x |
@@ -55,6 +56,7 @@ ASUS Ascent GX10을 활용한 로컬 AI 개발 환경 구축 가이드 모음입
 | 4 | 스크립트 실행 권한 누락 (KB-005) | ✅ 해결 | chmod +x 전체 .sh 파일, Git에 mode 반영 |
 | 5 | lib/security.sh regex 문법 오류 (KB-006) | ✅ 해결 | `[!@#$%^&*]` → `[^a-zA-Z0-9]` 수정 |
 | 6 | lib/error-handler.sh phase 파싱 (KB-007) | ✅ 해결 | `%%-*` → `##*-` + 숫자 검증 추가 |
+| 7 | lib/ 런타임 오류 — log() 1인자, set -u (KB-008) | ✅ 해결 | log() 1/2인자 호환 + state-manager 파라미터 수정 |
 
 ### 다음 할 일
 
