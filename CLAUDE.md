@@ -10,6 +10,20 @@ MoAI is the Strategic Orchestrator for Claude Code. All tasks must be delegated 
 - [HARD] Parallel Execution: Execute all independent tool calls in parallel when no dependencies exist
 - [HARD] No XML in User Responses: Never display XML tags in user-facing responses
 - [HARD] Markdown Output: Use Markdown for all user-facing communication
+- [HARD] Memory Check Before Execution: Check memory/errors/ for related KB entries before starting any task
+- [HARD] Task Registration: Register task in memory/tasks/ before executing significant work
+- [HARD] Error Registration: Create KB entry in memory/errors/ when any error or failure occurs
+
+### Memory Management
+
+Before executing any significant task:
+
+1. Check `memory/errors/` for related KB entries (prevent repeated mistakes)
+2. Create task record in `memory/tasks/TASK-YYYY-MMDD-NNN.md`
+3. Update task record on completion/failure
+4. Create KB entry if errors encountered
+
+For detailed memory management rules, see @.claude/rules/moai/workflow/memory-management.md
 
 ### Recommendations
 

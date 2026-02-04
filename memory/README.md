@@ -9,10 +9,40 @@
 ```
 memory/
 ├── README.md                 # 이 파일
-├── errors/                   # 자동 감지된 기술적 오류
+├── tasks/                    # 작업 기록 (세션 복구용)
+├── errors/                   # 기술적 오류 KB (Knowledge Base)
 ├── lessons-learned/          # 프로세스/커뮤니케이션 실수
 ├── templates/                # 문서 템플릿
+│   ├── task-record-template.md
+│   ├── error-record-template.md
+│   └── quick-note-template.md
 └── auto-detected/            # 자동화 스크립트 결과
+```
+
+## Quick Start (MUST DO BEFORE ANY TASK)
+
+### 1. Check for Related Errors
+
+```bash
+grep -ri "keyword" memory/errors/
+```
+
+### 2. Create Task Record
+
+```bash
+cp memory/templates/task-record-template.md memory/tasks/TASK-$(date +%Y-%m%d)-001.md
+```
+
+### 3. On Error/Failure
+
+```bash
+cp memory/templates/error-record-template.md memory/errors/KB-NNN-description.md
+```
+
+### 4. Session Recovery
+
+```bash
+grep -l "in-progress" memory/tasks/*.md
 ```
 
 ## Categories
