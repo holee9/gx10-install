@@ -10,8 +10,18 @@ GX10 Code/Vision Brain 구축 관련 문서입니다.
 |------|------|
 | [implementation-guide.md](implementation-guide.md) | 최종 구현 가이드 |
 | [two-brain-architecture.md](two-brain-architecture.md) | Two Brain 아키텍처 및 최적화 |
+| [dashboard-guide.md](dashboard-guide.md) | 시스템 모니터링 대시보드 사용 가이드 |
 | [build-checklist.md](build-checklist.md) | 구축 체크리스트 |
 | [external-access.md](external-access.md) | 외부 접근 가이드 (Tailscale) |
+
+---
+
+## API 문서
+
+| 문서 | 설명 |
+|------|------|
+| [api-reference.md](api-reference.md) | GX10 Brain API 레퍼런스 (Shell Scripts) |
+| [dashboard-api.md](dashboard-api.md) | Dashboard REST API 레퍼런스 (HTTP/WebSocket) |
 
 ---
 

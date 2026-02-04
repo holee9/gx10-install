@@ -37,13 +37,17 @@ set -e
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/config.sh"
 source "$SCRIPT_DIR/lib/logger.sh"
 source "$SCRIPT_DIR/lib/state-manager.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
 source "$SCRIPT_DIR/lib/security.sh"
 
-LOG_FILE="/gx10/runtime/logs/01-code-models-download.log"
-mkdir -p /gx10/runtime/logs
+# Initialize configuration
+init_config
+
+LOG_FILE="$GX10_LOGS_DIR/01-code-models-download.log"
+mkdir -p "$GX10_LOGS_DIR"
 
 # Initialize state management
 init_state
@@ -68,30 +72,30 @@ log "Starting code models download..."
 
 # Configure KV Cache size for 16K context window (PRD requirement)
 # Reference: PRD.md line 169 - "qwen2.5-coder:32b: 24GB (16K KV Cache)"
-log "Configuring Ollama environment for 16K KV Cache..."
-export OLLAMA_NUM_CTX=16384
-log "OLLAMA_NUM_CTX set to 16384 (16K context window)"
+log "Configuring Ollama environment for ${OLLAMA_NUM_CTX} context window..."
+export OLLAMA_NUM_CTX="$OLLAMA_NUM_CTX"
+log "OLLAMA_NUM_CTX set to $OLLAMA_NUM_CTX"
 
 # Main coding model (32B) - 30min, 20GB
-log "Downloading Qwen2.5-Coder 32B with 16K KV Cache (this will take ~30 minutes)..."
+log "Downloading $CODE_MODEL_PRIMARY with ${OLLAMA_NUM_CTX} KV Cache (this will take ~30 minutes)..."
 echo "Progress: Model download is running in background. Check log for details."
-time ollama pull qwen2.5-coder:32b >> "$LOG_FILE" 2>&1
-log "Qwen2.5-Coder 32B downloaded successfully!"
+time ollama pull "$CODE_MODEL_PRIMARY" >> "$LOG_FILE" 2>&1
+log "$CODE_MODEL_PRIMARY downloaded successfully!"
 
 # Fast response model (7B) - 10min, 5GB
-log "Downloading Qwen2.5-Coder 7B (this will take ~10 minutes)..."
-time ollama pull qwen2.5-coder:7b >> "$LOG_FILE" 2>&1
-log "Qwen2.5-Coder 7B downloaded successfully!"
+log "Downloading $CODE_MODEL_SECONDARY (this will take ~10 minutes)..."
+time ollama pull "$CODE_MODEL_SECONDARY" >> "$LOG_FILE" 2>&1
+log "$CODE_MODEL_SECONDARY downloaded successfully!"
 
 # DeepSeek alternative (16B) - 15min, 10GB
-log "Downloading DeepSeek-Coder V2 16B (this will take ~15 minutes)..."
-time ollama pull deepseek-coder-v2:16b >> "$LOG_FILE" 2>&1
-log "DeepSeek-Coder V2 16B downloaded successfully!"
+log "Downloading $CODE_MODEL_ALTERNATIVE (this will take ~15 minutes)..."
+time ollama pull "$CODE_MODEL_ALTERNATIVE" >> "$LOG_FILE" 2>&1
+log "$CODE_MODEL_ALTERNATIVE downloaded successfully!"
 
 # Embedding model
-log "Downloading Nomic Embed Text model..."
-time ollama pull nomic-embed-text >> "$LOG_FILE" 2>&1
-log "Nomic Embed Text downloaded successfully!"
+log "Downloading $EMBEDDING_MODEL model..."
+time ollama pull "$EMBEDDING_MODEL" >> "$LOG_FILE" 2>&1
+log "$EMBEDDING_MODEL downloaded successfully!"
 
 # Verification
 log "Verifying installed models..."
@@ -100,11 +104,11 @@ echo "=== Installed Models ===" | tee -a "$LOG_FILE"
 ollama list | tee -a "$LOG_FILE"
 
 # Quick test
-log "Running quick test with 32B model..."
+log "Running quick test with primary model..."
 echo "" | tee -a "$LOG_FILE"
-echo "=== Quick Test (32B Model) ===" | tee -a "$LOG_FILE"
+echo "=== Quick Test ($CODE_MODEL_PRIMARY) ===" | tee -a "$LOG_FILE"
 echo "Testing: Write a Python hello world function..." | tee -a "$LOG_FILE"
-time ollama run qwen2.5-coder:32b "def hello(): print('Hello GX10')" >> "$LOG_FILE" 2>&1
+time ollama run "$CODE_MODEL_PRIMARY" "def hello(): print('Hello GX10')" >> "$LOG_FILE" 2>&1
 
 # Mark checkpoint as completed
 complete_checkpoint "$CHECKPOINT_ID"
@@ -114,7 +118,7 @@ echo "=========================================="
 echo "Phase 1: COMPLETED"
 echo "=========================================="
 echo "Models installed:"
-echo "  - qwen2.5-coder:32b (Main)"
-echo "  - qwen2.5-coder:7b (Fast)"
-echo "  - deepseek-coder-v2:16b (Alternative)"
-echo "  - nomic-embed-text (Embedding)"
+echo "  - $CODE_MODEL_PRIMARY (Main)"
+echo "  - $CODE_MODEL_SECONDARY (Fast)"
+echo "  - $CODE_MODEL_ALTERNATIVE (Alternative)"
+echo "  - $EMBEDDING_MODEL (Embedding)"

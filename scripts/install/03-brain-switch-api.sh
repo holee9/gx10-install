@@ -41,13 +41,17 @@ set -e
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/config.sh"
 source "$SCRIPT_DIR/lib/logger.sh"
 source "$SCRIPT_DIR/lib/state-manager.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
 source "$SCRIPT_DIR/lib/security.sh"
 
-LOG_FILE="/gx10/runtime/logs/03-brain-switch-api.log"
-mkdir -p /gx10/runtime/logs
+# Initialize configuration
+init_config
+
+LOG_FILE="$GX10_LOGS_DIR/03-brain-switch-api.log"
+mkdir -p "$GX10_LOGS_DIR"
 
 # Initialize state management
 init_state
@@ -71,7 +75,7 @@ log "Creating Brain Switch API with optimization..."
 
 # Create initial active_brain.json
 log "Creating active_brain.json..."
-cat > /gx10/runtime/active_brain.json << EOF
+cat > "$BRAIN_STATUS_FILE" << EOF
 {
   "brain": "none",
   "pid": null,
@@ -84,7 +88,7 @@ EOF
 
 # Create brain usage pattern for optimization
 log "Creating brain-usage-pattern.json..."
-cat > /gx10/runtime/brain-usage-pattern.json << EOF
+cat > "$BRAIN_PATTERN_FILE" << EOF
 {
   "pattern": {
     "morning": {
@@ -112,11 +116,11 @@ EOF
 
 # Create switch log
 log "Creating switch log..."
-touch /gx10/runtime/logs/brain-switch.log
+touch "$BRAIN_SWITCH_LOG"
 
 # Create status.sh
 log "Creating status.sh script..."
-cat > /gx10/api/status.sh << 'EOF'
+cat > "$GX10_API_DIR/status.sh" << 'EOF'
 #!/bin/bash
 # GX10 Brain Status Script
 
@@ -145,11 +149,11 @@ echo ""
 echo "=== Recent Switch Activity (Last 5) ==="
 tail -5 /gx10/runtime/logs/brain-switch.log 2>/dev/null || echo "No switch log yet"
 EOF
-chmod +x /gx10/api/status.sh
+chmod +x "$GX10_API_DIR/status.sh"
 
 # Create switch.sh with optimization (L1-1: Transition Caching)
 log "Creating optimized switch.sh script..."
-cat > /gx10/api/switch.sh << 'EOF'
+cat > "$GX10_API_DIR/switch.sh" << 'EOF'
 #!/bin/bash
 # GX10 Brain Switch Script (Optimized - GX10-09 P0)
 
@@ -295,11 +299,11 @@ echo ""
 echo "Current Status:"
 /gx10/api/status.sh
 EOF
-chmod +x /gx10/api/switch.sh
+chmod +x "$GX10_API_DIR/switch.sh"
 
 # Create predict.sh for pattern-based scheduling (L1-2)
 log "Creating predict.sh for pattern-based scheduling..."
-cat > /gx10/api/predict.sh << 'EOF'
+cat > "$GX10_API_DIR/predict.sh" << 'EOF'
 #!/bin/bash
 # GX10 Brain Prediction Script (L1-2: Pattern-Based Scheduling)
 
@@ -349,11 +353,11 @@ else
   echo "No switch needed"
 fi
 EOF
-chmod +x /gx10/api/predict.sh
+chmod +x "$GX10_API_DIR/predict.sh"
 
 # Create benchmark.sh for performance measurement
 log "Creating benchmark.sh for performance measurement..."
-cat > /gx10/api/benchmark.sh << 'EOF'
+cat > "$GX10_API_DIR/benchmark.sh" << 'EOF'
 #!/bin/bash
 # GX10 Brain Switch Benchmark (L1-1 Performance Measurement)
 
@@ -401,7 +405,7 @@ else
   echo "⚠️  Below P0 Target"
 fi
 EOF
-chmod +x /gx10/api/benchmark.sh
+chmod +x "$GX10_API_DIR/benchmark.sh"
 
 # Note: /usr/local/bin/gx10-brain-switch wrapper is created in Phase 0 (00-sudo-prereqs.sh)
 # Note: sudoers for brain switch is also configured in Phase 0
@@ -411,13 +415,13 @@ log "Skipping wrapper creation (handled by Phase 0)"
 log "Verifying Brain Switch API..."
 echo "" | tee -a "$LOG_FILE"
 echo "=== Brain Status ===" | tee -a "$LOG_FILE"
-/gx10/api/status.sh | tee -a "$LOG_FILE"
+"$GX10_API_DIR/status.sh" | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "=== Scripts Created ===" | tee -a "$LOG_FILE"
-ls -la /gx10/api/*.sh | tee -a "$LOG_FILE"
+ls -la "$GX10_API_DIR"/*.sh | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "=== Configuration Files ===" | tee -a "$LOG_FILE"
-ls -la /gx10/runtime/*.json | tee -a "$LOG_FILE"
+ls -la "$GX10_RUNTIME_DIR"/*.json | tee -a "$LOG_FILE"
 
 # Mark checkpoint as completed
 complete_checkpoint "$CHECKPOINT_ID"
@@ -433,10 +437,10 @@ echo "  [L1-2] Pattern-Based Scheduling: Usage pattern prediction"
 echo "  [L1-1] Performance Monitoring: Benchmark tool included"
 echo ""
 echo "Commands:"
-echo "  Check status:     /gx10/api/status.sh"
-echo "  Switch brain:     sudo /gx10/api/switch.sh [code|vision]"
-echo "  Predict optimal:  /gx10/api/predict.sh"
-echo "  Run benchmark:    /gx10/api/benchmark.sh"
+echo "  Check status:     $GX10_API_DIR/status.sh"
+echo "  Switch brain:     sudo $GX10_API_DIR/switch.sh [code|vision]"
+echo "  Predict optimal:  $GX10_API_DIR/predict.sh"
+echo "  Run benchmark:    $GX10_API_DIR/benchmark.sh"
 echo ""
 echo "Expected Performance:"
 echo "  - Switch time:    5-10s (P0 target, baseline: 30s)"

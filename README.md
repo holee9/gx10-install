@@ -94,7 +94,76 @@ sudo /gx10/api/switch.sh code
 | Brain Switch | `sudo /gx10/api/switch.sh [code\|vision]` | Brain 전환 (5-17초) |
 | Ollama API | `http://localhost:11434` | Code Brain API |
 
-> 📡 **외부 접근**: Tailscale VPN으로 외부에서 GX10에 접근할 수 있습니다. → [외부 접근 가이드](docs/external-access.md)
+> 외부 접근: Tailscale VPN으로 외부에서 GX10에 접근할 수 있습니다. [외부 접근 가이드](docs/external-access.md)
+
+---
+
+## Dashboard
+
+GX10 시스템을 실시간으로 모니터링하는 웹 대시보드입니다.
+
+### 주요 기능 (v2.0)
+
+| 기능 | 설명 |
+|------|------|
+| **실시간 모니터링** | CPU, Memory, GPU, Disk, Network 상태를 2초 간격으로 업데이트 |
+| **Alert 시스템** | CPU/GPU/Memory/Disk 임계값 설정 및 브라우저 알림 |
+| **프로세스 모니터링** | GPU 프로세스, CPU/Memory 상위 프로세스 목록 |
+| **히스토리 차트** | IndexedDB 기반 24시간 데이터 보존 (1분/5분/1시간/24시간 뷰) |
+| **데이터 내보내기** | JSON/CSV 형식으로 메트릭 데이터 내보내기 |
+| **Prometheus 메트릭** | `/metrics` 엔드포인트로 외부 모니터링 시스템 연동 |
+| **테마 지원** | Dark/Light 모드 토글 |
+| **키보드 단축키** | 탭 전환(1-4), 새로고침(R), 설정(S), 테마(T) |
+
+### 탭 구성
+
+| 탭 | 내용 |
+|----|------|
+| **Overview** | 시스템 전체 요약, Brain 상태, Ollama 모델 |
+| **Performance** | CPU 코어별 사용률, 상세 메모리 정보, 프로세스 목록 |
+| **Storage** | 디스크 사용량, 메모리 상세 분석, 히스토리 차트 |
+| **Network** | 네트워크 인터페이스 통계, 실시간 메트릭 |
+
+### 접속 방법
+
+```bash
+# 로컬 접속
+http://localhost:9000
+
+# 네트워크 접속
+http://<GX10-IP>:9000
+
+# Tailscale 접속
+http://<Tailscale-IP>:9000
+```
+
+### 설정
+
+Settings 페이지에서 다음을 구성할 수 있습니다:
+- Alert 임계값 (CPU, GPU 온도, Memory, Disk)
+- 브라우저 알림 활성화
+- 테마 설정
+
+### API 엔드포인트
+
+```bash
+# 시스템 상태
+curl http://localhost:9000/api/status
+
+# 실시간 메트릭
+curl http://localhost:9000/api/metrics
+
+# 프로세스 목록
+curl http://localhost:9000/api/processes
+
+# Prometheus 메트릭
+curl http://localhost:9000/metrics
+
+# Health 체크
+curl http://localhost:9000/api/health
+```
+
+상세 문서: [gx10-dashboard/README.md](../gx10-dashboard/README.md)
 
 ---
 

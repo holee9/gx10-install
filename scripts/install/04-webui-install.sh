@@ -43,12 +43,16 @@ set -e
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/config.sh"
 source "$SCRIPT_DIR/lib/logger.sh"
 source "$SCRIPT_DIR/lib/state-manager.sh"
 source "$SCRIPT_DIR/lib/error-handler.sh"
 
-LOG_FILE="/gx10/runtime/logs/04-webui-install.log"
-mkdir -p /gx10/runtime/logs
+# Initialize configuration
+init_config
+
+LOG_FILE="$GX10_LOGS_DIR/04-webui-install.log"
+mkdir -p "$GX10_LOGS_DIR"
 
 # Initialize state management
 init_state
@@ -72,40 +76,37 @@ log "Installing Open WebUI..."
 
 # Create data directory
 log "Creating data directory..."
-mkdir -p /gx10/brains/code/webui
+mkdir -p "$WEBUI_DATA_DIR"
 
 # Pull Open WebUI image
 log "Pulling Open WebUI image..."
-docker pull ghcr.io/open-webui/open-webui:main >> "$LOG_FILE" 2>&1
+docker pull "$WEBUI_IMAGE" >> "$LOG_FILE" 2>&1
 
-# Start Open WebUI container (HTTP mode - 8080)
+# Start Open WebUI container (HTTP mode)
 # Note: Open WebUI does not support internal HTTPS (KB-011)
-log "Starting Open WebUI container (HTTP mode)..."
+log "Starting Open WebUI container (HTTP mode on port $WEBUI_PORT)..."
 
 # Remove existing container if present (idempotent reinstall - KB-013)
-docker rm -f open-webui 2>/dev/null || true
+docker rm -f "$WEBUI_CONTAINER_NAME" 2>/dev/null || true
 
 docker run -d \
-  --name open-webui \
+  --name "$WEBUI_CONTAINER_NAME" \
   --restart unless-stopped \
-  -p 8080:8080 \
-  -v /gx10/brains/code/webui:/app/backend/data \
-  -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+  -p "$WEBUI_PORT:8080" \
+  -v "$WEBUI_DATA_DIR:/app/backend/data" \
+  -e OLLAMA_BASE_URL=http://host.docker.internal:$OLLAMA_PORT \
   --add-host=host.docker.internal:host-gateway \
-  ghcr.io/open-webui/open-webui:main >> "$LOG_FILE" 2>&1
-
-WEBUI_PORT=8080
-WEBUI_PROTOCOL="http"
+  "$WEBUI_IMAGE" >> "$LOG_FILE" 2>&1
 
 # Wait for container to start
 log "Waiting for Open WebUI to start..."
-sleep 10
+sleep "$CONTAINER_START_WAIT"
 
 # Verification
 log "Verifying Open WebUI..."
 echo "" | tee -a "$LOG_FILE"
 echo "=== Open WebUI Container ===" | tee -a "$LOG_FILE"
-docker ps | grep open-webui | tee -a "$LOG_FILE"
+docker ps | grep "$WEBUI_CONTAINER_NAME" | tee -a "$LOG_FILE"
 echo "" | tee -a "$LOG_FILE"
 echo "=== Access Information ===" | tee -a "$LOG_FILE"
 IP=$(hostname -I | awk '{print $1}')
