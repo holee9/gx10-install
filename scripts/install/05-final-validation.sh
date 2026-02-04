@@ -426,10 +426,10 @@ benchmark_model() {
     if [[ "$tokens" -gt 0 && "$duration_ms" -gt 0 ]]; then
         local tokens_per_sec=$(echo "scale=1; $tokens * 1000 / $duration_ms" | bc 2>/dev/null || echo "0")
 
-        if (( $(echo "$tokens_per_sec >= 10" | bc -l 2>/dev/null || echo 0) )); then
+        if (( $(echo "$tokens_per_sec >= $BENCHMARK_TARGET_TOKENS_PER_SEC" | bc -l 2>/dev/null || echo 0) )); then
             test_pass "Benchmark ($CODE_MODEL_PRIMARY)" "${tokens_per_sec} tokens/sec (${tokens} tokens in ${duration_ms}ms)"
         else
-            test_fail "Benchmark ($CODE_MODEL_PRIMARY)" "${tokens_per_sec} tokens/sec is below target (10 tok/s)"
+            test_fail "Benchmark ($CODE_MODEL_PRIMARY)" "${tokens_per_sec} tokens/sec is below target (${BENCHMARK_TARGET_TOKENS_PER_SEC} tok/s)"
         fi
     else
         test_fail "Benchmark ($CODE_MODEL_PRIMARY)" "Could not measure performance"

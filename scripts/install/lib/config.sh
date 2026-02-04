@@ -96,7 +96,8 @@ WEBUI_PROTOCOL="${WEBUI_PROTOCOL:-http}"
 # =============================================
 DASHBOARD_PORT="${DASHBOARD_PORT:-9000}"
 DASHBOARD_WS_PATH="${DASHBOARD_WS_PATH:-/ws}"
-DASHBOARD_UPDATE_INTERVAL="${DASHBOARD_UPDATE_INTERVAL:-2000}"
+# Update interval: 10 seconds for low resource usage (occasional monitoring)
+DASHBOARD_UPDATE_INTERVAL="${DASHBOARD_UPDATE_INTERVAL:-10000}"
 DASHBOARD_REPO="${DASHBOARD_REPO:-https://github.com/holee9/gx10-dashboard.git}"
 DASHBOARD_DIR="${DASHBOARD_DIR:-$HOME/workspace/gx10-dashboard}"
 DASHBOARD_SERVICE_NAME="${DASHBOARD_SERVICE_NAME:-gx10-dashboard}"
@@ -129,6 +130,15 @@ MIN_MEMORY_GB="${MIN_MEMORY_GB:-100}"
 GPU_TEMP_WARNING="${GPU_TEMP_WARNING:-75}"
 GPU_TEMP_CRITICAL="${GPU_TEMP_CRITICAL:-85}"
 TEST_COVERAGE_TARGET="${TEST_COVERAGE_TARGET:-85}"
+
+# =============================================
+# BENCHMARK TARGETS (GB10 optimized)
+# =============================================
+# GB10 (Jetson AGX Orin) has lower token generation speed than RTX 4090
+# 32B model: ~5 tokens/sec (vs ~15 tokens/sec on RTX 4090)
+BENCHMARK_TARGET_TOKENS_PER_SEC="${BENCHMARK_TARGET_TOKENS_PER_SEC:-5}"
+BENCHMARK_TARGET_LATENCY_MS="${BENCHMARK_TARGET_LATENCY_MS:-5000}"
+LOAD_TEST_SUCCESS_RATE="${LOAD_TEST_SUCCESS_RATE:-80}"
 
 # =============================================
 # NODE.JS CONFIGURATION
