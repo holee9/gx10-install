@@ -227,12 +227,15 @@ curl http://localhost:9000/api/health
 
 | 구성 | 사용량 | 여유 |
 |-----|-------|------|
-| kqwen-coder 단독 (32K) | 33 GB | 86 GB |
-| kqwen-coder + kqwen-rag 동시 | 66 GB | 53 GB |
+| kqwen-coder 단독 (32K) | 33 GB GPU | 86 GB |
+| kqwen-coder + kqwen-rag | 각 33 GB, GPU 교대 사용 | — |
 | qwen3:30b 단독 (262K 기본값) | **119 GB** | 0 GB ⚠️ |
 
+> **GB10 GPU 실측 동작**: GPU 활성 메모리 한도 ~32 GiB (한 번에 1개 모델).
+> 두 번째 모델 요청 시 GPU 교체, 이전 모델은 **시스템 RAM 유지** (KEEP_ALIVE=2h).
+> 전환 소요 시간 **0.1초** (RAM→GPU, 디스크 재로드 없음). `ollama ps`는 GPU 활성 모델만 표시.
+>
 > **⚠️ qwen3:30b 직접 사용 주의**: 기본 컨텍스트 262K로 로드 시 RAM 전체 점유.
-> Open-WebUI 모델들은 32K ctx Modelfile 적용으로 안전.
 
 ### 발견 및 해결된 이슈 (Knowledge Base)
 
@@ -255,6 +258,7 @@ curl http://localhost:9000/api/health
 | KB-015 | t3610 ↔ gx10 2.5G 직결 구성 | SSH config + NM 영속 라우팅 + Netplan | ✅ |
 | KB-016 | qwen3:30b 262K ctx → RAM 119 GB 전체 점유 | kqwen-coder:latest (32K ctx) Modelfile로 분리 | ✅ |
 | KB-017 | qwen3.5:122b 실행 불가 (런타임 149 GiB > 시스템 119 GiB) | 삭제. qwen3:30b(32K) 운영 | ✅ |
+| KB-018 | GB10 GPU 활성 메모리 ~32 GiB 제한 — 동시 GPU 로드 1개 | KEEP_ALIVE RAM 상주 + 0.1s 교체. ollama ps 동작 문서화 | ✅ |
 
 > 상세 내용: `memory/errors/KB-*.md`
 
