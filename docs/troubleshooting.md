@@ -124,7 +124,7 @@ curl -s https://ollama.com/api/tags | head -5
 2. Check internet connectivity
 3. Try downloading manually:
    ```bash
-   ollama pull qwen3:30b
+   ollama pull qwen3.6:latest
    ```
 4. Check disk space for model storage
 
@@ -271,8 +271,8 @@ curl -s http://localhost:11434/api/ps | jq .
    ```
 3. Use smaller model for faster responses:
    ```bash
-   # Use 7b instead of 32b for quick tasks
-   ollama run qwen3:30b "Hello"
+   # Use devstral or gemma4 for quick tasks
+   ollama run devstral-small-2:latest "Hello"
    ```
 4. Adjust Ollama settings in `/etc/systemd/system/ollama.service`:
    ```ini
@@ -538,7 +538,7 @@ nvidia-smi --query-gpu=memory.used,memory.total --format=csv
    ```
 2. Use smaller model:
    ```bash
-   ollama run qwen3:30b
+   ollama run devstral-small-2:latest
    ```
 3. Reduce context length in Ollama settings
 4. Switch brains to free GPU memory

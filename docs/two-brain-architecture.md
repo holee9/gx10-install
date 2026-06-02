@@ -55,10 +55,10 @@ GX10 시스템은 **Two Brain 아키텍처**를 기반으로 작동합니다:
 ```
 총 메모리: 128GB LPDDR5x Unified Memory
 ├─ Code Brain (권장): 50-60GB
-│  ├─ kqwen-coder:latest: 24GB (16K KV Cache)
-│  ├─ qwen3:30b: 5GB (상시 로드)
-│  ├─ devstral-small-2:latest: 10GB (on-demand)
-│  └─ Ollama 오버헤드: 4GB
+│  ├─ kqwen-coder:latest: 33GB (32K ctx, GPU 활성)
+│  ├─ qwen3-embedding:latest: 15GB (GPU 활성, 상시 로드)
+│  ├─ devstral-small-2:latest: ~20GB (on-demand)
+│  └─ Ollama 오버헤드: ~2GB
 ├─ Vision Brain: 70-90GB
 │  ├─ qwen2.5-vl:72b: 70GB
 │  └─ YOLOv8x + SAM2: 10-20GB
@@ -151,20 +151,20 @@ Vision Brain: 48-76GB VRAM
 **권장 구성 (Option A: 공격적 확장)**:
 ```bash
 # 총 메모리: 50-60GB
-kqwen-coder:latest (메인): 24GB
-  - KV Cache: 16K context
-  - 용도: 복잡한 코드 생성, 대규모 리팩토링
+kqwen-coder:latest (메인): 33GB
+  - KV Cache: 32K context (Q4_K_M, 36B MoE)
+  - 용도: 코드 생성, 리팩토링, 한국어 응답
 
-qwen3:30b (서브): 5GB
+qwen3-embedding:latest (임베딩): 15GB
   - 상시 로드 (Hot Standby)
-  - 용도: 빠른 질문 응답, 간단한 수정
+  - 용도: RAG 임베딩, 벡터 검색 (4096차원)
 
-devstral-small-2:latest (수학/논리): 10GB
+devstral-small-2:latest (보조): ~20GB
   - on-demand 로드
   - 용도: 복잡한 수학, 알고리즘 문제
 
-Ollama 오버헤드: 4GB
-버퍼: 7-17GB
+Ollama 오버헤드: ~2GB
+실측 합계: ~48GB / 119GB 가용
 ```
 
 **구현 가이드**: 00-sudo-prereqs.sh (Phase 0에 통합됨, 구 03-environment-config.sh)

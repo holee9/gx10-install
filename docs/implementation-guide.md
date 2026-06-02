@@ -45,13 +45,17 @@
 
 | 항목 | 사양 |
 |------|------|
-| CPU | ARM v9.2-A (20-core: 10x Cortex-X925 + 10x Cortex-A725) |
+| CPU | ARM v9.2-A (20-core: 10x Cortex-X925 @ 3.9GHz + 10x Cortex-A725 @ 2.8GHz) |
 | GPU | NVIDIA Blackwell GB10 (1 petaFLOP FP4 sparse) |
-| 메모리 | 128GB LPDDR5x Unified Memory |
+| 메모리 | 128GB LPDDR5x Unified Memory (실측 가용: 119 GiB) |
 | 메모리 대역폭 | 273 GB/s (CPU+GPU 공유) |
-| 스토리지 | 1TB NVMe SSD |
+| 스토리지 | 1TB NVMe SSD (실측 가용: ~983 GB) |
 | 네트워크 | 10GbE + ConnectX-7 (200Gbps QSFP) |
-| OS | DGX OS 7.2.3 (Ubuntu 24.04 LTS 기반) |
+| OS | DGX OS 7.2.3 (Ubuntu 24.04.4 LTS) |
+| 커널 | 6.17.0-1018-nvidia |
+| GPU 드라이버 | NVIDIA 580.159.03 |
+| CUDA | 13.0 |
+| Ollama | v0.23.2 |
 
 ### 2.2 UMA(Unified Memory Architecture) 특성
 
