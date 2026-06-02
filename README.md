@@ -203,7 +203,6 @@ curl http://localhost:9000/api/health
 | `kqwen-coder:latest` | 23 GB | **33 GB** | qwen35moe (qwen3.6 기반) |
 | `kqwen-rag:latest` | 23 GB | **33 GB** | qwen35moe (qwen3.6 기반) |
 | `qwen3.6:latest` | 23 GB | 33 GB | qwen35moe, 36B, tools+thinking |
-| `qwen3:30b` | 18 GB | 31 GB | qwen3moe (262K ctx 기본 — 주의) |
 | `devstral-small-2:latest` | 15 GB | ~20 GB | mistral3, 24B |
 | `gemma4:26b` | 17 GB | ~22 GB | gemma4, 26B |
 | `qwen3-embedding:latest` | 4.7 GB | 15 GB | 임베딩 전용, 4096차원 |
