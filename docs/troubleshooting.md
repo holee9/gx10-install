@@ -124,7 +124,7 @@ curl -s https://ollama.com/api/tags | head -5
 2. Check internet connectivity
 3. Try downloading manually:
    ```bash
-   ollama pull qwen2.5-coder:7b
+   ollama pull qwen3:30b
    ```
 4. Check disk space for model storage
 
@@ -141,8 +141,8 @@ ollama show <model-name> --modelfile
 **Solutions**:
 1. Remove and re-download the model:
    ```bash
-   ollama rm qwen2.5-coder:32b
-   ollama pull qwen2.5-coder:32b
+   ollama rm kqwen-coder:latest
+   ollama pull kqwen-coder:latest
    ```
 2. Check available disk space
 3. Verify OLLAMA_MODELS environment variable
@@ -263,7 +263,7 @@ curl -s http://localhost:11434/api/ps | jq .
 **Solutions**:
 1. Ensure model is loaded in GPU:
    ```bash
-   ollama run qwen2.5-coder:32b "test" --verbose
+   ollama run kqwen-coder:latest "test" --verbose
    ```
 2. Check for GPU memory pressure:
    ```bash
@@ -272,7 +272,7 @@ curl -s http://localhost:11434/api/ps | jq .
 3. Use smaller model for faster responses:
    ```bash
    # Use 7b instead of 32b for quick tasks
-   ollama run qwen2.5-coder:7b "Hello"
+   ollama run qwen3:30b "Hello"
    ```
 4. Adjust Ollama settings in `/etc/systemd/system/ollama.service`:
    ```ini
@@ -306,7 +306,7 @@ nvidia-smi -l 1
    ```
 4. Force GPU layers:
    ```bash
-   OLLAMA_NUM_GPU=999 ollama run qwen2.5-coder:32b "test"
+   OLLAMA_NUM_GPU=999 ollama run kqwen-coder:latest "test"
    ```
 
 ### High GPU Temperature
@@ -534,11 +534,11 @@ nvidia-smi --query-gpu=memory.used,memory.total --format=csv
 **Solutions**:
 1. Unload unused models:
    ```bash
-   curl http://localhost:11434/api/generate -d '{"model":"qwen2.5-coder:32b","keep_alive":0}'
+   curl http://localhost:11434/api/generate -d '{"model":"kqwen-coder:latest","keep_alive":0}'
    ```
 2. Use smaller model:
    ```bash
-   ollama run qwen2.5-coder:7b
+   ollama run qwen3:30b
    ```
 3. Reduce context length in Ollama settings
 4. Switch brains to free GPU memory

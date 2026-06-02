@@ -55,9 +55,9 @@ GX10 시스템은 **Two Brain 아키텍처**를 기반으로 작동합니다:
 ```
 총 메모리: 128GB LPDDR5x Unified Memory
 ├─ Code Brain (권장): 50-60GB
-│  ├─ qwen2.5-coder:32b: 24GB (16K KV Cache)
-│  ├─ qwen2.5-coder:7b: 5GB (상시 로드)
-│  ├─ deepseek-coder-v2:16b: 10GB (on-demand)
+│  ├─ kqwen-coder:latest: 24GB (16K KV Cache)
+│  ├─ qwen3:30b: 5GB (상시 로드)
+│  ├─ devstral-small-2:latest: 10GB (on-demand)
 │  └─ Ollama 오버헤드: 4GB
 ├─ Vision Brain: 70-90GB
 │  ├─ qwen2.5-vl:72b: 70GB
@@ -151,15 +151,15 @@ Vision Brain: 48-76GB VRAM
 **권장 구성 (Option A: 공격적 확장)**:
 ```bash
 # 총 메모리: 50-60GB
-qwen2.5-coder:32b (메인): 24GB
+kqwen-coder:latest (메인): 24GB
   - KV Cache: 16K context
   - 용도: 복잡한 코드 생성, 대규모 리팩토링
 
-qwen2.5-coder:7b (서브): 5GB
+qwen3:30b (서브): 5GB
   - 상시 로드 (Hot Standby)
   - 용도: 빠른 질문 응답, 간단한 수정
 
-deepseek-coder-v2:16b (수학/논리): 10GB
+devstral-small-2:latest (수학/논리): 10GB
   - on-demand 로드
   - 용도: 복잡한 수학, 알고리즘 문제
 
@@ -255,8 +255,8 @@ outputs = model.process_batch(images, batch_size=4)
 
 **개념**:
 ```python
-# Code Mode: qwen2.5-coder:32b (50GB)
-# Vision Mode: qwen2.5-coder:32b + qwen2.5-vl:7b (60GB)
+# Code Mode: kqwen-coder:latest (50GB)
+# Vision Mode: kqwen-coder:latest + qwen2.5-vl:7b (60GB)
 
 # 장점:
 # - 전환 시간: 30초 → 10초 (67% 단축)

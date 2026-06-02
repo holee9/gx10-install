@@ -327,7 +327,7 @@
 - 반복 작업 제출
 
 **예상 시나리오**:
-- qwen2.5-coder:32B 로드
+- kqwen-coder:latest 로드
 - qwen2.5-vl:72B 로드 (Code Brain 정지 후)
 
 **기대 결과**:

@@ -250,7 +250,7 @@
 - 코드 하이라이팅
 
 **FR-PRS-7.2**: 기본 기능
-- 모델 선택 (qwen2.5-coder:32b, :7b)
+- 모델 선택 (kqwen-coder:latest, qwen3:30b)
 - 대화 기록 저장
 - 코드 조각 테스트
 
@@ -306,9 +306,9 @@
 
 **Code Brain 메모리**:
 - 권장: 50-60GB (Option A: 공격적 확장)
-  - qwen2.5-coder:32b: 24GB (16K KV Cache)
-  - qwen2.5-coder:7b: 5GB (상시 로드)
-  - deepseek-coder-v2:16b: 10GB (on-demand)
+  - kqwen-coder:latest: 31GB (32K ctx)
+  - qwen3:30b: 18GB weights (범용)
+  - devstral-small-2:latest: 15GB (코딩 보조)
   - Ollama 오버헤드: 4GB
 - 보수적 설정: 40-45GB (단일 모델 + on-demand 서브 모델)
 

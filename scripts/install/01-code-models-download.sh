@@ -71,7 +71,7 @@ trap "rollback $CHECKPOINT_ID; exit 1" ERR
 log "Starting code models download..."
 
 # Configure KV Cache size for 16K context window (PRD requirement)
-# Reference: PRD.md line 169 - "qwen2.5-coder:32b: 24GB (16K KV Cache)"
+# Reference: README.md - Current model stack (kqwen-coder:latest, qwen3:30b, devstral-small-2, gemma4:26b)
 log "Configuring Ollama environment for ${OLLAMA_NUM_CTX} context window..."
 export OLLAMA_NUM_CTX="$OLLAMA_NUM_CTX"
 log "OLLAMA_NUM_CTX set to $OLLAMA_NUM_CTX"

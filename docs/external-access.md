@@ -41,7 +41,7 @@ Method: POST
 Headers: Content-Type: application/json
 Body:
 {
-  "model": "qwen2.5-coder:7b",
+  "model": "qwen3:30b",
   "prompt": "your prompt here",
   "stream": false
 }

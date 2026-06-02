@@ -570,7 +570,7 @@ Message format:
       "power_draw": 30.5
     },
     "brain": { "active": "code" },
-    "ollama": { "models_loaded": ["qwen2.5-coder:32b"] }
+    "ollama": { "models_loaded": ["kqwen-coder:latest"] }
   },
   "alerts": []
 }

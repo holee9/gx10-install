@@ -166,9 +166,9 @@ GX10 시스템은 **Two Brain Architecture**를 기반으로 작동합니다:
 - Ollama + Qwen2.5-Coder-7B (빠른 응답)
 - DeepSeek-Coder-V2-16B (수학/논리)
 - **메모리: 50-60GB** (권장, Option A: 공격적 확장)
-  - qwen2.5-coder:32b: 24GB (16K KV Cache)
-  - qwen2.5-coder:7b: 5GB (상시 로드)
-  - deepseek-coder-v2:16b: 10GB (on-demand)
+  - kqwen-coder:latest: 31GB (32K ctx)
+  - qwen3:30b: 18GB weights (범용)
+  - devstral-small-2:latest: 15GB (코딩 보조)
   - Ollama 오버헤드: 4GB
 - 보수적 설정: 40-45GB (단일 모델 + on-demand 서브 모델)
 
@@ -425,9 +425,9 @@ flowchart TD
 **Code Brain 메모리 구성 (Option A: 공격적 확장)**:
 - 총 메모리: 50-60GB
 - 구성:
-  - qwen2.5-coder:32b (메인): 24GB (16K KV Cache)
-  - qwen2.5-coder:7b (서브): 5GB (상시 로드)
-  - deepseek-coder-v2:16b (수학/논리): 10GB (on-demand)
+  - kqwen-coder:latest: 31GB (32K ctx)
+  - qwen3:30b: 18GB weights (범용)
+  - devstral-small-2:latest: 15GB (코딩 보조)
   - Ollama 오버헤드: 4GB
   - 버퍼: 7-17GB
 

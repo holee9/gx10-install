@@ -5,7 +5,7 @@
 The GX10 Brain API provides shell-based endpoints for managing the dual-brain system architecture. The API scripts are located at `/gx10/api/` and enable programmatic control of brain switching, status monitoring, and system resource management.
 
 The dual-brain architecture supports:
-- **Code Brain**: Ollama-based local LLM for coding assistance (qwen2.5-coder:32b)
+- **Code Brain**: Ollama-based local LLM for coding assistance (kqwen-coder:latest)
 - **Vision Brain**: Docker-based vision-language model (Qwen2.5-VL-32B)
 
 ---
@@ -141,7 +141,7 @@ curl http://localhost:11434/api/tags
 {
   "models": [
     {
-      "name": "qwen2.5-coder:32b",
+      "name": "kqwen-coder:latest",
       "size": 19853023744,
       "digest": "abc123...",
       "modified_at": "2026-02-01T10:00:00Z",
@@ -161,7 +161,7 @@ curl http://localhost:11434/api/tags
 curl -X POST http://localhost:11434/api/generate \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "qwen2.5-coder:32b",
+    "model": "kqwen-coder:latest",
     "prompt": "Write a Python function to calculate fibonacci",
     "stream": false
   }'
@@ -177,8 +177,8 @@ curl http://localhost:11434/api/ps
 {
   "models": [
     {
-      "name": "qwen2.5-coder:32b",
-      "model": "qwen2.5-coder:32b",
+      "name": "kqwen-coder:latest",
+      "model": "kqwen-coder:latest",
       "size": 19853023744,
       "digest": "abc123...",
       "expires_at": "2026-02-04T11:30:00Z",

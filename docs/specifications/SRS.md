@@ -139,9 +139,9 @@
 
 **Code Brain (필수)**:
 - Ollama: 0.5+
-- qwen2.5-coder:32b (메인)
-- qwen2.5-coder:7b (빠른 응답)
-- deepseek-coder-v2:16b (대안)
+- kqwen-coder:latest (메인 코딩)
+- qwen3:30b (범용 추론)
+- devstral-small-2:latest (대안)
 
 **Vision Brain (권장)**:
 - qwen2.5-vl:72b 또는 :7b
@@ -150,7 +150,7 @@
 - Depth-Anything-V2
 
 **임베딩 (선택)**:
-- nomic-embed-text
+- qwen3-embedding:latest
 
 ---
 
@@ -266,9 +266,9 @@
 
 **Code Brain**:
 - 메모리: 50-60GB (권장, Option A) 또는 40-45GB (보수적)
-  - qwen2.5-coder:32b: 24GB (16K KV Cache)
-  - qwen2.5-coder:7b: 5GB (상시 로드)
-  - deepseek-coder-v2:16b: 10GB (on-demand)
+  - kqwen-coder:latest: 31GB (32K ctx)
+  - qwen3:30b: 18GB (범용)
+  - devstral-small-2:latest: 15GB (코딩 보조)
   - Ollama 오버헤드: 4GB
 - GPU: 중간 (23-48GB VRAM)
 - CPU: 중간
