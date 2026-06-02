@@ -497,7 +497,7 @@ for m in qwen3.6:latest qwen3:30b devstral-small-2:latest gemma4:26b qwen3-embed
 done
 
 # 전용 모델 재생성
-ollama create kqwen-coder -f /gx10/automation/Modelfile-kqwen-coder-v2
+ollama create kqwen-coder -f /gx10/automation/Modelfile-kqwen-coder
 ollama create kqwen-rag   -f /gx10/automation/Modelfile-kqwen-rag
 ```
 
