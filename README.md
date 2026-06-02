@@ -225,17 +225,14 @@ curl http://localhost:9000/api/health
 
 #### 메모리 실측 (GB10, 119 GiB 통합 메모리)
 
-| 구성 | 사용량 | 여유 |
-|-----|-------|------|
-| kqwen-coder 단독 (32K) | 33 GB GPU | 86 GB |
-| kqwen-coder + kqwen-rag | 각 33 GB, GPU 교대 사용 | — |
-| qwen3:30b 단독 (262K 기본값) | **119 GB** | 0 GB ⚠️ |
+| 구성 | GPU 사용량 | 동시 가능 |
+|-----|-----------|---------|
+| kqwen-coder + qwen3-embedding | 31,609 + 14,386 MiB = **~46 GiB** | ✅ 상시 권장 구성 |
+| kqwen-coder + kqwen-rag | ~63 GiB | ❌ 한도 초과, GPU 교대 |
+| qwen3:30b (262K 기본값) | 전체 RAM | ⚠️ 직접 사용 금지 |
 
-> **GB10 GPU 실측 동작**: GPU 활성 메모리 한도 ~32 GiB (한 번에 1개 모델).
-> 두 번째 모델 요청 시 GPU 교체, 이전 모델은 **시스템 RAM 유지** (KEEP_ALIVE=2h).
-> 전환 소요 시간 **0.1초** (RAM→GPU, 디스크 재로드 없음). `ollama ps`는 GPU 활성 모델만 표시.
->
-> **⚠️ qwen3:30b 직접 사용 주의**: 기본 컨텍스트 262K로 로드 시 RAM 전체 점유.
+> **GB10 GPU 동시 로드 실효 한도: ~46-48 GiB** (nvidia-smi 실측).
+> kqwen-coder↔kqwen-rag 교대 시 전환 0.1초 (KEEP_ALIVE=2h RAM 상주). `ollama ps`는 GPU 활성 모델만 표시.
 
 ### 발견 및 해결된 이슈 (Knowledge Base)
 
