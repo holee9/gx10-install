@@ -196,23 +196,43 @@ curl http://localhost:9000/api/health
 
 ### 현재 운영 AI 모델 (2026-06-02 기준)
 
-| 모델 | 크기 | 용도 | 비고 |
-|------|------|------|------|
-| `kqwen-coder:latest` | 18 GB | K-Qwen-Coder 전용 (32K ctx) | qwen3:30b 기반, 한국어 시스템 프롬프트 내장 |
-| `qwen3:30b` | 18 GB | 범용 추론·대화 | MoE 구조, 262K ctx (기본값 — 주의: 119 GB RAM 점유) |
-| `devstral-small-2:latest` | 15 GB | 코딩 보조 | SWE-bench 68% |
-| `gemma4:26b` | 17 GB | 비전·범용 | Google, Apache 2.0 |
-| `qwen3-embedding:latest` | 4.7 GB | 임베딩 | MTEB 다국어 1위 |
+#### Ollama 설치 모델
 
-> **⚠️ qwen3:30b 직접 사용 시 주의**: 기본 컨텍스트 262,144 토큰으로 로드 시 RAM 119 GB 전체 점유.
-> Open-WebUI K-Qwen-Coder는 `kqwen-coder:latest` (32K ctx, ~31 GB)를 사용하므로 정상.
+| Ollama 모델 | 파일 크기 | 런타임 (32K) | 아키텍처 |
+|------------|---------|-------------|---------|
+| `kqwen-coder:latest` | 23 GB | **33 GB** | qwen35moe (qwen3.6 기반) |
+| `kqwen-rag:latest` | 23 GB | **33 GB** | qwen35moe (qwen3.6 기반) |
+| `qwen3.6:latest` | 23 GB | 33 GB | qwen35moe, 36B, tools+thinking |
+| `qwen3:30b` | 18 GB | 31 GB | qwen3moe (262K ctx 기본 — 주의) |
+| `devstral-small-2:latest` | 15 GB | ~20 GB | mistral3, 24B |
+| `gemma4:26b` | 17 GB | ~22 GB | gemma4, 26B |
+| `qwen3-embedding:latest` | 4.7 GB | 15 GB | 임베딩 전용, 4096차원 |
+
+#### Open-WebUI 커스텀 모델
+
+| Open-WebUI 모델 | 베이스 | 용도 |
+|----------------|-------|------|
+| **K-Qwen-Coder** | `kqwen-coder:latest` | 코딩 에이전트 (한국어, web_search, 32K ctx) |
+| **K-Qwen-RAG** | `kqwen-rag:latest` | RAG/온톨로지 검색 (temperature 0.3, 출처 기반) |
+
+#### RAG 임베딩
+
+| 항목 | 설정 |
+|------|------|
+| engine | ollama |
+| model | `qwen3-embedding:latest` |
+| 차원 | 4096 (MTEB 다국어 1위) |
 
 #### 메모리 실측 (GB10, 119 GiB 통합 메모리)
 
-| 컨텍스트 | 모델 가중치 | KV 캐시 | 합계 |
-|---------|------------|---------|------|
-| 32K (운영 설정) | 18 GB | 13 GB | **31 GB** |
-| 262K (기본값) | 18 GB | 101 GB | 119 GB (RAM 전체) |
+| 구성 | 사용량 | 여유 |
+|-----|-------|------|
+| kqwen-coder 단독 (32K) | 33 GB | 86 GB |
+| kqwen-coder + kqwen-rag 동시 | 66 GB | 53 GB |
+| qwen3:30b 단독 (262K 기본값) | **119 GB** | 0 GB ⚠️ |
+
+> **⚠️ qwen3:30b 직접 사용 주의**: 기본 컨텍스트 262K로 로드 시 RAM 전체 점유.
+> Open-WebUI 모델들은 32K ctx Modelfile 적용으로 안전.
 
 ### 발견 및 해결된 이슈 (Knowledge Base)
 
@@ -454,27 +474,30 @@ curl http://$(hostname -I | awk '{print $1}'):9000/api/health
 
 ## 🔮 향후 검토 항목 (Roadmap)
 
-### AI 모델 운영 현황 (2026-06-02 업데이트)
+### AI 모델 운영 현황 (2026-06-02 완료)
 
-| 항목 | 현재 상태 | 비고 |
-|------|---------|------|
-| K-Qwen-Coder 베이스 | `kqwen-coder:latest` (qwen3:30b, 32K ctx) | ✅ 운영 중 |
-| RAG 임베딩 교체 | sentence-transformers → qwen3-embedding | 🔲 미완료 (Issue #13) |
-| qwen3.6:35b 추가 검토 | 미설치 | 🔲 검토 중 (Issue #11) |
+| 항목 | 상태 |
+|------|------|
+| K-Qwen-Coder (qwen3.6, 32K ctx) | ✅ 운영 중 |
+| K-Qwen-RAG (qwen3.6, 32K ctx) | ✅ 운영 중 |
+| RAG 임베딩 (qwen3-embedding, 4096차원) | ✅ 완료 |
+| qwen3.6:35b 설치 | ✅ 완료 |
 
-> **메모리 제약 (GB10 실측)**: 119 GiB 통합 메모리. 단일 모델 권장 상한 ~50 GB (weights + 32K KV cache 합산).
-> 100B+ 파라미터 dense 모델은 실행 불가. MoE 구조 모델(active params 기준)만 대형 모델 가능.
+> **메모리 제약 (GB10 실측)**: 119 GiB 통합 메모리.
+> 32K ctx 기준 단일 모델 상한 ~50 GB. kqwen-coder + kqwen-rag 동시 운용 시 ~66 GB.
+> 100B+ 모델(dense/MoE 무관)은 전체 weights 로드 필요 → 실행 불가.
 
-### 모델 업데이트 명령
+### 모델 재설치 명령
 
 ```bash
-# 설치된 모델 최신 버전으로 업데이트
-for m in qwen3:30b devstral-small-2:latest gemma4:26b qwen3-embedding:latest; do
+# 기반 모델 업데이트
+for m in qwen3.6:latest qwen3:30b devstral-small-2:latest gemma4:26b qwen3-embedding:latest; do
   ollama pull $m
 done
 
-# K-Qwen-Coder 전용 모델 재생성 (컨텍스트 제한 포함)
-ollama create kqwen-coder -f /gx10/automation/Modelfile-kqwen-coder
+# 전용 모델 재생성
+ollama create kqwen-coder -f /gx10/automation/Modelfile-kqwen-coder-v2
+ollama create kqwen-rag   -f /gx10/automation/Modelfile-kqwen-rag
 ```
 
 ### 관련 링크
