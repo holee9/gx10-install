@@ -55,7 +55,7 @@
 | 커널 | 6.17.0-1018-nvidia |
 | GPU 드라이버 | NVIDIA 580.159.03 |
 | CUDA | 13.0 |
-| Ollama | v0.23.2 |
+| Ollama | v0.30.6 |
 
 ### 2.2 UMA(Unified Memory Architecture) 특성
 
