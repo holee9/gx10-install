@@ -2,6 +2,9 @@
 
 This guide provides solutions for common issues encountered during GX10 installation and operation.
 
+> **현재 운영 환경 (2026-06-08):** Ollama v0.30.6, gpt-oss:120b (38.5 tok/s), qwen3-embedding:latest  
+> **Known Issues:** KB-019 (gpt-oss 빈 응답 → /api/chat 사용), KB-020 (qwen3-coder-next 설치 금지)
+
 ## Table of Contents
 
 - [Installation Issues](#installation-issues)
@@ -141,8 +144,8 @@ ollama show <model-name> --modelfile
 **Solutions**:
 1. Remove and re-download the model:
    ```bash
-   ollama rm kqwen-coder:latest
-   ollama pull kqwen-coder:latest
+   ollama rm gpt-oss:120b
+   ollama pull gpt-oss:120b
    ```
 2. Check available disk space
 3. Verify OLLAMA_MODELS environment variable
@@ -263,18 +266,18 @@ curl -s http://localhost:11434/api/ps | jq .
 **Solutions**:
 1. Ensure model is loaded in GPU:
    ```bash
-   ollama run kqwen-coder:latest "test" --verbose
+   ollama run gpt-oss:120b "test" --verbose
    ```
 2. Check for GPU memory pressure:
    ```bash
    nvidia-smi --query-gpu=memory.used,memory.total --format=csv
    ```
-3. Use smaller model for faster responses:
+3. Check current Ollama performance (v0.30.6 기준 gpt-oss:120b → 38.5 tok/s):
    ```bash
-   # Use devstral or gemma4 for quick tasks
-   ollama run devstral-small-2:latest "Hello"
+   ollama ps  # 현재 로드된 모델 확인
+   ollama run gpt-oss:120b "hello" --verbose  # 속도 측정
    ```
-4. Adjust Ollama settings in `/etc/systemd/system/ollama.service`:
+4. Adjust Ollama settings in `/etc/systemd/system/ollama.service.d/override.conf`:
    ```ini
    Environment="OLLAMA_NUM_GPU=1"
    Environment="OLLAMA_GPU_OVERHEAD=0"
@@ -306,7 +309,7 @@ nvidia-smi -l 1
    ```
 4. Force GPU layers:
    ```bash
-   OLLAMA_NUM_GPU=999 ollama run kqwen-coder:latest "test"
+   OLLAMA_NUM_GPU=999 ollama run gpt-oss:120b "test"
    ```
 
 ### High GPU Temperature
@@ -532,16 +535,20 @@ nvidia-smi --query-gpu=memory.used,memory.total --format=csv
 ```
 
 **Solutions**:
-1. Unload unused models:
+1. Unload models to free memory:
    ```bash
-   curl http://localhost:11434/api/generate -d '{"model":"kqwen-coder:latest","keep_alive":0}'
+   curl http://localhost:11434/api/generate -d '{"model":"gpt-oss:120b","keep_alive":0}'
    ```
-2. Use smaller model:
+2. Check memory usage:
    ```bash
-   ollama run devstral-small-2:latest
+   nvidia-smi --query-gpu=memory.used,memory.total --format=csv
+   free -h
    ```
-3. Reduce context length in Ollama settings
-4. Switch brains to free GPU memory
+3. Clear buffer cache if needed:
+   ```bash
+   sudo sh -c 'sync; echo 3 > /proc/sys/vm/drop_caches'
+   ```
+4. gpt-oss:120b requires ~76 GiB; ensure system has sufficient headroom
 
 ---
 

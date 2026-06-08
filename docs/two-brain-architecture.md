@@ -2,6 +2,9 @@
 
 본 문서는 GX10 시스템의 Two Brain 아키텍처(Code Brain, Vision Brain) 최적화 방법을 상세히 설명합니다.
 
+> **⚠️ 현재 운영 상태 (2026-06-08)**: Code Brain만 배포 운영 중. Vision Brain은 미배포(향후 검토).  
+> Code Brain 현행 구성: `gpt-oss:120b` (38.5 tok/s, ~76 GiB) + `qwen3-embedding:latest` (~5 GiB)
+
 **작성일**: 2026-02-01
 **버전**: 1.0
 **상태**: 제안
@@ -35,10 +38,10 @@ GX10 시스템은 **Two Brain 아키텍처**를 기반으로 작동합니다:
 
 **핵심 제약사항**:
 - 단일 Brain 실행 정책 (하드웨어 한계로 불가피)
-- 총 메모리: 128GB UMA
-- Code Brain: 50-60GB (권장)
-- Vision Brain: 70-90GB
-- 동시 실행 시 필요: 120-150GB > 128GB available ❌
+- 총 메모리: 128GB UMA (실측 가용: 119 GiB)
+- Code Brain (현재): ~81 GiB (gpt-oss:120b ~76 + embedding ~5)
+- Vision Brain: 70-90GB (향후 계획)
+- 동시 실행 시 필요: ~170 GiB > 119 GiB available ❌
 
 **최적화 목표**:
 - Brain 전환 시간 최소화 (30초 → 5초)
@@ -53,18 +56,18 @@ GX10 시스템은 **Two Brain 아키텍처**를 기반으로 작동합니다:
 ### 1.1 메모리 제약
 
 ```
-총 메모리: 128GB LPDDR5x Unified Memory
-├─ Code Brain (권장): 50-60GB
-│  ├─ kqwen-coder:latest: 33GB (32K ctx, GPU 활성)
-│  ├─ qwen3-embedding:latest: 15GB (GPU 활성, 상시 로드)
-│  ├─ devstral-small-2:latest: ~20GB (on-demand)
-│  └─ Ollama 오버헤드: ~2GB
-├─ Vision Brain: 70-90GB
-│  ├─ qwen2.5-vl:72b: 70GB
+총 메모리: 128GB LPDDR5x Unified Memory (실측 가용: 119 GiB)
+├─ Code Brain (현재 운영): ~81 GiB
+│  ├─ gpt-oss:120b: ~76 GiB (MoE 116.8B, MXFP4, 131K ctx)
+│  ├─ qwen3-embedding:latest: ~5 GiB (Q4_K_M, 4096차원)
+│  └─ Ollama 오버헤드: ~2 GiB (포함)
+├─ Vision Brain (미배포, 향후 계획): 70-90GB
+│  ├─ qwen2.5-vl:72b: ~70GB
 │  └─ YOLOv8x + SAM2: 10-20GB
-└─ 시스템 기본: ~10GB
+└─ 시스템 기본: ~10 GiB
+   여유: ~38 GiB (OS/KV cache용)
 
-동시 실행 시 필요: 130-160GB > 128GB available ❌
+동시 실행 시 필요: ~170 GiB > 119 GiB available ❌
 ```
 
 ### 1.2 GPU 제약
@@ -148,23 +151,21 @@ Vision Brain: 48-76GB VRAM
 
 #### L2-1: 메모리 구성 최적화
 
-**권장 구성 (Option A: 공격적 확장)**:
+**현재 운영 구성 (2026-06-08 확정)**:
 ```bash
-# 총 메모리: 50-60GB
-kqwen-coder:latest (메인): 33GB
-  - KV Cache: 32K context (Q4_K_M, 36B MoE)
-  - 용도: 코드 생성, 리팩토링, 한국어 응답
+# 총 메모리 사용: ~81 GiB / 119 GiB 가용
+gpt-oss:120b (단일 엔드포인트): ~76 GiB
+  - MoE 116.8B, MXFP4 양자화, 131K 컨텍스트
+  - 실측 속도: 38.5 tok/s (Ollama v0.30.6)
+  - 용도: 코딩·서치·RAG 모든 추론 통합
 
-qwen3-embedding:latest (임베딩): 15GB
-  - 상시 로드 (Hot Standby)
-  - 용도: RAG 임베딩, 벡터 검색 (4096차원)
+qwen3-embedding:latest (임베딩 전용): ~5 GiB
+  - Q4_K_M, 4096차원, 다국어 MTEB 1위
+  - 용도: RAG 벡터 임베딩
 
-devstral-small-2:latest (보조): ~20GB
-  - on-demand 로드
-  - 용도: 복잡한 수학, 알고리즘 문제
-
-Ollama 오버헤드: ~2GB
-실측 합계: ~48GB / 119GB 가용
+Ollama 오버헤드: 포함 (~2 GiB)
+실측 합계: ~81 GiB / 119 GiB 가용
+여유: ~38 GiB (OS + KV cache + 버퍼)
 ```
 
 **구현 가이드**: 00-sudo-prereqs.sh (Phase 0에 통합됨, 구 03-environment-config.sh)
@@ -382,13 +383,12 @@ MAX_WORKERS=2
 | L1-1 적용 | 5초 | 6회 | 30초 (83% ↓) |
 | L1-2 적용 | 5초 | 3회 | 15초 (92% ↓) |
 
-### 5.2 Code Brain 성능
+### 5.2 Code Brain 성능 (2026-06-08 실측)
 
-| 구성 | 메모리 | KV Cache | 코드 생성 품질 | 대규모 프로젝트 |
-|------|--------|----------|----------------|----------------|
-| 기본 | 40GB | 4K | 기준 | 불가능 |
-| L2-1 적용 | 50GB | 8K | +20% | 어려움 |
-| L2-2 적용 | 60GB | 16K | +40% | 가능 |
+| 구성 | 메모리 | 컨텍스트 | 속도 | 비고 |
+|------|--------|---------|------|------|
+| 현재 운영 (gpt-oss:120b) | ~81 GiB | 131K | **38.5 tok/s** | Ollama v0.30.6 실측 |
+| 이전 (kqwen-coder 32K) | ~48 GiB | 32K | 21.6 tok/s | v0.23.2 시절 |
 
 ### 5.3 Vision Brain 성능
 
@@ -605,8 +605,9 @@ nvidia-smi
 
 | 일자 | 버전 | 설명 | 리뷰어 |
 |------|------|------|--------|
-| 2026-02-01 | 1.0 | 초기 작성 - Two Brain 최적화 종합 가이드 | drake |
+| 2026-06-08 | 1.2 | 현재 운영 상태 반영: gpt-oss:120b 38.5 tok/s, 메모리 ~81 GiB 실측, Vision Brain 미배포 명시 | holee |
 | 2026-02-01 | 1.1 | 향후 작업 제안 추가 (P1 미완료, P2 연구 중) | drake |
+| 2026-02-01 | 1.0 | 초기 작성 - Two Brain 최적화 종합 가이드 | drake |
 
 ---
 

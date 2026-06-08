@@ -78,21 +78,25 @@
 - Buffer Cache가 GPU 메모리를 점유할 수 있음
 - 대역폭(273 GB/s)이 주요 병목 → 대형 모델의 TTFT가 김
 
-### 2.3 실측 벤치마크 (2025년 리서치 기준)
+### 2.3 실측 벤치마크 (2026-06-08 기준)
 
-| 모델 | 토큰/초 | TTFT | 메모리 사용량 | 비고 |
-|------|---------|------|--------------|------|
-| Qwen2.5-Coder-7B (Q4) | 46 | 22초 | ~5GB | 빠른 응답용 |
-| Qwen3:32B (Q4) | 9.5 | ~30초 | ~20GB | **권장 메인 모델** |
-| DeepSeek-Coder-V2-16B | 15-20 | ~25초 | ~10GB | 대안 |
-| Qwen2.5-72B | 4.6 | 133초 | ~45GB | 복잡한 작업만 |
-| Llama-3.1-70B | 4.6 | ~120초 | ~45GB | 대안 |
-| DeepSeek-R1-14B (FP8+SGLang) | 83.5 | - | ~10GB | 배치 처리시 |
+| 모델 | 토큰/초 | 메모리 사용량 | 컨텍스트 | 비고 |
+|------|---------|--------------|---------|------|
+| `gpt-oss:120b` (MoE, MXFP4) | **38.5** | ~76 GiB | 131K | ✅ **현재 단일 운영 모델** |
+| `qwen3-embedding:latest` (Q4_K_M) | — | ~5 GiB | — | 임베딩 전용 (4096차원) |
 
-**결론:**
-- 32B 모델이 실용적 sweet spot
-- 70B+ 모델은 TTFT가 길어 대화형 작업에 부적합
-- 7B 모델은 자동완성/빠른 응답에 적합
+**참고 — 이전 Dense 모델 실측 (2026-06 조사):**
+| 모델 | 토큰/초 | 비고 |
+|------|---------|------|
+| Dense 70B Q4_K_M | 2.7 | ❌ 대화 불가 |
+| Dense 32B Q4_K_M | ~9.5 | ⚠️ 느림 |
+| Dense 27B Q4_K_M | ~12 | ⚠️ 가능하나 느림 |
+| MoE 122B/10B (Qwen3.5) | 28–51 | ✅ 실용적 |
+
+**핵심 원칙 (GB10 하드웨어):**
+- 메모리 병목 = 273 GB/s 대역폭 → Dense 대형 모델은 구조적 불리
+- MoE 아키텍처만이 active param 수를 줄여 속도 이점 확보
+- gpt-oss:120b: 116.8B 파라미터 중 추론 시 ~5B만 활성 → 38.5 tok/s 달성
 
 ---
 
@@ -154,27 +158,28 @@
 
 ## 5. GX10 Brain 구성
 
-### 5.1 Two Brain 아키텍처
+### 5.1 현재 운영 아키텍처 (2026-06-08)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                         GX10 System                             │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  ┌─────────────────────┐      ┌─────────────────────┐          │
-│  │    CODE BRAIN       │  OR  │   VISION BRAIN      │          │
-│  │    (Native Mode)    │      │   (Docker Mode)     │          │
-│  ├─────────────────────┤      ├─────────────────────┤          │
-│  │ Ollama (systemd)    │      │ PyTorch Container   │          │
-│  │ • Qwen2.5-Coder-32B │      │ • Qwen2.5-VL-72B    │          │
-│  │ • DeepSeek-Coder    │      │ • YOLO/SAM2         │          │
-│  │ • Qwen2.5-Coder-7B  │      │ • TensorRT          │          │
-│  ├─────────────────────┤      ├─────────────────────┤          │
-│  │ 메모리: 40-50GB     │      │ 메모리: 70-90GB     │          │
-│  │ 토큰/초: 9-46       │      │ GPU: 최대 활용      │          │
-│  └─────────────────────┘      └─────────────────────┘          │
+│  ┌──────────────────────────────────────────┐                  │
+│  │           CODE BRAIN (현재 운영)           │                  │
+│  │           (Native Mode, systemd)          │                  │
+│  ├──────────────────────────────────────────┤                  │
+│  │ Ollama v0.30.6 (systemd)                 │                  │
+│  │ • gpt-oss:120b (116.8B MoE, MXFP4)      │                  │
+│  │   → 코딩·서치·RAG 범용 추론 38.5 tok/s   │                  │
+│  │ • qwen3-embedding:latest (7.6B Q4_K_M)   │                  │
+│  │   → RAG 임베딩 4096차원                   │                  │
+│  ├──────────────────────────────────────────┤                  │
+│  │ 메모리: ~81 GiB / 119 GiB               │                  │
+│  │ 컨텍스트: gpt-oss 131K, embedding 4096   │                  │
+│  └──────────────────────────────────────────┘                  │
 │                                                                 │
-│  ⚠️ 동시 실행 금지 - 단일 Brain만 활성화                         │
+│  [Vision Brain - 미배포, 향후 검토 예정]                         │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -183,19 +188,19 @@
 
 **아키텍처 결정 참조**: [ADR-002: 단일 Brain 실행 정책](GX10_Project_Documents/ADR-002-Single-Brain-Policy.md)
 
-1. **단일 Brain만 실행 가능**
-2. **Code + Vision 동시 실행 금지**
-3. **Brain 전환 시 Buffer Cache 플러시 필수**
+1. **단일 엔드포인트 원칙**: 모든 추론 요청은 `gpt-oss:120b` 하나로 처리
+2. **클라이언트 모델 선택 불필요**: 호출 시스템에서 모델 구분 없이 사용
+3. **Vision Brain**: 현재 미배포, 비전 입력 필요 시 추후 검토
 
-### 5.3 왜 Code Brain은 Native, Vision Brain은 Docker인가?
+### 5.3 왜 Code Brain은 Native 실행인가?
 
 **아키텍처 결정 참조**: [ADR-001: Native vs Docker 실행](GX10_Project_Documents/ADR-001-Native-vs-Docker.md)
 
 **리서치 결과:**
 - UMA 아키텍처에서 Docker cgroups가 **20-30GB 메모리 오버헤드** 발생
 - 대형 모델(>10B)은 **native 실행이 1.6-2.7x 효율적**
-- Code Brain(32B)은 native로 실행하여 메모리 효율 극대화
-- Vision Brain은 복잡한 의존성 관리를 위해 Docker 사용
+- gpt-oss:120b (~76 GiB)는 native 실행 필수 (Docker 오버헤드 시 메모리 초과)
+- Ollama v0.30.6: cuda_v13 라이브러리로 SM 12.1 (GB10) 완전 지원
 
 ---
 
@@ -222,24 +227,27 @@
 
 ### 6.4 모델 구성
 
-| 용도 | 모델 | 크기 | 토큰/초 |
-|------|------|------|---------|
-| 메인 코딩 | qwen2.5-coder:32b | ~20GB | ~9.5 |
-| 빠른 응답 | qwen2.5-coder:7b | ~5GB | ~46 |
-| 수학/논리 | deepseek-coder-v2:16b | ~10GB | ~18 |
-| 임베딩 | nomic-embed-text | ~275MB | - |
+| 용도 | 모델 | 크기 (디스크) | 메모리 | 토큰/초 |
+|------|------|-------------|--------|---------|
+| **범용 추론 (코딩·서치·RAG)** | `gpt-oss:120b` | 65 GB | ~76 GiB | **38.5** |
+| **텍스트 임베딩** | `qwen3-embedding:latest` | 4.7 GB | ~5 GiB | — |
+
+> **단일 엔드포인트 원칙**: 모든 추론 요청은 `gpt-oss:120b` 하나로 처리.
+> - 116.8B MoE (MXFP4), 컨텍스트 131K, SWE-bench 72.3%, GPQA 82.9%
+> - Tool Calling ✅ (web_search 함수 호출 확인)
+> - 한국어 포함 다국어 코드 생성 ✅
 
 ### 6.5 리소스 사용량
 
 ```
-Code Brain 실행 시:
-├─ Ollama 서버: ~2GB
-├─ 32B 모델 로드: ~20GB
-├─ KV Cache (8K ctx): ~4GB
-├─ 운영 오버헤드: ~4GB
-└─ 총 예상: 30-40GB
+Code Brain 실행 시 (2026-06-08 실측):
+├─ Ollama 서버: ~2 GiB
+├─ gpt-oss:120b 로드: ~76 GiB
+├─ qwen3-embedding 로드: ~5 GiB
+├─ KV Cache (131K ctx): 포함
+└─ 총 실측: ~81 GiB / 119 GiB 가용
 
-남은 메모리: 88-98GB (여유)
+남은 메모리: ~38 GiB (OS/KV cache 여유)
 ```
 
 ---
@@ -625,15 +633,16 @@ ollama --version
 ### 2.2 Ollama 서비스 설정
 
 ```bash
-# systemd 오버라이드 생성
+# systemd 오버라이드 생성 (현재 운영 설정)
 sudo mkdir -p /etc/systemd/system/ollama.service.d
 sudo tee /etc/systemd/system/ollama.service.d/override.conf << EOF
 [Service]
 Environment="OLLAMA_HOST=0.0.0.0"
 Environment="OLLAMA_MODELS=/gx10/brains/code/models"
-Environment="OLLAMA_KEEP_ALIVE=24h"
+Environment="OLLAMA_KEEP_ALIVE=2h"
 Environment="OLLAMA_NUM_PARALLEL=2"
-Environment="OLLAMA_MAX_LOADED_MODELS=2"
+Environment="OLLAMA_MAX_LOADED_MODELS=3"
+Environment="OLLAMA_FLASH_ATTENTION=1"
 EOF
 
 sudo systemctl daemon-reload
@@ -645,37 +654,42 @@ sudo systemctl status ollama
 curl http://localhost:11434/api/version
 ```
 
-### 2.3 코딩 모델 다운로드
+### 2.3 모델 다운로드
 
 ```bash
-# 메인 코딩 모델 (32B) - 권장
-# 소요 시간: ~30분, 용량: ~20GB
-ollama pull qwen2.5-coder:32b
+# 범용 추론 모델 (116.8B MoE, MXFP4)
+# 소요 시간: ~15분 (LAN), 용량: 65GB
+ollama pull gpt-oss:120b
 
-# 빠른 응답용 (7B)
-# 소요 시간: ~10분, 용량: ~5GB
-ollama pull qwen2.5-coder:7b
-
-# 대안: DeepSeek (수학/논리 강점)
-ollama pull deepseek-coder-v2:16b
-
-# 임베딩 모델 (코드 검색용)
-ollama pull nomic-embed-text
+# 텍스트 임베딩 모델 (RAG용)
+# 소요 시간: ~2분, 용량: 4.7GB
+ollama pull qwen3-embedding:latest
 
 # 설치 확인
 ollama list
 ```
 
+> ⚠️ **설치 금지 (KB-020):** `qwen3-coder-next` (80B) — GB10 aarch64에서 전체 `?` 토큰 출력 버그  
+> (llama.cpp #23010 OPEN). 대안: `qwen3-coder:30b` (MoE 19GB)
+
 ### 2.4 모델 테스트
 
 ```bash
-# 32B 모델 테스트
-time ollama run qwen2.5-coder:32b "Write a Python function to calculate fibonacci numbers with memoization" --verbose
+# gpt-oss:120b 기본 테스트 (/api/chat 사용 — KB-019 참조)
+curl http://localhost:11434/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-oss:120b",
+    "messages": [{"role": "user", "content": "Write a Python fibonacci function with memoization"}],
+    "stream": false
+  }' | jq -r '.message.content'
 
 # 예상 결과:
-# - TTFT: 20-40초
-# - 토큰/초: 8-12
-# - 메모리 사용: ~25GB
+# - 응답 시작: ~5-10초
+# - 토큰/초: ~38.5 (Ollama v0.30.6)
+# - 메모리 사용: ~76 GiB
+
+# ⚠️ /api/generate + num_predict < 1000 조합 금지 (KB-019: 빈 응답)
 ```
 
 ### 2.5 Open WebUI 설치 (선택사항)
@@ -1172,10 +1186,10 @@ sleep 15
 
 | 서비스 | URL | 용도 |
 |--------|-----|------|
-| Ollama API | http://localhost:11434 | LLM 추론 |
-| Open WebUI | http://localhost:8080 | 웹 채팅 |
-| Jupyter Lab | http://localhost:8888 | Vision 노트북 |
-| n8n | http://localhost:5678 | 워크플로우 자동화 |
+| **Ollama API** | http://localhost:11434 | LLM 추론 (OpenAI 호환) |
+| **Open WebUI** | http://localhost:8080 | 웹 채팅 UI |
+| **SearXNG** | http://localhost:8888 | 프라이빗 검색엔진 |
+| Dashboard | http://localhost:9000 | 시스템 모니터링 |
 
 ## 명령어 요약
 
@@ -1183,28 +1197,22 @@ sleep 15
 # 상태 확인
 /gx10/api/status.sh
 
-# Brain 전환
-/gx10/api/switch.sh code     # Code Brain 활성화
-/gx10/api/switch.sh vision   # Vision Brain 활성화
-/gx10/api/switch.sh none     # 모두 비활성화
-
-# 전체 시스템 시작
-/gx10/system/start-all.sh
-
 # Ollama 직접 접근
-ollama list                  # 모델 목록
-ollama ps                    # 실행 중인 모델
-ollama run qwen2.5-coder:32b # 대화형 실행
+ollama list                   # 모델 목록
+ollama ps                     # 현재 로드된 모델
+ollama run gpt-oss:120b       # 대화형 실행
+
+# 서비스 관리
+sudo systemctl status ollama  # Ollama 상태
+docker ps                     # Docker 서비스 상태
 ```
 
-## 모델 권장 사양
+## 운영 모델 현황 (2026-06-08)
 
-| 용도 | 모델 | 메모리 | 속도 |
-|------|------|--------|------|
-| 코딩 (메인) | qwen2.5-coder:32b | ~20GB | ~9 tok/s |
-| 코딩 (빠름) | qwen2.5-coder:7b | ~5GB | ~46 tok/s |
-| Vision (분석) | qwen2.5-vl:72b | ~45GB | ~4 tok/s |
-| Vision (빠름) | qwen2.5-vl:7b | ~5GB | ~30 tok/s |
+| 모델 | 디스크 | 메모리 | 속도 | 용도 |
+|------|--------|--------|------|------|
+| `gpt-oss:120b` | 65 GB | ~76 GiB | **38.5 tok/s** | 범용 추론 (단일 엔드포인트) |
+| `qwen3-embedding:latest` | 4.7 GB | ~5 GiB | — | RAG 임베딩 (4096차원) |
 
 ## 문제 해결
 
@@ -1378,35 +1386,39 @@ ssh -N -L 5678:localhost:5678 user@gx10-brain.local &
 | [NVIDIA Blog](https://developer.nvidia.com/blog/how-nvidia-dgx-sparks-performance-enables-intensive-ai-tasks/) | 2025-10 | Qwen3-235B 듀얼: 23,477 tok/s |
 | [Brandon RC](https://brandonrc.github.io/benchmark-spark/phase1/index.html) | 2025-11 | Docker 20-30GB 오버헤드 |
 
-## B. 모델 성능 요약
+## B. 운영 모델 성능 (2026-06-08 실측)
 
 | 모델 | 메모리 | 속도 | 용도 |
 |------|--------|------|------|
-| qwen2.5-coder:32b | ~20GB | ~9.5 tok/s | 메인 코딩 |
-| qwen2.5-coder:7b | ~5GB | ~46 tok/s | 자동완성 |
-| qwen2.5-vl:72b | ~45GB | ~4.6 tok/s | 정밀 비전 |
-| qwen2.5-vl:7b | ~5GB | ~30 tok/s | 빠른 비전 |
+| `gpt-oss:120b` (MXFP4 MoE) | ~76 GiB | **38.5 tok/s** | 범용 추론 (단일 엔드포인트) |
+| `qwen3-embedding:latest` (Q4_K_M) | ~5 GiB | — | RAG 임베딩 4096차원 |
+
+**설치 금지 목록 (KB-020):**
+| 모델 | 이유 |
+|------|------|
+| `qwen3-coder-next` (80B) | GB10 aarch64에서 전체 `?` 토큰 출력 (llama.cpp #23010 OPEN) |
 
 ## C. 라이선스
 
 | 구성요소 | 라이선스 | 상업적 사용 |
 |----------|----------|-------------|
-| Qwen2.5-Coder | Apache 2.0 | ✅ |
-| Qwen2.5-VL | Apache 2.0 | ✅ |
-| DeepSeek-Coder-V2 | DeepSeek License | ✅ |
+| gpt-oss (Microsoft OSS) | MIT | ✅ |
+| qwen3-embedding (Qwen) | Apache 2.0 | ✅ |
 | Ollama | MIT | ✅ |
-| n8n | Sustainable Use | ⚠️ 조건부 |
-| OpenHands | MIT | ✅ |
+| Open WebUI | MIT | ✅ |
+| SearXNG | AGPL-3.0 | ⚠️ 조건부 |
 
-## D. 버전 정보
+## D. 버전 정보 (현재 운영 기준)
 
-| 구성요소 | 권장 버전 |
+| 구성요소 | 현재 버전 |
 |----------|----------|
-| DGX OS | 1.1+ |
-| CUDA | 12.x / 13.x |
-| Ollama | 0.5+ |
+| OS | DGX OS 7.2.3 (Ubuntu 24.04.4 LTS) |
+| 커널 | 6.17.0-1018-nvidia |
+| GPU 드라이버 | NVIDIA 580.159.03 |
+| CUDA | 13.0 |
+| Ollama | **v0.30.6** (2026-06-08 업그레이드) |
 | Docker | 24.x+ |
-| Python | 3.11+ |
+| Python | 3.12 |
 
 ## E. 체크리스트
 
@@ -1423,8 +1435,7 @@ ssh -N -L 5678:localhost:5678 user@gx10-brain.local &
 
 **문서 끝**
 
-*본 문서는 2025년 실측 벤치마크를 기반으로 작성되었습니다.*
-*하드웨어/소프트웨어 업데이트에 따라 성능이 변경될 수 있습니다.*
+*성능 데이터는 실측 기준입니다. Ollama 버전 업그레이드에 따라 수치가 변동될 수 있습니다.*
 
 ---
 
@@ -1432,6 +1443,7 @@ ssh -N -L 5678:localhost:5678 user@gx10-brain.local &
 
 | 일자 | 버전 | 설명 | 리뷰어 |
 |------|------|------|--------|
+| 2026-06-08 | 2.3 | Ollama v0.30.6 업그레이드 반영, gpt-oss:120b 단일 모델 체계, 38.5 tok/s 실측, KB-019/020 추가, 전체 모델 참조 현행화 | holee |
 | 2026-02-02 | 2.2 | DGX OS 7.2.3 기반으로 수정 (사전 설치된 컴포넌트 활용) | drake |
 | 2026-02-02 | 2.1 | Ubuntu 24.04 LTS 변경 사항 반영 | drake |
 | 2026-02-01 | 2.0 | 딥 리서치 기반 전면 재구성 | drake |

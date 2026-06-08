@@ -288,6 +288,8 @@ curl http://localhost:9000/api/health
 | KB-016 | qwen3:30b 262K ctx → RAM 119 GB 전체 점유 | kqwen-coder:latest (32K ctx) Modelfile로 분리 | ✅ |
 | KB-017 | qwen3.5:122b 실행 불가 (런타임 149 GiB > 시스템 119 GiB) | 삭제. qwen3:30b(32K) 운영 | ✅ |
 | KB-018 | GB10 GPU 활성 메모리 ~32 GiB 제한 — 동시 GPU 로드 1개 | KEEP_ALIVE RAM 상주 + 0.1s 교체. ollama ps 동작 문서화 | ✅ |
+| KB-019 | gpt-oss:120b (thinking 모델) 빈 응답 — `/api/generate` + num_predict 20 | `/api/chat` + `num_predict ≥ 1000` 사용 필수 (think 블록 토큰 소모) | ✅ |
+| KB-020 | qwen3-coder-next(80B) GB10 aarch64 전체 `?` 토큰 출력 | llama.cpp #23010 (OPEN) — 수정 전까지 설치 금지. 대안: qwen3-coder:30b | ✅ |
 
 > 상세 내용: `memory/errors/KB-*.md`
 
@@ -336,7 +338,8 @@ gx10-install/
 │       ├── 06-dashboard-install.sh     # Phase 6
 │       └── lib/                 # 공통 라이브러리
 ├── memory/
-│   └── errors/                  # Knowledge Base (KB-001~014)
+│   ├── errors/                  # Knowledge Base (KB-001~020)
+│   └── tasks/                   # Task 이력
 ├── GX10-*.md                    # 상세 가이드 문서
 └── gx10-scripts/                # 추가 유틸리티
 ```
@@ -501,11 +504,13 @@ curl http://$(hostname -I | awk '{print $1}'):9000/api/health
 | 문서 | 설명 |
 |------|------|
 | [docs/implementation-guide.md](docs/implementation-guide.md) | 최종 구현 가이드 |
+| [docs/lan-client-guide.md](docs/lan-client-guide.md) | LAN 클라이언트 API 사용 가이드 |
 | [docs/two-brain-architecture.md](docs/two-brain-architecture.md) | Two Brain 아키텍처 |
 | [docs/build-checklist.md](docs/build-checklist.md) | 구축 체크리스트 |
 | [docs/external-access.md](docs/external-access.md) | 외부 접근 가이드 (Tailscale) |
+| [docs/troubleshooting.md](docs/troubleshooting.md) | 문제 해결 가이드 |
 | [scripts/install/README.md](scripts/install/README.md) | 스크립트 상세 설명 |
-| [memory/errors/](memory/errors/) | KB-001~017 오류 해결 |
+| [memory/errors/](memory/errors/) | KB-001~020 오류 해결 |
 
 ---
 
@@ -546,7 +551,7 @@ ollama pull qwen3-embedding:latest
 
 | 항목 | 내용 |
 |------|------|
-| **버전** | 2.7.0 |
+| **버전** | 2.8.0 |
 | **최종 수정** | 2026-06-08 |
 | **1차 구축 완료** | 2026-02-03 |
 | **작성** | Claude Sonnet 4.6 + MoAI-ADK |
@@ -556,6 +561,7 @@ ollama pull qwen3-embedding:latest
 
 | 버전 | 일자 | 설명 |
 |------|------|------|
+| 2.8.0 | 2026-06-08 | 전체 문서 상세 개정: KB-019/020 추가, 모든 구형 모델명 정리, implementation-guide/troubleshooting/lan-client-guide 전면 업데이트 |
 | 2.7.0 | 2026-06-08 | Ollama v0.23.2→v0.30.6 업그레이드, gpt-oss:120b 단일 모델 운영 현황 업데이트, 실측 속도 38.5 tok/s 반영 |
 | 2.6.0 | 2026-06-02 | 현재 운영 상태 섹션 추가, NVIDIA 580.159.03/CUDA 13.0/Ollama v0.23.2 사양 반영, qwen3:30b 재설치 명령에서 제거 |
 | 2.5.0 | 2026-05-21 | t3610 2.5G 직결 네트워크 구성 반영 (KB-015), 하드웨어 사양·접속 방법 업데이트 |
